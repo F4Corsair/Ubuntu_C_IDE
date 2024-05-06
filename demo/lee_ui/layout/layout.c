@@ -160,3 +160,9 @@ int main() {
 
 	return 0;
 }
+
+/*
+ * if winsize changed & catched its signal, raise win_size_changed flag and display alert page first (flag will stop all input handling)
+ * then file saving procedure will call - if finished, [press any key to refresh] message will display
+ * any key input will load all window from scratch but reference working data
+*/
