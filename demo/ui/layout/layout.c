@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define CTRL(c) ((c) & 037)  // macro function to read CTRL + character
-#define DEBUG_INPUT
+#define DEBUG_INPUT // debug option : print input charcter
 
 #define KEY_NAME_WIDTH 14
 #define FILE_TAB_WIDTH 15
@@ -14,15 +14,18 @@
 
 #define CODE_TAB 0
 #define FILE_TAB 1
-#define COMP_TAB 2
-#define CMND_TAB 3
-#define MANL_TAB 4
+#define BUILD_TAB 2
+#define TERMINAL_TAB 3
+#define MANUAL_TAB 4
 #define QUIT_TAB 5
 
 typedef struct {
 	char *file_name;
 	char *full_path;
 } TabContents;
+
+char menu_tab_names[MENU_TAB_CNT][MIN_MENU_TAB_WIDTH - 1] = {"  Code  ", "  File  ", "  Build ", "Terminal", " Manual ", "  Quit  "};
+int menu_tab_pos[MENU_TAB_CNT] = {2, 2, 2, 0, 1, 2}; 
 
 // todo : newFileTab append manage dynamic list of openned files
 // delFileTab will delete it & winsize change let max_file_tab changed, reallocation will needed
@@ -31,7 +34,7 @@ int max_file_tab; // cur window size determine this
 int file_tab_cnt;
 int file_tab_focus;
 
-void newFileTab(WINDOW *head_tab) {
+void newFileTab(WINDOW *file_tab) {
 	int start_pos = 0;
 	if(file_tab_cnt >= max_file_tab) {
 		// todo : delete tab by policy
@@ -41,13 +44,13 @@ void newFileTab(WINDOW *head_tab) {
 	start_pos = KEY_NAME_WIDTH + FILE_TAB_WIDTH * (file_tab_cnt - 1); 
 		
 	// print tab
-	mvwprintw(head_tab, 0, start_pos, "\\");
-	wattron(head_tab, A_UNDERLINE);
-	mvwprintw(head_tab, 0, start_pos+1, "%-*s", FILE_TAB_WIDTH - 2, "file1.c");
-	wattroff(head_tab, A_UNDERLINE);
-	mvwprintw(head_tab, 0, start_pos+FILE_TAB_WIDTH-1, "/");
+	mvwprintw(file_tab, 0, start_pos, "\\");
+	wattron(file_tab, A_UNDERLINE);
+	mvwprintw(file_tab, 0, start_pos+1, "%-*s", FILE_TAB_WIDTH - 2, "file1.c");
+	wattroff(file_tab, A_UNDERLINE);
+	mvwprintw(file_tab, 0, start_pos+FILE_TAB_WIDTH-1, "/");
 
-	wrefresh(head_tab);
+	wrefresh(file_tab);
 }
 
 void delFileTab() {
@@ -55,7 +58,7 @@ void delFileTab() {
 }
 
 // todo!!! : change tab name from head, tail to file, menu
-void tailTabPrint(WINDOW *tail_tab, int max_col, int focus) {
+void menuTabPrint(WINDOW *menu_tab, int max_col, int focus) {
 	if(max_col < MIN_WIDTH) {
 		perror("too small window size\n");
 		exit(1);
@@ -66,15 +69,24 @@ void tailTabPrint(WINDOW *tail_tab, int max_col, int focus) {
 	// print
 	for(int i = 0; i < MENU_TAB_CNT; i++) {
 		int startpos = width * i;
-		mvwaddch(tail_tab, 0, startpos, ' ');
-		mvwaddch(tail_tab, 1, startpos, '/');
+		mvwaddch(menu_tab, 0, startpos, ' ');
 		for(int j = 0; j < width - 1; j++)
-			mvwaddch(tail_tab, 0, startpos + j + 1 , '_');
-		mvwaddch(tail_tab, 0, startpos + width - 1, ' ');
-		mvwaddch(tail_tab, 1, startpos + width - 1, '\\');
+			mvwaddch(menu_tab, 0, startpos + j + 1 , '_');
+		mvwaddch(menu_tab, 0, startpos + width - 1, ' ');
+
+		mvwaddch(menu_tab, 1, startpos, '/');
+		mvwaddch(menu_tab, 1, startpos + width - 1, '\\');
+
+		if(i == focus)
+			wattron(menu_tab, A_STANDOUT);
+		mvwprintw(menu_tab, 1, startpos + 1, "%*s", width - 2, "");
+		mvwprintw(menu_tab, 1, startpos + (width - 8) / 2, "%s", menu_tab_names[i]);
+		wattron(menu_tab, A_UNDERLINE);
+		mvwaddch(menu_tab, 1, startpos + (width - 8) / 2 + menu_tab_pos[i] , menu_tab_names[i][menu_tab_pos[i]]);
+		wattroff(menu_tab, A_UNDERLINE | A_STANDOUT);
 	}
 
-	wrefresh(tail_tab);
+	wrefresh(menu_tab);
 
 }
 
@@ -93,18 +105,18 @@ int main() {
 	// todo : import termios, replace LINES & COLS
 	// declare windows
 	WINDOW *contents = newwin(LINES - 3, COLS, 1, 0);
-	WINDOW *head_tab = newwin(1, COLS, 0, 0);
-	WINDOW *tail_tab = newwin(2, COLS, LINES - 2, 0);
+	WINDOW *file_tab = newwin(1, COLS, 0, 0);
+	WINDOW *menu_tab = newwin(2, COLS, LINES - 2, 0);
 
-	// head tab init
-	wattron(head_tab, A_UNDERLINE);
-	mvwprintw(head_tab, 0, 0, "KEY_NAME     ");
-	wattroff(head_tab, A_UNDERLINE);
-	mvwprintw(head_tab, 0, KEY_NAME_WIDTH - 1, "/");
-	wrefresh(head_tab);
+	// file tab init
+	wattron(file_tab, A_UNDERLINE);
+	mvwprintw(file_tab, 0, 0, "KEY_NAME     ");
+	wattroff(file_tab, A_UNDERLINE);
+	mvwprintw(file_tab, 0, KEY_NAME_WIDTH - 1, "/");
+	wrefresh(file_tab);
 
-	// tail tab init
-	tailTabPrint(tail_tab, COLS, CODE_TAB);
+	// menu tab init
+	menuTabPrint(menu_tab, COLS, CODE_TAB);
 
 	// test code
 	int strow, stcol, maxrow, maxcol;
@@ -125,15 +137,15 @@ int main() {
 		input_char = getch();
 #ifdef DEBUG_INPUT
 		// print input keyname
-		wattron(head_tab, A_UNDERLINE);
-		mvwprintw(head_tab, 0, 0, "%-*s", KEY_NAME_WIDTH - 1, keyname(input_char));
-		wattroff(head_tab, A_UNDERLINE);
-		wrefresh(head_tab);
+		wattron(file_tab, A_UNDERLINE);
+		mvwprintw(file_tab, 0, 0, "%-*s", KEY_NAME_WIDTH - 1, keyname(input_char));
+		wattroff(file_tab, A_UNDERLINE);
+		wrefresh(file_tab);
 #endif
 		if (input_char == CTRL('q'))
 			break;
 		else if (input_char == 'n') {
-			newFileTab(head_tab);
+			newFileTab(file_tab);
 		}
 		else {
 			mvwprintw(contents, 1, 0, "Input : %s\nHex : 0x%x", keyname(input_char), input_char);
@@ -142,6 +154,8 @@ int main() {
 	}
 
 	// terminate
+	delwin(file_tab);
+	delwin(menu_tab);
 	endwin();
 
 	return 0;
