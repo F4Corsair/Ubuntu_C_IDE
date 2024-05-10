@@ -30,20 +30,23 @@ typedef struct {
 int max_file_tab; // cur window size determine this
 int file_tab_cnt;
 int file_tab_focus;
+int tab_num;
 
 void newFileTab(WINDOW *head_tab) {
 	int start_pos = 0;
+	char file_name[FILE_TAB_WIDTH];
 	if(file_tab_cnt >= max_file_tab) {
 		// todo : delete tab by policy
 	} else
 		file_tab_cnt++;
 	// calculate start_pos
 	start_pos = KEY_NAME_WIDTH + FILE_TAB_WIDTH * (file_tab_cnt - 1); 
-		
+	
+	snprintf(file_name, sizeof(file_name), "file%d.c", file_tab_cnt);	
 	// print tab
 	mvwprintw(head_tab, 0, start_pos, "\\");
 	wattron(head_tab, A_UNDERLINE);
-	mvwprintw(head_tab, 0, start_pos+1, "%-*s", FILE_TAB_WIDTH - 2, "file1.c");
+	mvwprintw(head_tab, 0, start_pos+1, "%-*s", FILE_TAB_WIDTH - 2, file_name);
 	wattroff(head_tab, A_UNDERLINE);
 	mvwprintw(head_tab, 0, start_pos+FILE_TAB_WIDTH-1, "/");
 
@@ -80,7 +83,7 @@ void tailTabPrint(WINDOW *tail_tab, int max_col, int focus) {
 
 int main() {
 	int input_char;
-	max_file_tab = 5, file_tab_cnt = 0, file_tab_focus = -1;
+	max_file_tab = 5, file_tab_cnt = 0, file_tab_focus = -1, tab_num=0;
 
 	// init
 	initscr();
@@ -132,7 +135,8 @@ int main() {
 #endif
 		if (input_char == CTRL('q'))
 			break;
-		else if (input_char == 'n') {
+		else if (input_char == CTRL('n')) {   //CTRL n 
+			tab_num++;
 			newFileTab(head_tab);
 		}
 		else {
