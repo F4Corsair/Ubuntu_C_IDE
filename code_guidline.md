@@ -11,7 +11,7 @@ when you define header, try to use macro block like
 ```c
 #ifndef __HeaderNameOrSomething
 #define __HeaderNameOrSomething
-// *** big category ***
+/* BIG CATEGORY */
 // small category
 extern int global_variable; // original global variable MUST declare at global.h - other uses extern
 void funcDef(int);

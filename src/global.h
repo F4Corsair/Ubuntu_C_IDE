@@ -2,10 +2,10 @@
 #ifndef __GlobalHeader
 #define __GlobalHeader
 
-// *** macro functions ***
+/* MACRO FUNCTIONS */
 #define CTRL(c) ((c) & 037)  // macro function to read CTRL + character
 
-// *** struct ***
+/* STRUCT */
 
 typedef struct {
 	char *file_name;
@@ -13,14 +13,16 @@ typedef struct {
     int row, col;
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
 
-// *** global variables ***
+/* GLOBAL VARIABLES */
 
 // file tab
 int max_file_tab; // cur window size determine this
-int file_tab_cnt;
-int file_tab_focus;
 
 // menu tab
 int menu_tab_focus; // will define its value at menuTab.h
+
+// size information of stdwin
+int win_row;
+int win_col;
 
 #endif
