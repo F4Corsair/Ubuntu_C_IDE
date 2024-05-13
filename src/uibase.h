@@ -11,17 +11,13 @@
 #define FILE_TAB_WIDTH 15
 #define MIN_MENU_TAB_WIDTH 10
 #define MENU_TAB_CNT 6
-#define MIN_WIDTH (MIN_MENU_TAB_WIDTH * MENU_TAB_CNT)
+
+// lower bound of stdscr
+#define WIN_MIN_WIDTH (MIN_MENU_TAB_WIDTH * MENU_TAB_CNT)
+#define WIN_MIN_HEIGHT 30
+// todo : re-calculate this value after UI design is done
 
 /* STRUCT */
-enum MenuTab {
-    CODE_TAB,
-    FILE_TAB,
-    BUILD_TAB,
-    TERMINAL_TAB,
-    MANUAL_TAB,
-    QUIT_TAB
-};
 
 /* READ ONLY DATA */
 static char menu_tab_names[MENU_TAB_CNT][MIN_MENU_TAB_WIDTH - 1] = {"  Code  ", "  File  ", "  Build ", "Terminal", " Manual ", "  Quit  "};
@@ -33,5 +29,7 @@ int file_tab_cnt; // # of current file tab
 int file_tab_focus;
 
 /* METHOD */
+void ui_init();
+void ui_terminate();
 
 #endif

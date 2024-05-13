@@ -3,9 +3,7 @@
 
 #include "global.h"
 
-// todo : re-calculate this value after UI design is done
-#define WIN_MIN_ROW 30
-#define WIN_MIN_COL 80
+// window lower bound : WIN_MIN_HEIGHT & WIN_MIN_WIDTH (defined on global.h)
 
 extern int win_row;
 extern int win_col;
