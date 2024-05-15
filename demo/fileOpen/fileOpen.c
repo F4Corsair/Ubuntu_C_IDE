@@ -12,7 +12,7 @@ typedef struct {
 
 FileStatus fileOpen(char *file_name) {
 	FileStatus temp;
-	char *path = (char*)malloc(512*sizeof(char));
+	char *path = (char*)malloc(256*sizeof(char));
 	
 	if (chdir(".") != 0) {
 		perror("directory");
@@ -20,7 +20,7 @@ FileStatus fileOpen(char *file_name) {
 	}
 
 	// full_path
-	if (getcwd(path, 512) == NULL) {
+	if (getcwd(path, 256) == NULL) {
 		perror("getcwd");
 		exit(1);
 	}
