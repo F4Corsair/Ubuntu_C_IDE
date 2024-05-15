@@ -23,11 +23,18 @@ FileStatus fileOpen(char *file_name) {
 	strcat(path, "/");
 	strcat(path, file_name);
 	printf("%s\n", path);
-
-	// initializing
-	temp.file_name = strdup(file_name);
-	temp.full_path = strdup(path);
-	temp.row = 0; temp.col = 0 ;
+	
+	// file existence check
+	if (access(path, F_OK) == 0) {
+		// initializing
+        	temp.file_name = strdup(file_name);
+        	temp.full_path = strdup(path);
+        	temp.row = 0; temp.col = 0;	
+	}
+	else {
+		fprintf(stderr, "file does not exist\n");
+		exit(1);
+	}
 
 	return temp;
 }

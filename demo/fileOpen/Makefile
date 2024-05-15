@@ -1,4 +1,4 @@
-CFLAGS = -g -lncurses
+CFLAGS = global.h -g -lncurses
 
 fileOpen.out : fileOpen.c
-	cc -o $@ $< $(CFLAGS)
+	gcc -o $@ $< $(CFLAGS)
