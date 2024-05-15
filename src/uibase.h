@@ -36,7 +36,7 @@ extern WINDOW *contents;
 void ui_init();
 void ui_terminate();
 void ui_set_whole();
-void menu_tab_reset();
+void window_reset();
 void menu_tab_update();
 void tab_restore();
 

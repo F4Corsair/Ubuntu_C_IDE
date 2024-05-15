@@ -8,20 +8,32 @@
 #include "uibase.h"
 
 void wininch_handler(int signum) {
-    menu_tab_focus_backup = menu_tab_focus;
+    if(menu_tab_focus != WINSIZE_TAB)
+        menu_tab_focus_backup = menu_tab_focus;
     menu_tab_focus = WINSIZE_TAB;
     winsize_flag = 1; // this flag blocks keyboard input
 	
     // todo : pause system
     winsize_calculate();
-    // todo : clear window - use method defined on uibase.h
 
+    erase();
+    refresh();
+
+    int row_pos = win_row / 2 - 1;
+    row_pos = row_pos < 0 ? 0 : row_pos;
+    int col_pos = win_col / 2 - 14;
+    col_pos = col_pos < 0 ? 0 : col_pos;
    	if(win_row < WIN_MIN_HEIGHT || win_col < WIN_MIN_WIDTH) {
-        // show msg : Terminal size is too small!
+        mvaddstr(row_pos, col_pos, "Window size change detected");
+        mvaddstr(row_pos + 1, col_pos, "Terminal Size is too small!");
+        refresh();
     }
     else {
-        // show msg : Window size change detected
+        mvaddstr(row_pos, col_pos, "Window size change detected");
+        refresh();
         // if pre-process is done : ask user to continue
+        mvaddstr(row_pos + 1, col_pos, "[Press any key to Continue]");
+        refresh();
         winsize_flag = 2;
     }
 }

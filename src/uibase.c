@@ -39,18 +39,23 @@ void ui_terminate() {
 }
 
 void ui_set_whole() {
-    menu_tab_reset();
+    window_reset();
+    menu_tab_update();
     wrefresh(menu_tab);
-
-    file_tab = newwin(1, win_col, 0 , 0);
-
-    contents = newwin(win_row - 3, win_col, 1, 0);
 }
 
-void menu_tab_reset() {
+void window_reset() {
     delwin(menu_tab);
+    delwin(file_tab);
+    delwin(contents);
+
+    // NOTICE : you have to call 'endwin()' before reset window size!!!
+    endwin();
+    refresh();
+
     menu_tab = newwin(2, win_col, win_row - 2, 0);
-    menu_tab_update();
+    file_tab = newwin(1, win_col, 0 , 0);
+    contents = newwin(win_row - 3, win_col, 1, 0);
 }
 
 void menu_tab_update() {
@@ -99,8 +104,6 @@ void tab_restore() {
         quit_tab_transition();
         break;
     }
-
-    menu_tab_update();
 
     return;
 }

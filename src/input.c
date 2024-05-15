@@ -5,6 +5,7 @@
 #include "global.h"
 #include "uibase.h"
 #include "quit.h"
+#include "winsize.h"
 
 
 int input_control(int input_char) {
@@ -15,7 +16,7 @@ int input_control(int input_char) {
 		// wattroff(file_tab, A_UNDERLINE);
 		// wrefresh(file_tab);
 #endif
-    // check tab transition
+    // check tab transition - need to exclude WINSIZE_TAB
     if (input_char == CTRL('q')) { // terminate program
         quit_tab_transition();
         return 0;
@@ -43,8 +44,10 @@ int input_control(int input_char) {
             break;
         case WINSIZE_TAB:
             if(winsize_flag == 2) {
+                // ready to reset stdscr
+                winsize_calculate();
+                window_reset();
                 tab_restore();
-                // refresh
             }
             break;
         default:
