@@ -25,11 +25,24 @@ static int menu_tab_pos[MENU_TAB_CNT] = {2, 2, 2, 0, 1, 2};  // start position o
 
 /* GLOBAL VARIABLE */
 extern int max_file_tab; // window size determine this
-int file_tab_cnt; // # of current file tab
-int file_tab_focus;
+extern int file_tab_cnt; // number of current file tab
+extern int file_tab_focus; // don't change it directly
+
+extern WINDOW *file_tab;
+extern WINDOW *menu_tab;
+extern WINDOW *contents;
 
 /* METHOD */
 void ui_init();
 void ui_terminate();
+void ui_set_whole();
+void menu_tab_reset();
+void menu_tab_update();
+void tab_restore();
 
 #endif
+
+// notice
+/*
+ * don't change menu_tab_focus directly
+*/

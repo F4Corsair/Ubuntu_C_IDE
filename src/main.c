@@ -15,15 +15,18 @@ int main(int argc, char **argv) {
 
 	// debug variable declare
 
-	flag_init();
+
+	// stream.h -> connect stdout, stderr to file : log it
 	ui_init();
 	winsize_init(); // handle SIGWINCH
+	ui_set_whole();
 
 	while(1) {
 		// read key input
 		input_char = getch();
 		if(input_control(input_char) == -1)
 			break;
+		// break; // for debug
 	}
 
 	// terminate procedure

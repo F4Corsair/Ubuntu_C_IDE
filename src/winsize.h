@@ -7,6 +7,7 @@
 
 extern int win_row;
 extern int win_col;
+extern int winsize_flag;
 
 void winsize_init();
 void wininch_handler(int signum);

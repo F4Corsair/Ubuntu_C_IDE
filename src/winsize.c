@@ -8,7 +8,9 @@
 #include "uibase.h"
 
 void wininch_handler(int signum) {
-    set_wait_any_input(TRUE); // todo : this flag blocks keyboard input
+    menu_tab_focus_backup = menu_tab_focus;
+    menu_tab_focus = WINSIZE_TAB;
+    winsize_flag = 1; // this flag blocks keyboard input
 	
     // todo : pause system
     winsize_calculate();
@@ -20,8 +22,7 @@ void wininch_handler(int signum) {
     else {
         // show msg : Window size change detected
         // if pre-process is done : ask user to continue
-        set_winsize_changed(FALSE);
-        set_wait_any_input(TRUE);
+        winsize_flag = 2;
     }
 }
 
@@ -30,10 +31,10 @@ void winsize_init() {
     winsize_calculate();
 
     if(win_row < WIN_MIN_HEIGHT || win_col < WIN_MIN_WIDTH) {
-        set_winsize_changed(TRUE); // to block key input
+        winsize_flag = 1; // to block key input
         // show msg : Terminal size is too small!
     } else {
-        set_winsize_changed(FALSE);
+        winsize_flag = 0;
     }
 }
 
