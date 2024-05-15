@@ -3,12 +3,7 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef struct {
-	char *file_name;
-	char *full_path;
-	int row, col;
-} FileStatus;
+#include "global.h"
 
 FileStatus fileOpen(char *file_name) {
 	FileStatus temp;
