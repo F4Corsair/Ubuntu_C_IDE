@@ -1,11 +1,4 @@
-CC=gcc
-CFLAGS=-g
-LIBS=-lcurses
+CFLAGS =ls.c -g -lcurses
 
-layout.out: layout.c ls.c
-    $(CC) -o $@ $^ $(CFLAGS) $(LIBS)
-
-.PHONY: clean
-
-clean:
-    rm -f layout.out
+layout.out : layout.c
+	cc -o $@ $< $(CFLAGS)
