@@ -24,7 +24,7 @@ FileStatus fileOpen(char *file_name) {
 	strcat(path, file_name);
 	printf("%s\n", path);
 	
-	// file existence check
+	// file existence check - exception handling
 	if (access(path, F_OK) == 0) {
 		// initializing
         	temp.file_name = strdup(file_name);
@@ -39,7 +39,7 @@ FileStatus fileOpen(char *file_name) {
 	return temp;
 }
 
-int main(int argc, char* argv[]) {
+/* int main(int argc, char* argv[]) {
 	FileStatus file1;
 
 	if (argc != 2) {
@@ -53,5 +53,5 @@ int main(int argc, char* argv[]) {
 	printf("file full path : %s\n", file1.full_path);
 	
 	return 0;
-}
+} */
 	
