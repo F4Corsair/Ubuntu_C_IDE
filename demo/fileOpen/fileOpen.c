@@ -19,10 +19,8 @@ FileStatus fileOpen(char *file_name) {
 		perror("getcwd");
 		exit(1);
 	}
-	printf("%s\n", path);
 	strcat(path, "/");
 	strcat(path, file_name);
-	printf("%s\n", path);
 	
 	// file existence check - exception handling
 	if (access(path, F_OK) == 0) {
@@ -32,7 +30,7 @@ FileStatus fileOpen(char *file_name) {
         	temp.row = 0; temp.col = 0;	
 	}
 	else {
-		fprintf(stderr, "file does not exist\n");
+		perror("file does not exist");
 		exit(1);
 	}
 
