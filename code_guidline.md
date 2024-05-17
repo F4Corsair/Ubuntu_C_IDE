@@ -3,7 +3,7 @@
 - struct : UpperCase
 - global / local variable : snake_case\
 (Local Variable Must declared in global.h)
-- function(method) : cammelCase
+- function(method) : snake_case
 - filename : cammelCase.ext
 ## Recommendation
 when you define header, try to use macro block like

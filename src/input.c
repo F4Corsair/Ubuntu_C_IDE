@@ -4,6 +4,11 @@
 #include "input.h"
 #include "global.h"
 #include "uibase.h"
+#include "code.h"
+#include "file.h"
+#include "build.h"
+#include "terminal.h"
+#include "manual.h"
 #include "quit.h"
 #include "winsize.h"
 
@@ -16,10 +21,33 @@ int input_control(int input_char) {
 		// wattroff(file_tab, A_UNDERLINE);
 		// wrefresh(file_tab);
 #endif
-    // check tab transition - need to exclude WINSIZE_TAB
+    // check tab transition
     if (input_char == CTRL('q')) { // terminate program
         quit_tab_transition();
         return 0;
+    }
+    switch (input_char)
+    {
+    case CTRL('c'):
+        code_tab_transition();
+        return 0;
+    case CTRL('f'):
+        file_tab_transition();
+        return 0;
+    case CTRL('b'):
+        build_tab_transition();
+        return 0;
+    case CTRL('t'):
+        terminal_tab_transition();
+        return 0;
+    case 0xa: // to recognize CTRL_M
+        manual_tab_transition();
+        return 0;
+    case CTRL('q'):
+        quit_tab_transition();
+        return 0;
+    default:
+        break;
     }
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first

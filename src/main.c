@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <panel.h>
+#include <curses.h>
 
 #include "global.h"
 #include "uibase.h"

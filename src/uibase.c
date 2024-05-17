@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <panel.h>
+#include <curses.h>
 #include <signal.h>
 
 #include "uibase.h"

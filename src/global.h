@@ -2,7 +2,8 @@
 #ifndef __GlobalHeader
 #define __GlobalHeader
 
-#include <panel.h>
+#include <curses.h>
+#include <time.h>
 
 /* MACRO CONSTANT */
 // flag offset
@@ -15,6 +16,8 @@ typedef struct {
 	char *file_name;
 	char *full_path;
     int row, col;
+    int modified;
+    time_t last_saved;
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
 
 enum MenuTab {

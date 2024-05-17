@@ -1,4 +1,4 @@
-#include <panel.h>
+#include <curses.h>
 
 #include "global.h"
 #include "quit.h"

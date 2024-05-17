@@ -1,19 +1,19 @@
 #include <curses.h>
 
 #include "global.h"
-#include "code.h"
+#include "file.h"
 #include "uibase.h"
 
-void code_tab_transition() {
-    if(menu_tab_focus == CODE_TAB)
+void file_tab_transition() {
+    if(menu_tab_focus == FILE_TAB)
         return;
 
     erase();
     refresh();
 
-    menu_tab_focus = CODE_TAB;
+    menu_tab_focus = FILE_TAB;
     menu_tab_update();
     wrefresh(menu_tab);
 
-    // todo : show CODE_TAB
+    // todo : show FILE_TAB
 }
