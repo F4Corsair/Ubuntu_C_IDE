@@ -16,7 +16,7 @@ typedef struct {
 	char *file_name;
 	char *full_path;
     int row, col;
-    int modified;
+    int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
 
