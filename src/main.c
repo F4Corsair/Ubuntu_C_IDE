@@ -28,6 +28,8 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
+	del_opened_file_tab(1);
+	del_opened_file_tab(4);
 
 
 	while(1) {

@@ -101,10 +101,11 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     return 0;
 }
 
+// todo : you need to let foucs live
 void del_opened_file_tab(int idx) {
     FileStatus *cur = opened_file_info->head;
     FileStatus *pre = NULL;
-    for(int i = idx; i > 0; i--) {
+    for(int i = 0; i < idx; i++) {
         if(cur == NULL) {
             perror("del_opened_file_tab : out of index");
             return;
@@ -119,6 +120,13 @@ void del_opened_file_tab(int idx) {
             return;
     }
 
+    // focus check before delete
+    if(cur == opened_file_info->focus) {
+        opened_file_info->focus = opened_file_info->head;
+        opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
+        
+    }
+
     // delete file tab
     if(pre == NULL) { // del head
         opened_file_info->head = cur->next;
@@ -128,6 +136,7 @@ void del_opened_file_tab(int idx) {
     if(cur->fd != -1)
         close(cur->fd);
     free(cur);
+    opened_file_info->cnt--;
 }
 
 OpenFileInfo *opened_file_info_init() {
@@ -162,4 +171,5 @@ void opened_file_focus_prev() {
 
 int close_unsaved_caution() {
     // ret -1 : don't save & cancel close process
+    return 0;
 }

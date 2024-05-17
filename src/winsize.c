@@ -42,9 +42,7 @@ void winsize_init() {
     signal(SIGWINCH, wininch_handler);
     winsize_calculate();
 
-    perror("test start");
     if(win_row < WIN_MIN_HEIGHT || win_col < WIN_MIN_WIDTH) {
-        perror("handled");
         wininch_handler(SIGWINCH);
     } else {
         winsize_flag = 0;
