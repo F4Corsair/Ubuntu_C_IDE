@@ -11,7 +11,9 @@ void quit_tab_transition() {
     erase();
     refresh();
 
-    menu_tab_focus_backup = menu_tab_focus;
+    // to keep backup safe
+    if(menu_tab_focus_backup[1] != QUIT_TAB)
+        menu_tab_focus_backup[0] = menu_tab_focus;
     menu_tab_focus = QUIT_TAB;
     menu_tab_update();
     wrefresh(menu_tab);

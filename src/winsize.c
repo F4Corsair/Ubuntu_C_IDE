@@ -9,7 +9,7 @@
 
 void wininch_handler(int signum) {
     if(menu_tab_focus != WINSIZE_TAB)
-        menu_tab_focus_backup = menu_tab_focus;
+        menu_tab_focus_backup[1] = menu_tab_focus;
     menu_tab_focus = WINSIZE_TAB;
     winsize_flag = 1; // this flag blocks keyboard input
 	
