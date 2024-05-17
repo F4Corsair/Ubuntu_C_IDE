@@ -21,11 +21,12 @@ int input_control(int input_char) {
 		// wattroff(file_tab, A_UNDERLINE);
 		// wrefresh(file_tab);
 #endif
-    // check tab transition
-    if (input_char == 0x19a) {
+    // input ignore
+    if (input_char == 0x19a || winsize_flag == 1) {
         // ignore KEY_RESIZE
         return 0;
     }
+    // check tab transition
     if (input_char == CTRL('q')) { // terminate program
         quit_tab_transition();
         return 0;
