@@ -42,7 +42,6 @@ void tab_restore();
 
 #endif
 
-// notice
-/*
+/* NOTICE
  * don't change menu_tab_focus directly
 */
