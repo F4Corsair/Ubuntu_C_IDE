@@ -6,38 +6,20 @@
 #include <stddef.h>
 #include "ls.h"
 #include "global.h"
+#include "layout.h"
 
 
 
-#define CTRL(c) ((c) & 037)  // macro function to read CTRL + character
-#define DEBUG_INPUT // debug option : print input character
 
-#define KEY_NAME_WIDTH 14
-#define FILE_TAB_WIDTH 15
-#define MIN_MENU_TAB_WIDTH 10
-#define MENU_TAB_CNT 6
-#define MIN_WIDTH (MIN_MENU_TAB_WIDTH * MENU_TAB_CNT)
-
-#define CODE_TAB 0
-#define FILE_TAB 1
-#define BUILD_TAB 2
-#define TERMINAL_TAB 3
-#define MANUAL_TAB 4
-#define QUIT_TAB 5
-
-typedef struct {
-    char *file_name;
-    char *full_path;
-} TabContents;
 
 extern WorkSpaceContents* head;
 
-char menu_tab_names[MENU_TAB_CNT][MIN_MENU_TAB_WIDTH - 1] = {"  Code  ", "  File  ", "  Build ", "Terminal", " Manual ", "  Quit  "};
-int menu_tab_pos[MENU_TAB_CNT] = {2, 2, 2, 0, 1, 2}; 
+
 
 int max_file_tab; // cur window size determine this
 int file_tab_cnt;
 int file_tab_focus;
+
 
 void displayDirectoryContents(WINDOW*, char* full_path); 
 void fileOpen(char* file_name);
@@ -132,10 +114,10 @@ int main() {
     refresh();
     
     // declare windows
-    WINDOW *contents = newwin(LINES - 4, COLS, 2, 0);
-    WINDOW *path = newwin(1,COLS,1,0);
-    WINDOW *file_tab = newwin(1, COLS, 0, 0);
-    WINDOW *menu_tab = newwin(2, COLS, LINES - 2, 0);
+    file_contents = newwin(LINES - 4, COLS, 2, 0);
+    file_path = newwin(1,COLS,1,0);
+    file_tab = newwin(1, COLS, 0, 0);
+    file_menu_tab = newwin(2, COLS, LINES - 2, 0);
 
     // file tab init
     wattron(file_tab, A_UNDERLINE);
@@ -145,20 +127,18 @@ int main() {
     wrefresh(file_tab);
 
     // menu tab init
-    menuTabPrint(menu_tab, COLS, FILE_TAB);
+    menuTabPrint(file_menu_tab, COLS, FILE_TAB);
 
     // print path
     if (getcwd(work_space_file.full_path, 256) != NULL) {
-	wprintw(path, "%s\n", work_space_file.full_path);
-        printPath(path, work_space_file.full_path);
+	wprintw(file_path, "%s\n", work_space_file.full_path);
+        printPath(file_path, work_space_file.full_path);
         work_space_file.file_name=".";
-        displayDirectoryContents(contents, work_space_file.full_path);
-	mvwchgat(contents, contents_row, contents_col, 5, A_BLINK, 0, NULL);
-    } else {
-        
-    }
+        displayDirectoryContents(file_contents, work_space_file.full_path);
+	mvwchgat(file_contents, contents_row, contents_col, 5, A_BLINK, 0, NULL);
+    } 
    
-   wrefresh(contents);  
+   wrefresh(file_contents);  
     // input handling
     while(1) {
         input_char = getch();
@@ -171,20 +151,20 @@ int main() {
         	newFileTab(file_tab);
         }
 	else if (input_char == KEY_DOWN) {
-		wchgat(contents, -1, A_NORMAL, 0, NULL);
+		wchgat(file_contents, -1, A_NORMAL, 0, NULL);
 		contents_row++;
-		mvwchgat(contents, contents_row, contents_col, 10, A_BLINK, 0, NULL);
-		wrefresh(contents);
+		mvwchgat(file_contents, contents_row, contents_col, 10, A_BLINK, 0, NULL);
+		wrefresh(file_contents);
 	}
 	else if (input_char == KEY_UP) {
-		wchgat(contents, -1, A_NORMAL, 0, NULL);
+		wchgat(file_contents, -1, A_NORMAL, 0, NULL);
 		contents_row--;
-		mvwchgat(contents, contents_row, contents_col, 10, A_BLINK, 0, NULL);
-		wrefresh(contents);
+		mvwchgat(file_contents, contents_row, contents_col, 10, A_BLINK, 0, NULL);
+		wrefresh(file_contents);
 	}
     /*
 	else if (input_char == '\n') { // file selection
-	       wscanw(contents, "%s", contents_file_name);
+	       wscanw(file_contents, "%s", contents_file_name);
 	       if ((pid = fork()) < 0) {
 		       perror("fork");
 		       exit(1);
@@ -201,7 +181,7 @@ int main() {
 
     // terminate
     delwin(file_tab);
-    delwin(menu_tab);
+    delwin(file_menu_tab);
     endwin();
 
     return 0;
