@@ -22,6 +22,10 @@ int input_control(int input_char) {
 		// wrefresh(file_tab);
 #endif
     // check tab transition
+    if (input_char == 0x19a) {
+        // ignore KEY_RESIZE
+        return 0;
+    }
     if (input_char == CTRL('q')) { // terminate program
         quit_tab_transition();
         return 0;

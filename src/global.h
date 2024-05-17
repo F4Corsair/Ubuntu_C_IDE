@@ -40,7 +40,7 @@ extern int max_file_tab; // cur window size determine this
 
 // menu tab
 extern enum MenuTab menu_tab_focus; // will define its value at menuTab.h
-extern enum MenuTab menu_tab_focus_backup;
+extern enum MenuTab menu_tab_focus_backup[2];
 
 // size information of stdwin
 extern int win_row;

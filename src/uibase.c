@@ -2,7 +2,9 @@
 #include <unistd.h>
 #include <curses.h>
 #include <signal.h>
+#include <stdlib.h>
 
+#include "global.h"
 #include "uibase.h"
 #include "code.h"
 #include "file.h"
@@ -27,6 +29,19 @@ void ui_init() {
     keypad(stdscr, true); // enables to read dynamic key input
     noecho();
     curs_set(0); // hide cursor
+
+    // color check
+    if(has_colors() == FALSE) {
+        endwin();
+        printf("Terminal does not support color");
+        perror("Terminal does not support color");
+        exit(1);
+    }
+    start_color();
+
+    // COLOR DEFINITION
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+
     refresh();
 
     // declare signal to ignore
@@ -86,12 +101,17 @@ void menu_tab_update() {
 }
 
 void tab_restore() {
-    if(menu_tab_focus != QUIT_TAB && menu_tab_focus != WINSIZE_TAB) {
+    enum MenuTab focus;
+    if (menu_tab_focus == QUIT_TAB) {
+        focus = menu_tab_focus_backup[0];
+    } else if(menu_tab_focus == WINSIZE_TAB) {
+        focus = menu_tab_focus_backup[1];
+    } else {
         perror("Wrong Call : tab_restore()");
         return;
     }
 
-    switch (menu_tab_focus_backup)
+    switch (focus)
     {
     case CODE_TAB:
         code_tab_transition();
