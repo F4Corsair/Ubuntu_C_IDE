@@ -7,6 +7,7 @@
 #include "uibase.h"
 #include "winsize.h" // handles SIGWINCH
 #include "input.h"
+#include "errLog.h"
 
 #define DEBUG_INPUT // turn on debug mode
 
@@ -16,7 +17,7 @@ int main(int argc, char **argv) {
 	// debug variable declare
 
 
-	// stream.h -> connect stdout, stderr to file : log it
+	start_logging();
 	ui_init();
 	winsize_init(); // handle SIGWINCH
 	ui_set_whole();
@@ -31,6 +32,7 @@ int main(int argc, char **argv) {
 
 	// terminate procedure
 	ui_terminate();
+	end_logging();
 
 	return 0;
 }

@@ -54,3 +54,6 @@ dkms.conf
 # code-workspace
 *.code-workspace
 *.editorconfig
+
+# log files
+*.log
