@@ -15,6 +15,7 @@
 typedef struct _file_status{
 	char file_name[256];
 	char full_path[256];
+    int fd;
     int row, col;
     int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
@@ -24,8 +25,8 @@ typedef struct _file_status{
 typedef struct {
     FileStatus *head;
     int cnt;
-    int focus;
-} OpenedFileInfo;
+    FileStatus *focus;
+} OpenFileInfo;
 
 enum MenuTab {
     CODE_TAB,
@@ -49,7 +50,7 @@ extern int win_row;
 extern int win_col;
 
 // uibase.h
-extern OpenedFileInfo *opened_file_info;
+extern OpenFileInfo *opened_file_info;
 
 extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;

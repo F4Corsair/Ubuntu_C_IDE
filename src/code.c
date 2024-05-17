@@ -1,5 +1,11 @@
 #include <curses.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "global.h"
 #include "code.h"
@@ -21,33 +27,94 @@ void code_tab_transition() {
     wrefresh(opened_file_tab);
 }
 
+/* opened_file_tab */
+
 void opened_file_tab_update() {
+    if(opened_file_info->cnt > MAX_FILE_TAB_CNT) {
+        perror("opend_file_tab out of index");
+        return;
+    }
+
+    wattron(opened_file_tab, A_UNDERLINE);
+    mvwaddstr(opened_file_tab, 0, 0, "File Focus");
+    wattroff(opened_file_tab, A_UNDERLINE);
+    mvwaddch(opened_file_tab, 0, INFO_LABEL_WIDTH - 1, '/');
 
 }
 
-void new_opened_file_tab(char *file_name, char *full_path) {
+int new_opened_file_tab(char *file_name, char *full_path) {
+    // check file tab capacity
+    if(opened_file_info->cnt >= MAX_FILE_TAB_CNT) {
+        // todo : check saved & its modified time, close oldest. if failed, return -1
+        perror("file open cap over");
+        return -1;
+    }
 
+    FileStatus *node = malloc(sizeof(FileStatus));
+    strcpy(node->file_name, file_name);
+    strcpy(node->full_path, full_path);
+    node->row = node->col = node->modified = 0;
+    node->last_saved = time(NULL);
+
+    // update opened_file_info
+    if(opened_file_info->cnt == 0) {
+        opened_file_info->focus = 0;
+    }
+    node->next = opened_file_info->head;
+    opened_file_info->head = node;
+    opened_file_info->cnt++;
+
+    // open file
+    node->fd = open(full_path, O_RDONLY);
+    // todo : if fd == -1, show error msg at code viewer
 
     // memory free
     free(file_name);
     free(full_path);
+
+    return 0;
 }
 
 void del_opened_file_tab(int idx) {
+    FileStatus *cur = opened_file_info->head;
+    FileStatus *pre = NULL;
+    for(int i = idx; i > 0; i--) {
+        if(cur == NULL) {
+            perror("del_opened_file_tab : out of index");
+            return;
+        }
+        pre = cur;
+        cur = cur->next;
+    }
 
+    // check file is saved
+    if(cur->modified != 0) {
+        if(close_unsaved_caution() == -1)
+            return;
+    }
+
+    // delete file tab
+    if(pre == NULL) { // del head
+        opened_file_info->head = cur->next;
+    } else {
+        pre->next = cur->next;
+    }
+    if(cur->fd != -1)
+        close(cur->fd);
+    free(cur);
 }
 
-OpenedFileInfo *opened_file_info_init() {
-    OpenedFileInfo *info = malloc(sizeof(OpenedFileInfo));
+OpenFileInfo *opened_file_info_init() {
+    OpenFileInfo *info = malloc(sizeof(OpenFileInfo));
     info->cnt = 0;
-    info->focus = -1;
+    info->focus = NULL;
     info->head = NULL;
 
     return info;
 }
 
-void opened_file_info_terminate(OpenedFileInfo *info) {
-    FileStatus *ptr = info->head;
+void opened_file_info_terminate() {
+    FileStatus *ptr = opened_file_info->head;
     if(ptr != NULL) {
         FileStatus *next;
         while(ptr != NULL) {
@@ -56,5 +123,17 @@ void opened_file_info_terminate(OpenedFileInfo *info) {
             ptr = next;
         }
     }
-    info->cnt = info->focus = 0;
+    free(opened_file_info);
+}
+
+void opened_file_focus_next() {
+
+}
+
+void opened_file_focus_prev() {
+
+}
+
+int close_unsaved_caution() {
+    // ret -1 : don't save & cancel close process
 }

@@ -13,7 +13,7 @@
 #include "manual.h"
 #include "quit.h"
 
-OpenedFileInfo *opened_file_info;
+OpenFileInfo *opened_file_info;
 
 WINDOW *opened_file_tab;
 WINDOW *menu_tab;
@@ -21,7 +21,6 @@ WINDOW *contents;
 
 void ui_init() {
     opened_file_info = opened_file_info_init();
-    menu_tab_focus = CODE_TAB;
     
     // set base property
     initscr();
@@ -51,7 +50,7 @@ void ui_init() {
 }
 
 void ui_terminate() {
-    opened_file_info_terminate(opened_file_info);
+    opened_file_info_terminate();
     delwin(menu_tab);
     delwin(opened_file_tab);
     delwin(contents);
@@ -60,6 +59,8 @@ void ui_terminate() {
 
 void ui_set_whole() {
     window_reset();
+    menu_tab_focus = FILE_TAB;
+    code_tab_transition();
     menu_tab_update();
     wrefresh(menu_tab);
 }
