@@ -7,8 +7,9 @@
 #define DEBUG_INPUT // debug option : print input charcter
 
 // lower bound of menu & file tab width
-#define KEY_NAME_WIDTH 14
-#define FILE_TAB_WIDTH 15
+#define INFO_LABEL_WIDTH 11
+#define FILE_TAB_FOCUS_MAX_WIDTH 17
+#define MAX_FILE_TAB_CNT 9
 #define MIN_MENU_TAB_WIDTH 10
 #define MENU_TAB_CNT 6
 
@@ -25,10 +26,10 @@ static int menu_tab_pos[MENU_TAB_CNT] = {2, 2, 2, 0, 1, 2};  // start position o
 
 /* GLOBAL VARIABLE */
 extern int max_file_tab; // window size determine this
-extern int file_tab_cnt; // number of current file tab
-extern int file_tab_focus; // don't change it directly
+extern int opened_file_tab_cnt; // number of current file tab
+extern int opened_file_tab_focus; // don't change it directly
 
-extern WINDOW *file_tab;
+extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;
 extern WINDOW *contents;
 

@@ -13,10 +13,10 @@
 #include "manual.h"
 #include "quit.h"
 
-int file_tab_cnt; // number of current file tab
-int file_tab_focus;
+int opened_file_tab_cnt; // number of current file tab
+int opened_file_tab_focus;
 
-WINDOW *file_tab;
+WINDOW *opened_file_tab;
 WINDOW *menu_tab;
 WINDOW *contents;
 
@@ -52,7 +52,7 @@ void ui_init() {
 
 void ui_terminate() {
     delwin(menu_tab);
-    delwin(file_tab);
+    delwin(opened_file_tab);
     delwin(contents);
     endwin();
 }
@@ -65,7 +65,7 @@ void ui_set_whole() {
 
 void window_reset() {
     delwin(menu_tab);
-    delwin(file_tab);
+    delwin(opened_file_tab);
     delwin(contents);
 
     // NOTICE : you have to call 'endwin()' before reset window size!!!
@@ -73,7 +73,7 @@ void window_reset() {
     refresh();
 
     menu_tab = newwin(2, win_col, win_row - 2, 0);
-    file_tab = newwin(1, win_col, 0 , 0);
+    opened_file_tab = newwin(1, win_col, 0 , 0);
     contents = newwin(win_row - 3, win_col, 1, 0);
 }
 

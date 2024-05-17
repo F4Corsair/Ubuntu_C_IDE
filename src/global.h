@@ -13,8 +13,8 @@
 /* STRUCT */
 
 typedef struct {
-	char *file_name;
-	char *full_path;
+	char file_name[256];
+	char full_path[256];
     int row, col;
     int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
@@ -32,22 +32,21 @@ enum MenuTab {
 
 /* GLOBAL VARIABLES */
 
-// SIGWINCH
+// global.c
 extern int winsize_flag; // 0 : default  1 : blocked  2 : ready to refresh
 
-// file tab
-extern int max_file_tab; // cur window size determine this
-
-// menu tab
 extern enum MenuTab menu_tab_focus; // will define its value at menuTab.h
 extern enum MenuTab menu_tab_focus_backup[2];
 
-// size information of stdwin
 extern int win_row;
 extern int win_col;
 
-// window
-extern WINDOW *file_tab;
+// uibase.h
+extern int max_file_tab;
+extern int opened_file_tab_cnt;
+extern int opened_file_tab_focus;
+
+extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;
 extern WINDOW *contents;
 
