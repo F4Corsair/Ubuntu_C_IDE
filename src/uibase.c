@@ -5,6 +5,10 @@
 
 #include "uibase.h"
 #include "code.h"
+#include "file.h"
+#include "build.h"
+#include "terminal.h"
+#include "manual.h"
 #include "quit.h"
 
 int file_tab_cnt; // number of current file tab
@@ -91,19 +95,21 @@ void tab_restore() {
     {
     case CODE_TAB:
         code_tab_transition();
-        break;
+        return;
     case FILE_TAB:
-        break;
+        file_tab_transition();
+        return;
     case BUILD_TAB:
-        break;
+        build_tab_transition();
+        return;
     case TERMINAL_TAB:
-        break;
+        terminal_tab_transition();
+        return;
     case MANUAL_TAB:
-        break;
+        manual_tab_transition();
+        return;
     case QUIT_TAB:
         quit_tab_transition();
-        break;
+        return;
     }
-
-    return;
 }
