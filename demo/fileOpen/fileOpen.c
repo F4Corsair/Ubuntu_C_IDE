@@ -3,11 +3,30 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
-#include "global.h"
+#include <ncurses.h>
 
-FileStatus fileOpen(char *file_name) {
+#include "global.h"
+#include "code.h"
+#include "layout.h"
+#include "winsize.h"
+
+void file_open_update() {
+	winsize_calculate();
+	int row_pos = win_row / 2 - 2;
+    mvwaddstr(file_contents, row_pos, win_col / 2 - 10, "Code file tab is full!\nDo you really want to open the file?");
+    int col_pos = win_col / 2 - 3;
+    row_pos++;
+    row_pos++;
+    mvwaddch(file_contents, row_pos, col_pos++, '[');
+    wattron(file_contents, A_UNDERLINE);
+    mvwaddch(file_contents, row_pos, col_pos++, 'Y');
+    wattroff(file_contents, A_UNDERLINE);
+    mvwaddstr(file_contents, row_pos, col_pos, "es]");
+}
+
+FileStatus file_open(char *file_name) {
 	FileStatus temp;
-	char *path = (char*)malloc(256*sizeof(char));
+	int new_file_input;
 	
 	if (chdir(".") != 0) {
 		perror("directory");
@@ -26,30 +45,22 @@ FileStatus fileOpen(char *file_name) {
 	if (access(path, F_OK) == 0) {
 		// initializing
         	temp.file_name = strdup(file_name);
-        	temp.full_path = strdup(path);
-        	temp.row = 0; temp.col = 0;	
+        	temp.full_path = strdup(path);	
 	}
 	else {
 		perror("file does not exist");
 		exit(1);
 	}
 
-	return temp;
-}
-
-/* int main(int argc, char* argv[]) {
-	FileStatus file1;
-
-	if (argc != 2) {
-		fprintf(stderr, "Usage: fileOpen.out <filename>\n");
-		exit(1);
+	// to do : file name 넘겨주기 + file tab number handling
+	/* idea :  new_opened_file_tab -> -1 리턴하면
+	   파일 탭을 추가할 지 안 할지 물어보고 뭐 y/Y 키보드 입력 들어오면
+	   del_opened_file_tab 호출 */
+	if (new_opened_file_tab(temp.file_name, temp.full_path) == -1) {
+		file_open_update();
+		
+		wscanw(file_contents, "%d", &input);
+		if (input == 'y' || input = 'Y')
+			del_opened_file_tab(0); // delete first-opened code file tab
 	}
-	
-	file1 = fileOpen(argv[1]);
-
-	printf("file name : %s\n", file1.file_name);
-	printf("file full path : %s\n", file1.full_path);
-	
-	return 0;
-} */
-	
+}	
