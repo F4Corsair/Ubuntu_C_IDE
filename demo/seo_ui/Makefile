@@ -1,4 +1,4 @@
-CFLAGS =ls.c -g -lcurses
+CFLAGS = ls.c ls.h fileOpen.c printFile.c global.h -g -lncurses
 
 layout.out : layout.c
-	cc -o $@ $< $(CFLAGS)
+	gcc -o $@ $< $(CFLAGS)

@@ -2,7 +2,11 @@
 #include <unistd.h>
 #include <panel.h>
 #include <stdlib.h>
+#include <limits.h>
+#include <stddef.h>
 #include "ls.h"
+#include "global.h"
+
 
 
 #define CTRL(c) ((c) & 037)  // macro function to read CTRL + character
@@ -26,11 +30,7 @@ typedef struct {
     char *full_path;
 } TabContents;
 
-typedef struct {
-	char *file_name;
-	char full_path[1024];
-    int row, col;
-} FileStatus;
+extern WorkSpaceContents* head;
 
 char menu_tab_names[MENU_TAB_CNT][MIN_MENU_TAB_WIDTH - 1] = {"  Code  ", "  File  ", "  Build ", "Terminal", " Manual ", "  Quit  "};
 int menu_tab_pos[MENU_TAB_CNT] = {2, 2, 2, 0, 1, 2}; 
@@ -38,6 +38,10 @@ int menu_tab_pos[MENU_TAB_CNT] = {2, 2, 2, 0, 1, 2};
 int max_file_tab; // cur window size determine this
 int file_tab_cnt;
 int file_tab_focus;
+
+void displayDirectoryContents(WINDOW*, char* full_path); 
+void fileOpen(char* file_name);
+void printFile(char* file_name);
 
 void newFileTab(WINDOW *file_tab) {
     int start_pos = 0;
@@ -104,18 +108,18 @@ void printPath(WINDOW *path_win, char *path) {
     wattroff(path_win,A_UNDERLINE);
     wrefresh(path_win);
 }
-/**
-void displayDirectoryContents(WINDOW *contents_win, char *path) {
-    do_ls(contents_win,path,1);
-    wrefresh(contents_win);
-}
-*/
+
+
 
 
 int main() {
     int input_char;
     max_file_tab = 5, file_tab_cnt = 0, file_tab_focus = -1;
     FileStatus work_space_file;
+    work_space_file.full_path = (char*)malloc(sizeof(char)*256);
+    int contents_row = 1, contents_col = 1; // cursor for file selection
+    char contents_file_name[256]; int pid;
+   
     // init
     initscr();
     raw(); // line buffering disabled
@@ -129,7 +133,7 @@ int main() {
     
     // declare windows
     WINDOW *contents = newwin(LINES - 4, COLS, 2, 0);
-	WINDOW *path=newwin(1,COLS,1,0);
+    WINDOW *path = newwin(1,COLS,1,0);
     WINDOW *file_tab = newwin(1, COLS, 0, 0);
     WINDOW *menu_tab = newwin(2, COLS, LINES - 2, 0);
 
@@ -144,17 +148,17 @@ int main() {
     menuTabPrint(menu_tab, COLS, FILE_TAB);
 
     // print path
-    
-    if (getcwd(work_space_file.full_path, sizeof(work_space_file.full_path)) != NULL) {
+    if (getcwd(work_space_file.full_path, 256) != NULL) {
+	wprintw(path, "%s\n", work_space_file.full_path);
         printPath(path, work_space_file.full_path);
         work_space_file.file_name=".";
         displayDirectoryContents(contents, work_space_file.full_path);
+	mvwchgat(contents, contents_row, contents_col, 5, A_BLINK, 0, NULL);
     } else {
         
     }
    
-    wrefresh(contents);
-    
+   wrefresh(contents);  
     // input handling
     while(1) {
         input_char = getch();
@@ -162,12 +166,39 @@ int main() {
 
 #endif
         if (input_char == CTRL('q'))
-            break;
+		break;
         else if (input_char == 'n') {
-            newFileTab(file_tab);
+        	newFileTab(file_tab);
         }
+	else if (input_char == KEY_DOWN) {
+		wchgat(contents, -1, A_NORMAL, 0, NULL);
+		contents_row++;
+		mvwchgat(contents, contents_row, contents_col, 10, A_BLINK, 0, NULL);
+		wrefresh(contents);
+	}
+	else if (input_char == KEY_UP) {
+		wchgat(contents, -1, A_NORMAL, 0, NULL);
+		contents_row--;
+		mvwchgat(contents, contents_row, contents_col, 10, A_BLINK, 0, NULL);
+		wrefresh(contents);
+	}
+    /*
+	else if (input_char == '\n') { // file selection
+	       wscanw(contents, "%s", contents_file_name);
+	       if ((pid = fork()) < 0) {
+		       perror("fork");
+		       exit(1);
+	       }
+	       else if (pid == 0)
+	       		printFile(contents_file_name);
+	       else 
+		       break;	
+	}
+    */
+	    	
     }
     attroff(COLOR_PAIR(1));
+
     // terminate
     delwin(file_tab);
     delwin(menu_tab);
