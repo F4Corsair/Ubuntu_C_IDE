@@ -23,23 +23,52 @@ void code_tab_transition() {
     wrefresh(menu_tab);
 
     // todo : show CODE_TAB
-    opened_file_tab_update();
+    opened_file_tab_print();
     wrefresh(opened_file_tab);
 }
 
 /* opened_file_tab */
 
-void opened_file_tab_update() {
+void opened_file_tab_print() {
     if(opened_file_info->cnt > MAX_FILE_TAB_CNT) {
         perror("opend_file_tab out of index");
         return;
     }
+
+    wclear(opened_file_tab);
+    wrefresh(opened_file_tab);
 
     wattron(opened_file_tab, A_UNDERLINE);
     mvwaddstr(opened_file_tab, 0, 0, "File Focus");
     wattroff(opened_file_tab, A_UNDERLINE);
     mvwaddch(opened_file_tab, 0, INFO_LABEL_WIDTH - 1, '/');
 
+    int col = INFO_LABEL_WIDTH;
+    int focus_len = FILE_TAB_FOCUS_MAX_WIDTH - 2;
+    int len;
+    if(opened_file_info->cnt != 0)
+        len = (win_col - INFO_LABEL_WIDTH - focus_len) / opened_file_info->cnt;
+    FileStatus *ptr = opened_file_info->head;
+    for(int i = 0; i < opened_file_info->cnt; i++) {
+        mvwaddch(opened_file_tab, 0, col++, '\\');
+        wattron(opened_file_tab, A_UNDERLINE);
+        if(ptr == opened_file_info->focus) {
+            wattron(opened_file_tab, A_STANDOUT);
+            // mvwaddstr(opened_file_tab, 0, col, "");
+            move(0, col);
+            wprintw(opened_file_tab, "%-*s", focus_len, ptr->file_name);
+            col = col + focus_len;
+            wattroff(opened_file_tab, A_STANDOUT);
+        } else {
+            move(0, col);
+            wprintw(opened_file_tab, "%-*s", len, ptr->file_name);
+            col = col + len;
+        }
+        wattroff(opened_file_tab, A_UNDERLINE);
+        mvwaddch(opened_file_tab, 0, col++, '/');
+        ptr = ptr->next;
+    }
+    wrefresh(opened_file_tab);
 }
 
 int new_opened_file_tab(char *file_name, char *full_path) {
@@ -58,7 +87,8 @@ int new_opened_file_tab(char *file_name, char *full_path) {
 
     // update opened_file_info
     if(opened_file_info->cnt == 0) {
-        opened_file_info->focus = 0;
+        opened_file_info->focus = node;
+        opened_file_info->focus_strlen = strlen(file_name);
     }
     node->next = opened_file_info->head;
     opened_file_info->head = node;
@@ -67,10 +97,6 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     // open file
     node->fd = open(full_path, O_RDONLY);
     // todo : if fd == -1, show error msg at code viewer
-
-    // memory free
-    free(file_name);
-    free(full_path);
 
     return 0;
 }

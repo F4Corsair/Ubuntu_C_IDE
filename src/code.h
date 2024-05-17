@@ -5,7 +5,7 @@
 
 void code_tab_transition();
 
-void opened_file_tab_update();
+void opened_file_tab_print();
 int new_opened_file_tab(char *file_name, char *full_path);
 void del_opened_file_tab(int idx);
 OpenFileInfo *opened_file_info_init();
