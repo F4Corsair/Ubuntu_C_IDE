@@ -25,9 +25,7 @@ static char menu_tab_names[MENU_TAB_CNT][MIN_MENU_TAB_WIDTH - 1] = {"  Code  ", 
 static int menu_tab_pos[MENU_TAB_CNT] = {2, 2, 2, 0, 1, 2};  // start position offset corresponding to each menu tab
 
 /* GLOBAL VARIABLE */
-extern int max_file_tab; // window size determine this
-extern int opened_file_tab_cnt; // number of current file tab
-extern int opened_file_tab_focus; // don't change it directly
+extern OpenedFileInfo *opened_file_info;
 
 extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;

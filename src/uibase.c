@@ -13,14 +13,14 @@
 #include "manual.h"
 #include "quit.h"
 
-int opened_file_tab_cnt; // number of current file tab
-int opened_file_tab_focus;
+OpenedFileInfo *opened_file_info;
 
 WINDOW *opened_file_tab;
 WINDOW *menu_tab;
 WINDOW *contents;
 
 void ui_init() {
+    opened_file_info = opened_file_info_init();
     menu_tab_focus = CODE_TAB;
     
     // set base property
@@ -51,6 +51,7 @@ void ui_init() {
 }
 
 void ui_terminate() {
+    opened_file_info_terminate(opened_file_info);
     delwin(menu_tab);
     delwin(opened_file_tab);
     delwin(contents);
