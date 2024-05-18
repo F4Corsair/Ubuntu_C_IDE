@@ -56,7 +56,29 @@ int input_control(int input_char) {
     }
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
-        // print input char
+        switch (input_char)
+        {
+        case CTRL('w'):
+            int idx = opened_file_focus_idx_find();
+            if(idx != -1) {
+                del_opened_file_tab(idx);
+                opened_file_tab_print();
+            }
+            break;
+        case 0x227: // ctrl + PGDN : move opened file tab focus down
+            opened_file_focus_next();
+            opened_file_tab_print();
+            // todo : tmp save & show another file
+            break;
+        case 0x22c: // ctrl + PGUP : move opened file tab foucs up
+            opened_file_focus_prev();
+            opened_file_tab_print();
+            // todo : tmp save & show another file
+            break;
+        default:
+            // print input char
+            break;
+        }
     } else {
         switch (menu_tab_focus)
         {

@@ -103,8 +103,14 @@ int new_opened_file_tab(char *file_name, char *full_path) {
 
 // todo : you need to let foucs live
 void del_opened_file_tab(int idx) {
+    int focus_flag = 0;
     FileStatus *cur = opened_file_info->head;
     FileStatus *pre = NULL;
+    if(cur == NULL) {
+        perror("del_opened_file_tab : out of index");
+        return;
+    }
+
     for(int i = 0; i < idx; i++) {
         if(cur == NULL) {
             perror("del_opened_file_tab : out of index");
@@ -122,9 +128,7 @@ void del_opened_file_tab(int idx) {
 
     // focus check before delete
     if(cur == opened_file_info->focus) {
-        opened_file_info->focus = opened_file_info->head;
-        opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
-        
+        focus_flag = 1;
     }
 
     // delete file tab
@@ -137,6 +141,12 @@ void del_opened_file_tab(int idx) {
         close(cur->fd);
     free(cur);
     opened_file_info->cnt--;
+
+    // focus update if needed
+    if(focus_flag == 1 && opened_file_info->cnt > 0) {
+        opened_file_info->focus = opened_file_info->head;
+        opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
+    }
 }
 
 OpenFileInfo *opened_file_info_init() {
@@ -161,12 +171,57 @@ void opened_file_info_terminate() {
     free(opened_file_info);
 }
 
-void opened_file_focus_next() {
+int opened_file_focus_idx_find() {
+    int idx = 0;
+    FileStatus *ptr = opened_file_info->head;
+    while(1) {
+        if(ptr == NULL) {
+            return -1;
+        }
+        if(ptr == opened_file_info->focus) {
+            return idx;
+        }
+        ptr = ptr->next;
+        idx++;
+    }
+}
 
+void opened_file_focus_next() {
+    if(opened_file_info->cnt < 2)
+        return;
+    
+    FileStatus *ptr = opened_file_info->focus->next;
+    if(ptr == NULL)
+        ptr = opened_file_info->head;
+    
+    opened_file_info->focus = ptr;
 }
 
 void opened_file_focus_prev() {
+    if(opened_file_info->cnt < 2)
+        return;
 
+    FileStatus *cur = opened_file_info->head;
+    FileStatus *pre = NULL;
+
+    while(1) {
+        if(cur == NULL)
+            return;
+        if(cur == opened_file_info->focus)
+            break;
+        pre = cur;
+        cur = cur->next;
+    }
+
+    if(pre == NULL) {
+        while (cur != NULL)
+        {
+            pre = cur;
+            cur = cur->next;
+        }
+        
+    }
+    opened_file_info->focus = pre;
 }
 
 int close_unsaved_caution() {
