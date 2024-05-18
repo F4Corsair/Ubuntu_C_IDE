@@ -29,6 +29,8 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
 
+	close_unsaved_caution(1);
+
 
 	while(1) {
 		input_char = getch();

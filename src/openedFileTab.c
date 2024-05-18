@@ -11,6 +11,8 @@
 #include "code.h"
 #include "uibase.h"
 
+int unsaved_caution_flag;
+
 void opened_file_tab_print() {
     if(opened_file_info->cnt > MAX_FILE_TAB_CNT) {
         perror("opend_file_tab out of index");
@@ -104,8 +106,8 @@ void del_opened_file_tab(int idx) {
 
     // check file is saved
     if(cur->modified != 0) {
-        if(close_unsaved_caution() == -1)
-            return;
+        close_unsaved_caution(idx);
+        return;
     }
 
     // focus check before delete
@@ -128,6 +130,7 @@ void del_opened_file_tab(int idx) {
     if(focus_flag == 1 && opened_file_info->cnt > 0) {
         opened_file_info->focus = opened_file_info->head;
         opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
+        // todo : print code contents & refresh(since focus updated)
     }
 }
 
@@ -206,7 +209,25 @@ void opened_file_focus_prev() {
     opened_file_info->focus = pre;
 }
 
-int close_unsaved_caution() {
-    // ret -1 : don't save & cancel close process
-    return 0;
+void close_unsaved_caution(int idx) {
+    unsaved_caution_flag = idx + 1; // change input handle procedure
+    // print caution msg
+    wclear(contents);
+    int row = (win_row - 3) / 2;
+    int col = win_col / 2;
+
+    mvwaddstr(contents, row - 2, col - 18, "You are trying to close Unsaved File");
+    mvwaddch(contents, row - 1, col - 3, '[');
+    wattron(contents, A_UNDERLINE);
+    mvwaddch(contents, row - 1, col - 2, 'S');
+    wattroff(contents, A_UNDERLINE);
+    mvwaddstr(contents, row - 1, col - 1, "ave]");
+    mvwaddch(contents, row, col - 10, '[');
+    wattron(contents, A_UNDERLINE);
+    mvwaddch(contents, row, col - 9, 'C');
+    wattroff(contents, A_UNDERLINE);
+    mvwaddstr(contents, row, col - 8, "lose without save]");
+    mvwaddstr(contents, row + 1, col - 11, "[input else to cancel]");
+
+    wrefresh(contents);
 }

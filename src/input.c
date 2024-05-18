@@ -27,10 +27,6 @@ int input_control(int input_char) {
         return 0;
     }
     // check tab transition
-    if (input_char == CTRL('q')) { // terminate program
-        quit_tab_transition();
-        return 0;
-    }
     switch (input_char)
     {
     case CTRL('c'):
@@ -56,6 +52,33 @@ int input_control(int input_char) {
     }
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
+        if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
+            int idx = unsaved_caution_flag - 1;
+            if(input_char == 's' || input_char == 'S') {
+                // save & del & refresh
+                // save_file(idx);
+                // del_opened_file_tab(idx);
+            } else if(input_char == 'c' || input_char == 'C') {
+                // don't save & del
+                // find file
+                FileStatus *ptr = opened_file_info->head;
+                while (idx > 0)
+                {
+                    if(ptr == NULL) {
+                        perror("close unsaved file : out of index");
+                        unsaved_caution_flag = 0;
+                        return 0;
+                    }
+                    ptr = ptr->next;
+                    idx--;
+                }
+                ptr->modified = 0; // force status change as unmodified(saved)
+                // del_opened_file_tab(idx);
+            }
+            unsaved_caution_flag = 0;
+            // todo : print contents window
+            return 0;
+        }
         switch (input_char)
         {
         case CTRL('w'):

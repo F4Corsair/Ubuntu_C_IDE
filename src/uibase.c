@@ -60,6 +60,7 @@ void ui_terminate() {
 void ui_set_whole() {
     window_reset();
     menu_tab_focus = FILE_TAB;
+    unsaved_caution_flag = 0;
     code_tab_transition();
     menu_tab_update();
     wrefresh(menu_tab);

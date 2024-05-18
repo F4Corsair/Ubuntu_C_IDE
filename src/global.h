@@ -57,6 +57,9 @@ extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;
 extern WINDOW *contents;
 
+// openedFileTab.h
+extern int unsaved_caution_flag;
+
 #endif
 
 /* MACRO FUNCTIONS */

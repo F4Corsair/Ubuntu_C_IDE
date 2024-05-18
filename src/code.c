@@ -18,6 +18,7 @@ void code_tab_transition() {
     erase();
     refresh();
 
+    unsaved_caution_flag = 0; // forget about unsaved handle procedure
     menu_tab_focus = CODE_TAB;
     menu_tab_update();
     wrefresh(menu_tab);

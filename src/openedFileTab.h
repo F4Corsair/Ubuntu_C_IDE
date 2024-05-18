@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+extern int unsaved_caution_flag;
+
 void opened_file_tab_print();
 int new_opened_file_tab(char *file_name, char *full_path);
 void del_opened_file_tab(int idx);
@@ -11,6 +13,6 @@ void opened_file_info_terminate();
 int opened_file_focus_idx_find();
 void opened_file_focus_next();
 void opened_file_focus_prev();
-int close_unsaved_caution();
+void close_unsaved_caution(int idx);
 
 #endif
