@@ -21,15 +21,12 @@ int input_control(int input_char) {
 		// wattroff(file_tab, A_UNDERLINE);
 		// wrefresh(file_tab);
 #endif
-    // check tab transition
-    if (input_char == 0x19a) {
+    // input ignore
+    if (input_char == 0x19a || winsize_flag == 1) {
         // ignore KEY_RESIZE
         return 0;
     }
-    if (input_char == CTRL('q')) { // terminate program
-        quit_tab_transition();
-        return 0;
-    }
+    // check tab transition
     switch (input_char)
     {
     case CTRL('c'):
@@ -55,7 +52,56 @@ int input_control(int input_char) {
     }
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
-        // print input char
+        if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
+            int idx = unsaved_caution_flag - 1;
+            if(input_char == 's' || input_char == 'S') {
+                // save & del & refresh
+                // save_file(idx);
+                // del_opened_file_tab(idx);
+            } else if(input_char == 'c' || input_char == 'C') {
+                // don't save & del
+                // find file
+                FileStatus *ptr = opened_file_info->head;
+                while (idx > 0)
+                {
+                    if(ptr == NULL) {
+                        perror("close unsaved file : out of index");
+                        unsaved_caution_flag = 0;
+                        return 0;
+                    }
+                    ptr = ptr->next;
+                    idx--;
+                }
+                ptr->modified = 0; // force status change as unmodified(saved)
+                // del_opened_file_tab(idx);
+            }
+            unsaved_caution_flag = 0;
+            // todo : print contents window
+            return 0;
+        }
+        switch (input_char)
+        {
+        case CTRL('w'):
+            int idx = opened_file_focus_idx_find();
+            if(idx != -1) {
+                del_opened_file_tab(idx);
+                opened_file_tab_print();
+            }
+            break;
+        case 0x227: // ctrl + PGDN : move opened file tab focus down
+            opened_file_focus_next();
+            opened_file_tab_print();
+            // todo : tmp save & show another file
+            break;
+        case 0x22c: // ctrl + PGUP : move opened file tab foucs up
+            opened_file_focus_prev();
+            opened_file_tab_print();
+            // todo : tmp save & show another file
+            break;
+        default:
+            // print input char
+            break;
+        }
     } else {
         switch (menu_tab_focus)
         {

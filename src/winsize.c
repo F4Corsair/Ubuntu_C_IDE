@@ -43,8 +43,7 @@ void winsize_init() {
     winsize_calculate();
 
     if(win_row < WIN_MIN_HEIGHT || win_col < WIN_MIN_WIDTH) {
-        winsize_flag = 1; // to block key input
-        // show msg : Terminal size is too small!
+        wininch_handler(SIGWINCH);
     } else {
         winsize_flag = 0;
     }

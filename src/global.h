@@ -12,13 +12,22 @@
 
 /* STRUCT */
 
-typedef struct {
-	char *file_name;
-	char *full_path;
+typedef struct _file_status{
+	char file_name[256];
+	char full_path[256];
+    int fd;
     int row, col;
     int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
+    struct _file_status *next;
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
+
+typedef struct {
+    FileStatus *head;
+    int cnt;
+    FileStatus *focus;
+    int focus_strlen;
+} OpenFileInfo;
 
 enum MenuTab {
     CODE_TAB,
@@ -32,24 +41,24 @@ enum MenuTab {
 
 /* GLOBAL VARIABLES */
 
-// SIGWINCH
+// global.c
 extern int winsize_flag; // 0 : default  1 : blocked  2 : ready to refresh
 
-// file tab
-extern int max_file_tab; // cur window size determine this
-
-// menu tab
 extern enum MenuTab menu_tab_focus; // will define its value at menuTab.h
 extern enum MenuTab menu_tab_focus_backup[2];
 
-// size information of stdwin
 extern int win_row;
 extern int win_col;
 
-// window
-extern WINDOW *file_tab;
+// uibase.h
+extern OpenFileInfo *opened_file_info;
+
+extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;
 extern WINDOW *contents;
+
+// openedFileTab.h
+extern int unsaved_caution_flag;
 
 #endif
 
