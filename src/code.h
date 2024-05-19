@@ -5,5 +5,6 @@
 #include "openedFileTab.h"
 
 void code_tab_transition();
+void code_contents_print();
 
 #endif

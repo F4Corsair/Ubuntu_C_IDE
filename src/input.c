@@ -73,10 +73,9 @@ int input_control(int input_char) {
                     idx--;
                 }
                 ptr->modified = 0; // force status change as unmodified(saved)
-                // del_opened_file_tab(idx);
+                del_opened_file_tab(idx);
             }
             unsaved_caution_flag = 0;
-            // todo : print contents window
             return 0;
         }
         switch (input_char)
@@ -85,18 +84,19 @@ int input_control(int input_char) {
             int idx = opened_file_focus_idx_find();
             if(idx != -1) {
                 del_opened_file_tab(idx);
-                opened_file_tab_print();
             }
             break;
         case 0x227: // ctrl + PGDN : move opened file tab focus down
             opened_file_focus_next();
             opened_file_tab_print();
-            // todo : tmp save & show another file
+            // todo : tmp save
+            code_contents_print();
             break;
         case 0x22c: // ctrl + PGUP : move opened file tab foucs up
             opened_file_focus_prev();
             opened_file_tab_print();
-            // todo : tmp save & show another file
+            // todo : tmp save
+            code_contents_print();
             break;
         default:
             // print input char

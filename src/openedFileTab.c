@@ -90,7 +90,6 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     return 0;
 }
 
-// todo : you need to let foucs live
 void del_opened_file_tab(int idx) {
     int focus_flag = 0;
     FileStatus *cur = opened_file_info->head;
@@ -132,11 +131,16 @@ void del_opened_file_tab(int idx) {
     opened_file_info->cnt--;
 
     // focus update if needed
-    if(focus_flag == 1 && opened_file_info->cnt > 0) {
-        opened_file_info->focus = opened_file_info->head;
-        opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
-        // todo : print code contents & refresh(since focus updated)
+    if(focus_flag == 1) {
+        if(opened_file_info->cnt > 0) {
+            opened_file_info->focus = opened_file_info->head;
+            opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
+        } else {
+            opened_file_info->focus = NULL;
+        }
     }
+    opened_file_tab_print();
+    code_contents_print();
 }
 
 OpenFileInfo *opened_file_info_init() {
@@ -154,6 +158,7 @@ void opened_file_info_terminate() {
         FileStatus *next;
         while(ptr != NULL) {
             next = ptr->next;
+            close(ptr->fd);
             free(ptr);
             ptr = next;
         }
@@ -222,11 +227,11 @@ void close_unsaved_caution(int idx) {
     int col = win_col / 2;
 
     mvwaddstr(contents, row - 2, col - 18, "You are trying to close Unsaved File");
-    mvwaddch(contents, row - 1, col - 3, '[');
+    mvwaddch(contents, row - 1, col - 8, '[');
     wattron(contents, A_UNDERLINE);
-    mvwaddch(contents, row - 1, col - 2, 'S');
+    mvwaddch(contents, row - 1, col - 7, 'S');
     wattroff(contents, A_UNDERLINE);
-    mvwaddstr(contents, row - 1, col - 1, "ave]");
+    mvwaddstr(contents, row - 1, col - 6, "ave and close]");
     mvwaddch(contents, row, col - 10, '[');
     wattron(contents, A_UNDERLINE);
     mvwaddch(contents, row, col - 9, 'C');
