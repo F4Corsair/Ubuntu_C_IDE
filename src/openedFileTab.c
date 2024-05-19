@@ -23,7 +23,7 @@ void opened_file_tab_print() {
     wrefresh(opened_file_tab);
 
     wattron(opened_file_tab, A_UNDERLINE);
-    mvwaddstr(opened_file_tab, 0, 0, "File Focus");
+    mvwaddstr(opened_file_tab, 0, 0, "ROW#|COL# ");
     wattroff(opened_file_tab, A_UNDERLINE);
     mvwaddch(opened_file_tab, 0, INFO_LABEL_WIDTH - 1, '/');
 
@@ -32,25 +32,34 @@ void opened_file_tab_print() {
     int len;
     if(opened_file_info->cnt != 0)
         len = (win_col - INFO_LABEL_WIDTH - focus_len) / opened_file_info->cnt;
+    len = len > focus_len ? focus_len : len;
     FileStatus *ptr = opened_file_info->head;
     for(int i = 0; i < opened_file_info->cnt; i++) {
         mvwaddch(opened_file_tab, 0, col++, '\\');
         wattron(opened_file_tab, A_UNDERLINE);
         if(ptr == opened_file_info->focus) {
             wattron(opened_file_tab, A_STANDOUT);
-            // mvwaddstr(opened_file_tab, 0, col, "");
-            move(0, col);
-            wprintw(opened_file_tab, "%-*s", focus_len, ptr->file_name);
-            col = col + focus_len;
+            if(ptr->modified != 0)
+                mvwaddch(opened_file_tab, 0, col++, '*');
+            else
+                mvwaddch(opened_file_tab, 0, col++, ' ');
+            mvwprintw(opened_file_tab, 0, col, "%-*s", focus_len - 1, ptr->file_name);
+            col = col + focus_len - 1;
             wattroff(opened_file_tab, A_STANDOUT);
         } else {
-            move(0, col);
-            wprintw(opened_file_tab, "%-*s", len, ptr->file_name);
-            col = col + len;
+            if(ptr->modified != 0)
+                mvwaddch(opened_file_tab, 0, col++, '*');
+            else
+                mvwaddch(opened_file_tab, 0, col++, ' ');
+            mvwprintw(opened_file_tab, 0, col, "%-*s", len - 1, ptr->file_name);
+            col = col + len - 1;
         }
         wattroff(opened_file_tab, A_UNDERLINE);
         mvwaddch(opened_file_tab, 0, col++, '/');
         ptr = ptr->next;
+    }
+    for(int i = col; i < win_col; i++) {
+        mvwaddch(opened_file_tab, 0, i, ' ');
     }
     wrefresh(opened_file_tab);
 }
@@ -80,12 +89,15 @@ int new_opened_file_tab(char *file_name, char *full_path) {
 
     // open file
     node->fd = open(full_path, O_RDONLY);
-    // todo : if fd == -1, show error msg at code viewer
+    if(node->fd != -1) {
+        node->buf_cnt = get_file_size(node->fd) / BUFSIZ + 1;
+        // initialize CodeBuf
+        code_buf_initialize(node);
+    }
 
     return 0;
 }
 
-// todo : you need to let foucs live
 void del_opened_file_tab(int idx) {
     int focus_flag = 0;
     FileStatus *cur = opened_file_info->head;
@@ -121,17 +133,20 @@ void del_opened_file_tab(int idx) {
     } else {
         pre->next = cur->next;
     }
-    if(cur->fd != -1)
-        close(cur->fd);
-    free(cur);
+    file_status_close(cur);
     opened_file_info->cnt--;
 
     // focus update if needed
-    if(focus_flag == 1 && opened_file_info->cnt > 0) {
-        opened_file_info->focus = opened_file_info->head;
-        opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
-        // todo : print code contents & refresh(since focus updated)
+    if(focus_flag == 1) {
+        if(opened_file_info->cnt > 0) {
+            opened_file_info->focus = opened_file_info->head;
+            opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
+        } else {
+            opened_file_info->focus = NULL;
+        }
     }
+    opened_file_tab_print();
+    code_contents_print();
 }
 
 OpenFileInfo *opened_file_info_init() {
@@ -149,7 +164,7 @@ void opened_file_info_terminate() {
         FileStatus *next;
         while(ptr != NULL) {
             next = ptr->next;
-            free(ptr);
+            file_status_close(ptr);
             ptr = next;
         }
     }
@@ -217,11 +232,11 @@ void close_unsaved_caution(int idx) {
     int col = win_col / 2;
 
     mvwaddstr(contents, row - 2, col - 18, "You are trying to close Unsaved File");
-    mvwaddch(contents, row - 1, col - 3, '[');
+    mvwaddch(contents, row - 1, col - 8, '[');
     wattron(contents, A_UNDERLINE);
-    mvwaddch(contents, row - 1, col - 2, 'S');
+    mvwaddch(contents, row - 1, col - 7, 'S');
     wattroff(contents, A_UNDERLINE);
-    mvwaddstr(contents, row - 1, col - 1, "ave]");
+    mvwaddstr(contents, row - 1, col - 6, "ave and close]");
     mvwaddch(contents, row, col - 10, '[');
     wattron(contents, A_UNDERLINE);
     mvwaddch(contents, row, col - 9, 'C');
@@ -230,4 +245,14 @@ void close_unsaved_caution(int idx) {
     mvwaddstr(contents, row + 1, col - 11, "[input else to cancel]");
 
     wrefresh(contents);
+}
+
+off_t get_file_size(int fd) {
+    struct stat st;
+    if(fstat(fd, &st) == -1) {
+        perror("get_file_size : failed to stat");
+        return 0;
+    }
+
+    return st.st_size;
 }
