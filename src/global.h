@@ -12,15 +12,28 @@
 
 /* STRUCT */
 
+typedef struct _code_line { // doubly linked list
+    char *line;
+    struct _code_line *prev, *next;
+} CodeLine;
+
+typedef struct _code_buf {
+    int head_row, tail_row, cur_row;
+    CodeLine *head, *tail, *cur;
+    int end_with_new_line;
+} CodeBuf;
+
 typedef struct _file_status{
 	char file_name[256];
 	char full_path[256];
     int fd;
-    off_t file_size;
     int buf_cnt;
     int row, col;
     int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
+    CodeBuf *buf_prev;
+    CodeBuf *buf_cur;
+    CodeBuf *buf_next;
     struct _file_status *next;
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
 

@@ -23,7 +23,7 @@ void opened_file_tab_print() {
     wrefresh(opened_file_tab);
 
     wattron(opened_file_tab, A_UNDERLINE);
-    mvwaddstr(opened_file_tab, 0, 0, "File Focus");
+    mvwaddstr(opened_file_tab, 0, 0, "ROW#|COL# ");
     wattroff(opened_file_tab, A_UNDERLINE);
     mvwaddch(opened_file_tab, 0, INFO_LABEL_WIDTH - 1, '/');
 
@@ -40,23 +40,26 @@ void opened_file_tab_print() {
         if(ptr == opened_file_info->focus) {
             wattron(opened_file_tab, A_STANDOUT);
             if(ptr->modified != 0)
-                mvwaddch(opened_file_tab, 0, col, '*');
+                mvwaddch(opened_file_tab, 0, col++, '*');
             else
-                mvwaddch(opened_file_tab, 0, col, ' ');
-            mvwprintw(opened_file_tab, 0, col + 1, "%-*s", focus_len - 1, ptr->file_name);
-            col = col + focus_len;
+                mvwaddch(opened_file_tab, 0, col++, ' ');
+            mvwprintw(opened_file_tab, 0, col, "%-*s", focus_len - 1, ptr->file_name);
+            col = col + focus_len - 1;
             wattroff(opened_file_tab, A_STANDOUT);
         } else {
             if(ptr->modified != 0)
-                mvwaddch(opened_file_tab, 0, col, '*');
+                mvwaddch(opened_file_tab, 0, col++, '*');
             else
-                mvwaddch(opened_file_tab, 0, col, ' ');
-            mvwprintw(opened_file_tab, 0, col + 1, "%-*s", len - 1, ptr->file_name);
-            col = col + len;
+                mvwaddch(opened_file_tab, 0, col++, ' ');
+            mvwprintw(opened_file_tab, 0, col, "%-*s", len - 1, ptr->file_name);
+            col = col + len - 1;
         }
         wattroff(opened_file_tab, A_UNDERLINE);
         mvwaddch(opened_file_tab, 0, col++, '/');
         ptr = ptr->next;
+    }
+    for(int i = col; i < win_col; i++) {
+        mvwaddch(opened_file_tab, 0, i, ' ');
     }
     wrefresh(opened_file_tab);
 }
@@ -87,8 +90,9 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     // open file
     node->fd = open(full_path, O_RDONLY);
     if(node->fd != -1) {
-        node->file_size = get_file_size(node->fd);
-        node->buf_cnt = node->file_size / BUFSIZ + 1;
+        node->buf_cnt = get_file_size(node->fd) / BUFSIZ + 1;
+        // initialize CodeBuf
+        code_buf_initialize(node);
     }
 
     return 0;
@@ -129,9 +133,7 @@ void del_opened_file_tab(int idx) {
     } else {
         pre->next = cur->next;
     }
-    if(cur->fd != -1)
-        close(cur->fd);
-    free(cur);
+    file_status_close(cur);
     opened_file_info->cnt--;
 
     // focus update if needed
@@ -162,8 +164,7 @@ void opened_file_info_terminate() {
         FileStatus *next;
         while(ptr != NULL) {
             next = ptr->next;
-            close(ptr->fd);
-            free(ptr);
+            file_status_close(ptr);
             ptr = next;
         }
     }

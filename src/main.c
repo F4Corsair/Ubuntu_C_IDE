@@ -22,14 +22,14 @@ int main(int argc, char **argv) {
 	winsize_init(); // handle SIGWINCH
 
 	// debug variable declare
-	new_opened_file_tab("input.c", "input.c");
+	// new_opened_file_tab("input.c", "input.c");
 	new_opened_file_tab("input.h", "input.h");
 	new_opened_file_tab("testFileNameIsLong", "");
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
 
-	opened_file_info->head->modified = 1;
+	// opened_file_info->head->modified = 1;
 
 	// close_unsaved_caution(1);
 
