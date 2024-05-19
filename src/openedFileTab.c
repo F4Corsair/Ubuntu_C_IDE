@@ -38,14 +38,19 @@ void opened_file_tab_print() {
         wattron(opened_file_tab, A_UNDERLINE);
         if(ptr == opened_file_info->focus) {
             wattron(opened_file_tab, A_STANDOUT);
-            // mvwaddstr(opened_file_tab, 0, col, "");
-            move(0, col);
-            wprintw(opened_file_tab, "%-*s", focus_len, ptr->file_name);
+            if(ptr->modified != 0)
+                mvwaddch(opened_file_tab, 0, col, '*');
+            else
+                mvwaddch(opened_file_tab, 0, col, ' ');
+            mvwprintw(opened_file_tab, 0, col + 1, "%-*s", focus_len - 1, ptr->file_name);
             col = col + focus_len;
             wattroff(opened_file_tab, A_STANDOUT);
         } else {
-            move(0, col);
-            wprintw(opened_file_tab, "%-*s", len, ptr->file_name);
+            if(ptr->modified != 0)
+                mvwaddch(opened_file_tab, 0, col, '*');
+            else
+                mvwaddch(opened_file_tab, 0, col, ' ');
+            mvwprintw(opened_file_tab, 0, col + 1, "%-*s", len - 1, ptr->file_name);
             col = col + len;
         }
         wattroff(opened_file_tab, A_UNDERLINE);
