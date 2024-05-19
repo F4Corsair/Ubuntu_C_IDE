@@ -6,14 +6,12 @@
 #include <time.h>
 
 /* MACRO CONSTANT */
-// flag offset
-#define WINSIZE_CHANGED 0x0
-#define WAIT_ANY_INPUT 0x1
 
 /* STRUCT */
 
 typedef struct _code_line { // doubly linked list
     char *line;
+    int len;
     struct _code_line *prev, *next;
 } CodeLine;
 

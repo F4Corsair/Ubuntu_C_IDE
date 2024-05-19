@@ -39,9 +39,19 @@ void code_contents_print() {
     } else if(status->fd == -1) {
         mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 10, "File does not exist");
     } else {
-        // buffer code if not exist - check row & col
-        // print to contents from code
-        mvwprintw(contents, 0, 0, "%d", status->buf_cnt);
+        // print to contents
+        CodeLine *ptr = status->buf_cur->cur;
+        int row;
+        for(row = 0; row < win_row - 3; row++) {
+            mvwprintw(contents, row, 0, "%s", ptr->line);
+            if(ptr->next != NULL) {
+                ptr = ptr->next;
+            } else {
+                if(status->buf_next == NULL)
+                    break;
+                ptr = status->buf_next->head;
+            }
+        }
     }
 
     wrefresh(contents);
@@ -59,6 +69,8 @@ void code_buf_initialize(FileStatus *status) {
     }
     read_buf[read_len] = '\0'; // just in case (prevent error)
     status->buf_cur = parse_buf(read_buf, read_len);
+    status->buf_cur->cur_row = 0;
+    status->buf_cur->cur = status->buf_cur->head;
 
     if(status->buf_cnt > 1) {
         read_len = read(status->fd, read_buf, BUFSIZ);
@@ -140,9 +152,10 @@ CodeLine* code_line_append(char *start, char *end) {
     code_line->line = malloc(sizeof(char) * (len + 1));
     strncpy(code_line->line, start, len);
     code_line->line[len] = '\0';
+    code_line->len = len;
 
     // for debug
-    fprintf(stderr, "line : %s\n", code_line->line);
+    // fprintf(stderr, "line : %s\n", code_line->line);
 
     return code_line;
 }

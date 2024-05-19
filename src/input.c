@@ -101,6 +101,13 @@ int input_control(int input_char) {
             // todo : tmp save
             code_contents_print();
             break;
+        case 0x103: // up arrow
+            // todo : arrow -> change row & col
+            // it will change CodeBuf's row & col & cur(move by link)
+            // and it will decide to append buffer or not (need margine for it : near 20 line)
+            break;
+        case 0x102: // down arrow
+            break;
         default:
             // print input char
             break;
