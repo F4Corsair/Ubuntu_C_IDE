@@ -14,5 +14,6 @@ int opened_file_focus_idx_find();
 void opened_file_focus_next();
 void opened_file_focus_prev();
 void close_unsaved_caution(int idx);
+off_t get_file_size(int fd) ;
 
 #endif

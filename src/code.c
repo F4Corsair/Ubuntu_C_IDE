@@ -40,6 +40,8 @@ void code_contents_print() {
     } else if(status->fd == -1) {
         mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 10, "File does not exist");
     } else {
+        // buffer code if not exist - check row & col
+        // print to contents from code
         mvwaddstr(contents, 0, 0, "File Contents from here");
     }
 

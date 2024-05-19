@@ -32,6 +32,7 @@ void opened_file_tab_print() {
     int len;
     if(opened_file_info->cnt != 0)
         len = (win_col - INFO_LABEL_WIDTH - focus_len) / opened_file_info->cnt;
+    len = len > focus_len ? focus_len : len;
     FileStatus *ptr = opened_file_info->head;
     for(int i = 0; i < opened_file_info->cnt; i++) {
         mvwaddch(opened_file_tab, 0, col++, '\\');
@@ -85,7 +86,10 @@ int new_opened_file_tab(char *file_name, char *full_path) {
 
     // open file
     node->fd = open(full_path, O_RDONLY);
-    // todo : if fd == -1, show error msg at code viewer
+    if(node->fd != -1) {
+        node->file_size = get_file_size(node->fd);
+        node->buf_cnt = node->file_size / BUFSIZ + 1;
+    }
 
     return 0;
 }
@@ -240,4 +244,14 @@ void close_unsaved_caution(int idx) {
     mvwaddstr(contents, row + 1, col - 11, "[input else to cancel]");
 
     wrefresh(contents);
+}
+
+off_t get_file_size(int fd) {
+    struct stat st;
+    if(fstat(fd, &st) == -1) {
+        perror("get_file_size : failed to stat");
+        return 0;
+    }
+
+    return st.st_size;
 }

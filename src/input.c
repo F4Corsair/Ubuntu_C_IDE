@@ -74,6 +74,9 @@ int input_control(int input_char) {
                 }
                 ptr->modified = 0; // force status change as unmodified(saved)
                 del_opened_file_tab(idx);
+            } else {
+                opened_file_tab_print();
+                code_contents_print();
             }
             unsaved_caution_flag = 0;
             return 0;

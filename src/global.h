@@ -16,6 +16,8 @@ typedef struct _file_status{
 	char file_name[256];
 	char full_path[256];
     int fd;
+    off_t file_size;
+    int buf_cnt;
     int row, col;
     int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
