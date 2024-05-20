@@ -108,19 +108,37 @@ int input_control(int input_char) {
         case 0x102: // down arrow
             if(code_next_row_exists() != -1) {
                 focus->row++;
+                if(focus->row - focus->start_row >= win_row - 3) {
+                    focus->start_row++;
+                    CodeLine *ptr = focus->buf_cur->cur;
+                    if(ptr->next != NULL) {
+                        focus->buf_cur->cur = ptr->next;
+                    } else {
+                        // change buffer
+                    }
+                }
                 code_contents_print();
             }
             break;
         case 0x103: // up arrow
             if(focus->row > 0) {
                 focus->row--;
+                if(focus->start_row > focus->row) {
+                    focus->start_row--;
+                    CodeLine *ptr = focus->buf_cur->cur;
+                    if(ptr->prev != NULL) {
+                        focus->buf_cur->cur = ptr->prev;
+                    } else {
+                        // change buffer
+                    }
+                }
 
                 code_contents_print();   
             }
             // todo : arrow -> change row & col
             // it will change CodeBuf's row & col & cur(move by link)
             // and it will decide to append buffer or not (only CodeBuf_cur decide this)
-            // notice : when buff append -> update row_cap
+            // notice : when buff append -> update row_cap!!!
             
             break;
         case 0x104: // left arrow
