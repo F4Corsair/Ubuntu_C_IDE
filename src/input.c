@@ -125,6 +125,13 @@ int input_control(int input_char) {
         case TERMINAL_TAB:
             break;
         case MANUAL_TAB:
+            if(input_char == 0x104) { // KEY_LEFT
+                manual_page_focus = (manual_page_focus - 1) % MAN_PAGE_CNT;
+                manual_page_print();
+            } else if(input_char == 0x105) { // KEY_RIGHT
+                manual_page_focus = (manual_page_focus + 1) % MAN_PAGE_CNT;
+                manual_page_print();
+            }
             break;
         case QUIT_TAB:
             if(input_char == 'y' || input_char == 'Y') {

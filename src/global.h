@@ -52,6 +52,13 @@ enum MenuTab {
     WINSIZE_TAB
 };
 
+enum ManualPage {
+    INTRO_MAN,
+    CODE_MAN,
+    FILE_MAN,
+    BUILD_MAN
+};
+
 /* GLOBAL VARIABLES */
 
 // global.c
@@ -63,15 +70,18 @@ extern enum MenuTab menu_tab_focus_backup[2];
 extern int win_row;
 extern int win_col;
 
-// uibase.h
+// uibase.c
 extern OpenFileInfo *opened_file_info;
 
 extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;
 extern WINDOW *contents;
 
-// openedFileTab.h
+// openedFileTab.c
 extern int unsaved_caution_flag;
+
+// manual.c
+extern enum ManualPage manual_page_focus;
 
 #endif
 
