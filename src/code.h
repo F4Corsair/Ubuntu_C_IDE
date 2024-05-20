@@ -12,5 +12,6 @@ CodeLine* code_line_append(char *start, char *end);
 void file_status_close(FileStatus *ptr);
 void code_buf_close(CodeBuf *buf);
 int code_next_row_exists();
+int code_next_col_exists();
 
 #endif

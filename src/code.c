@@ -47,7 +47,7 @@ void code_contents_print() {
         // print to contents
         ptr = status->buf->cur;
         for(row = 0; row < win_row - 3; row++) {
-            mvwprintw(contents, row, 0, "%s", &(ptr->line[status->col]));
+            mvwprintw(contents, row, 0, "%s", &(ptr->line[status->start_col]));
             if(ptr->next != NULL) {
                 ptr = ptr->next;
             } else {
@@ -75,6 +75,12 @@ void code_contents_print() {
             }
         }
         wattroff(contents, A_BLINK | A_STANDOUT);
+
+        // print row & col
+        wattron(opened_file_tab, A_UNDERLINE);
+        mvwprintw(opened_file_tab, 0, 0, "%4d|%5d", status->row, status->col);
+        wattroff(opened_file_tab, A_UNDERLINE);
+        wrefresh(opened_file_tab);
     }
     wrefresh(contents);
 
@@ -238,4 +244,21 @@ int code_next_row_exists() {
         return -1;
     else
         return 0;
+}
+
+int code_next_col_exists() {
+    FileStatus *focus = opened_file_info->focus;
+    int diff = focus->row - focus->start_row;
+    CodeLine *cur_line = focus->buf->cur;
+    for(int i = 0; i < diff; i++) {
+        cur_line = cur_line->next;
+        if(cur_line == NULL) {
+            perror("code_next_col_exists() : out of idx");
+        }
+    }
+    if(cur_line->len - 1 > focus->col)
+        return 0;
+    else
+        return -1;
+
 }

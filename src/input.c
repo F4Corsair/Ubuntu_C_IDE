@@ -53,6 +53,7 @@ int input_control(int input_char) {
     }
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
+        FileStatus *focus = opened_file_info->focus;
         if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
             idx = unsaved_caution_flag - 1;
             if(input_char == 's' || input_char == 'S') {
@@ -81,8 +82,15 @@ int input_control(int input_char) {
             }
             unsaved_caution_flag = 0;
             return 0;
+        } else if (focus->fd == -1) { // file not opened
+            if(input_char == CTRL('w')) {
+                idx = opened_file_focus_idx_find();
+                if(idx != -1) {
+                    del_opened_file_tab(idx);
+                }
+            }
+            return 0;
         }
-        FileStatus *focus = opened_file_info->focus;
         switch (input_char)
         {
         case CTRL('w'):
@@ -132,8 +140,22 @@ int input_control(int input_char) {
             }            
             break;
         case 0x104: // left arrow
+            if(focus->col > 0) {
+                focus->col--;
+                if(focus->start_col > focus->col) {
+                    focus->start_col--;
+                }
+                code_contents_print();
+            }
             break;
         case 0x105: // right arrow
+            if(code_next_col_exists() != -1) {
+                focus->col++;
+                if(focus->start_col - focus->col >= win_col) {
+                    focus->start_col++;
+                }
+                code_contents_print();
+            }
             break;
         case 0x152: // PGDN
             for(int i = 0; i < win_row - 3; i++) {
