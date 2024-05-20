@@ -39,11 +39,15 @@ void code_contents_print() {
     } else if(status->fd == -1) {
         mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 10, "File does not exist");
     } else {
-        // print to contents
-        CodeLine *ptr = status->buf_cur->cur;
+        int cur_row = status->row - status->start_row;
+        int cur_col = status->col - status->start_col;
         int row;
+        CodeLine *ptr;
+
+        // print to contents
+        ptr = status->buf_cur->cur;
         for(row = 0; row < win_row - 3; row++) {
-            mvwprintw(contents, row, 0, "%s", ptr->line);
+            mvwprintw(contents, row, 0, "%s", &(ptr->line[status->col]));
             if(ptr->next != NULL) {
                 ptr = ptr->next;
             } else {
@@ -52,9 +56,32 @@ void code_contents_print() {
                 ptr = status->buf_next->head;
             }
         }
-    }
+        wrefresh(contents);
 
+        // cursor highlight
+        wattron(contents, A_BLINK | A_STANDOUT);
+        ptr = status->buf_cur->cur;
+        for(row = 0; row < win_row; row++) {
+            if(row == cur_row) {
+                char c = ptr->line[status->col];
+                if(c == '\0') {
+                    mvwprintw(contents, cur_row, cur_col, " ");
+                } else {
+                    mvwprintw(contents, cur_row, cur_col, "%c", c);
+                }
+            }
+            if(ptr->next != NULL) {
+                ptr = ptr->next;
+            } else {
+                if(status->buf_next == NULL)
+                    break;
+                ptr = status->buf_next->head;
+            }
+        }
+        wattroff(contents, A_BLINK | A_STANDOUT);
+    }
     wrefresh(contents);
+
 }
 
 void code_buf_initialize(FileStatus *status) {
@@ -184,4 +211,20 @@ void code_buf_close(CodeBuf *buf) {
         ptr = next;
     }
     free(buf);
+}
+
+int code_next_row_exists() {
+    FileStatus *focus = opened_file_info->focus;
+    int row = focus->row;
+    if(focus->buf_next != NULL) {
+        if (row >= focus->buf_next->tail_row)
+            return -1;
+        else
+            return 0;
+    } else {
+        if (row >= focus->buf_cur->tail_row)
+            return -1;
+        else
+            return 0;
+    }
 }

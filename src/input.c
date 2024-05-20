@@ -82,6 +82,7 @@ int input_control(int input_char) {
             unsaved_caution_flag = 0;
             return 0;
         }
+        FileStatus *focus = opened_file_info->focus;
         switch (input_char)
         {
         case CTRL('w'):
@@ -104,12 +105,27 @@ int input_control(int input_char) {
             // todo : tmp save
             code_contents_print();
             break;
+        case 0x102: // down arrow
+            if(code_next_row_exists() != -1) {
+                focus->row++;
+                code_contents_print();
+            }
+            break;
         case 0x103: // up arrow
+            if(focus->row > 0) {
+                focus->row--;
+
+                code_contents_print();   
+            }
             // todo : arrow -> change row & col
             // it will change CodeBuf's row & col & cur(move by link)
-            // and it will decide to append buffer or not (need margine for it : near 20 line)
+            // and it will decide to append buffer or not (only CodeBuf_cur decide this)
+            // notice : when buff append -> update row_cap
+            
             break;
-        case 0x102: // down arrow
+        case 0x104: // left arrow
+            break;
+        case 0x105: // right arrow
             break;
         default:
             // print input char
