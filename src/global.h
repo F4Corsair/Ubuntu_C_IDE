@@ -5,8 +5,6 @@
 #include <curses.h>
 #include <time.h>
 
-/* MACRO CONSTANT */
-
 /* STRUCT */
 
 typedef struct _code_line { // doubly linked list

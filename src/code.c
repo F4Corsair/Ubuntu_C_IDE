@@ -144,6 +144,7 @@ CodeBuf *parse_buf(char *buf, int read_len) {
     while(end != NULL) {
         cur = code_line_append(start + 1, end);
         pre->next = cur;
+        cur->prev = pre;
         row++;
         pre = cur;
         start = end;
@@ -153,6 +154,7 @@ CodeBuf *parse_buf(char *buf, int read_len) {
     end = strchr(start, '\0');
     cur = code_line_append(start + 1, end);
     pre->next = cur;
+    cur->prev = pre;
     row++;
 
     if(cur == NULL) {
@@ -217,12 +219,12 @@ int code_next_row_exists() {
     FileStatus *focus = opened_file_info->focus;
     int row = focus->row;
     if(focus->buf_next != NULL) {
-        if (row >= focus->buf_next->tail_row)
+        if (row + 1 >= focus->buf_next->tail_row)
             return -1;
         else
             return 0;
     } else {
-        if (row >= focus->buf_cur->tail_row)
+        if (row + 1 >= focus->buf_cur->tail_row)
             return -1;
         else
             return 0;
