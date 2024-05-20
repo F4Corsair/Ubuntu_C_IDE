@@ -45,22 +45,20 @@ void code_contents_print() {
         CodeLine *ptr;
 
         // print to contents
-        ptr = status->buf_cur->cur;
+        ptr = status->buf->cur;
         for(row = 0; row < win_row - 3; row++) {
             mvwprintw(contents, row, 0, "%s", &(ptr->line[status->col]));
             if(ptr->next != NULL) {
                 ptr = ptr->next;
             } else {
-                if(status->buf_next == NULL)
-                    break;
-                ptr = status->buf_next->head;
+                break;
             }
         }
         wrefresh(contents);
 
         // cursor highlight
         wattron(contents, A_BLINK | A_STANDOUT);
-        ptr = status->buf_cur->cur;
+        ptr = status->buf->cur;
         for(row = 0; row < win_row; row++) {
             if(row == cur_row) {
                 char c = ptr->line[status->col];
@@ -73,9 +71,7 @@ void code_contents_print() {
             if(ptr->next != NULL) {
                 ptr = ptr->next;
             } else {
-                if(status->buf_next == NULL)
-                    break;
-                ptr = status->buf_next->head;
+                break;
             }
         }
         wattroff(contents, A_BLINK | A_STANDOUT);
@@ -87,7 +83,6 @@ void code_contents_print() {
 void code_buf_initialize(FileStatus *status) {
     char read_buf[BUFSIZ + 1];
     read_buf[BUFSIZ] = '\0';
-    status->buf_prev = NULL;
 
     int read_len = read(status->fd, read_buf, BUFSIZ);
     if(read_len == -1) {
@@ -95,51 +90,76 @@ void code_buf_initialize(FileStatus *status) {
         return;
     }
     read_buf[read_len] = '\0'; // just in case (prevent error)
-    status->buf_cur = parse_buf(read_buf, read_len);
-    status->buf_cur->cur_row = 0;
-    status->buf_cur->cur = status->buf_cur->head;
+    
+    status->buf = malloc(sizeof(CodeBuf));
+    status->buf->cur_row = status->buf->tail_row = 0;
+    status->buf->head = status->buf->tail = status->buf->cur = NULL;
+    status->buf->end_with_new_line = 1;
+    parse_buf(status->buf, read_buf, read_len);
 
-    if(status->buf_cnt > 1) {
+    for(int i = 1; i < status->buf_cnt; i++) {
         read_len = read(status->fd, read_buf, BUFSIZ);
         if(read_len == -1) {
             perror("code_buf_initialize : failed to read");
             return;
         }
         read_buf[read_len] = '\0'; // just in case (prevent error)
-        status->buf_next = parse_buf(read_buf, read_len);
-        if(status->buf_cur->end_with_new_line == 1) {
-            status->buf_next->head_row += status->buf_cur->tail_row + 1;
-            status->buf_next->tail_row += status->buf_cur->tail_row + 1;
-        }
-        else {
-            status->buf_next->head_row += status->buf_cur->tail_row;
-            status->buf_next->tail_row += status->buf_cur->tail_row;
-        }
-        status->buf_next->cur_row = status->buf_next->head_row;
+        parse_buf(status->buf, read_buf, read_len);
     }
 }
 
-CodeBuf *parse_buf(char *buf, int read_len) {
+void parse_buf(CodeBuf *code_buf ,char *buf, int read_len) {
     char *start, *end;
     int row = 0;
 
-
-    CodeBuf *code_buf = malloc(sizeof(CodeBuf));
-    code_buf->cur_row = code_buf->head_row = 0;
-
     if(buf == NULL) {
-        code_buf->tail_row = 0;
-        code_buf->end_with_new_line = 0;
-        code_buf->head = code_buf->tail = NULL;
-        return code_buf;
+        return;
     }
     // make head
-    start = strchr(buf, '\n');
-    code_buf->head = code_line_append(buf, start);
-    code_buf->head->prev = NULL;
-    row++;
-    CodeLine *pre = code_buf->head;
+    CodeLine *pre = code_buf->cur;
     CodeLine *cur = NULL;
+    start = strchr(buf, '\n');
+    if(start == NULL) { // file has only a line
+        start = strchr(buf, '\0');
+        cur = code_line_append(buf, start);
+        if(pre == NULL) {
+            code_buf->tail_row++;
+            code_buf->head = code_buf->tail = code_buf->cur = cur;
+            code_buf->head->prev = code_buf->head->next = NULL;
+            return;
+        }
+        if(code_buf->end_with_new_line == 0) {
+            code_buf->cur->line = realloc(code_buf->cur->line, strlen(code_buf->cur->line) + strlen(cur->line) + 1);
+            strcat(code_buf->cur->line, cur->line);
+            return;
+        }
+        pre->next = cur;
+        cur->prev = pre;
+        code_buf->cur = cur;
+        code_buf->tail = cur;
+        code_buf->tail_row++;
+        return;
+    } 
+
+    if(pre == NULL) {
+        code_buf->head = code_line_append(buf, start);
+        code_buf->head->prev = NULL;
+        code_buf->cur = code_buf->head;
+        pre = code_buf->cur;
+    } else {
+        if(code_buf->end_with_new_line == 0) {
+            code_buf->cur->line = realloc(code_buf->cur->line, strlen(code_buf->cur->line) + strlen(cur->line) + 1);
+            strcat(code_buf->cur->line, cur->line);
+            pre = code_buf->cur;
+            row--;
+        } else {
+            cur = code_line_append(buf, start);
+            pre->next = cur;
+            cur->prev = pre;
+            pre = cur;
+        }
+    }
+    row++;
     end = strchr(start + 1, '\n');
     while(end != NULL) {
         cur = code_line_append(start + 1, end);
@@ -157,21 +177,19 @@ CodeBuf *parse_buf(char *buf, int read_len) {
     cur->prev = pre;
     row++;
 
-    if(cur == NULL) {
-        code_buf->tail = code_buf->head;
-    }
+    // if(cur == NULL) {
+    //     code_buf->tail = code_buf->head;
+    // }
     code_buf->tail = cur;
     code_buf->tail->next = NULL;
 
-    code_buf->tail_row = row;
+    code_buf->tail_row += row;
     
     if(buf[read_len] == '\n') {
         code_buf->end_with_new_line = 1;
     } else {
         code_buf->end_with_new_line = 0;
     }
-
-    return code_buf;
 }
 
 CodeLine* code_line_append(char *start, char *end) {
@@ -193,9 +211,7 @@ CodeLine* code_line_append(char *start, char *end) {
 void file_status_close(FileStatus *ptr) {
     if(ptr->fd != -1) {
         close(ptr->fd);
-        code_buf_close(ptr->buf_prev);
-        code_buf_close(ptr->buf_cur);
-        code_buf_close(ptr->buf_next);
+        code_buf_close(ptr->buf);
     }
     free(ptr);
 }
@@ -218,15 +234,8 @@ void code_buf_close(CodeBuf *buf) {
 int code_next_row_exists() {
     FileStatus *focus = opened_file_info->focus;
     int row = focus->row;
-    if(focus->buf_next != NULL) {
-        if (row + 1 >= focus->buf_next->tail_row)
-            return -1;
-        else
-            return 0;
-    } else {
-        if (row + 1 >= focus->buf_cur->tail_row)
-            return -1;
-        else
-            return 0;
-    }
+    if (row + 1 >= focus->buf->tail_row)
+        return -1;
+    else
+        return 0;
 }

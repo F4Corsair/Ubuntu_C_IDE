@@ -110,9 +110,9 @@ int input_control(int input_char) {
                 focus->row++;
                 if(focus->row - focus->start_row >= win_row - 3) {
                     focus->start_row++;
-                    CodeLine *ptr = focus->buf_cur->cur;
+                    CodeLine *ptr = focus->buf->cur;
                     if(ptr->next != NULL) {
-                        focus->buf_cur->cur = ptr->next;
+                        focus->buf->cur = ptr->next;
                     } else {
                         // change buffer
                     }
@@ -125,9 +125,9 @@ int input_control(int input_char) {
                 focus->row--;
                 if(focus->start_row > focus->row) {
                     focus->start_row--;
-                    CodeLine *ptr = focus->buf_cur->cur;
+                    CodeLine *ptr = focus->buf->cur;
                     if(ptr->prev != NULL) {
-                        focus->buf_cur->cur = ptr->prev;
+                        focus->buf->cur = ptr->prev;
                     } else {
                         // change buffer
                     }
@@ -147,6 +147,7 @@ int input_control(int input_char) {
             break;
         default:
             // print input char
+            // have to handle empty file (buf has NULL data)
             break;
         }
     } else {
