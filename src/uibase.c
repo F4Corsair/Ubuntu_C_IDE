@@ -60,6 +60,7 @@ void ui_terminate() {
 void ui_set_whole() {
     window_reset();
     menu_tab_focus = FILE_TAB;
+    manual_page_focus = INTRO_MAN;
     unsaved_caution_flag = 0;
     code_tab_transition();
     menu_tab_update();
@@ -97,8 +98,6 @@ void menu_tab_update() {
 			wattron(menu_tab, A_STANDOUT);
 		mvwprintw(menu_tab, 1, startpos + 1, "%*s", tab_width - 2, "");
 		mvwprintw(menu_tab, 1, startpos + (tab_width - 8) / 2, "%s", menu_tab_names[i]);
-		wattron(menu_tab, A_UNDERLINE);
-		mvwaddch(menu_tab, 1, startpos + (tab_width - 8) / 2 + menu_tab_pos[i] , menu_tab_names[i][menu_tab_pos[i]]);
 		wattroff(menu_tab, A_UNDERLINE | A_STANDOUT);
     }
 }
