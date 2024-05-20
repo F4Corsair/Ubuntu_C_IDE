@@ -113,8 +113,6 @@ int input_control(int input_char) {
                     CodeLine *ptr = focus->buf->cur;
                     if(ptr->next != NULL) {
                         focus->buf->cur = ptr->next;
-                    } else {
-                        // change buffer
                     }
                 }
                 code_contents_print();
@@ -128,22 +126,44 @@ int input_control(int input_char) {
                     CodeLine *ptr = focus->buf->cur;
                     if(ptr->prev != NULL) {
                         focus->buf->cur = ptr->prev;
-                    } else {
-                        // change buffer
                     }
                 }
-
                 code_contents_print();   
-            }
-            // todo : arrow -> change row & col
-            // it will change CodeBuf's row & col & cur(move by link)
-            // and it will decide to append buffer or not (only CodeBuf_cur decide this)
-            // notice : when buff append -> update row_cap!!!
-            
+            }            
             break;
         case 0x104: // left arrow
             break;
         case 0x105: // right arrow
+            break;
+        case 0x152: // PGDN
+            for(int i = 0; i < win_row - 3; i++) {
+                if(code_next_row_exists() != -1) {
+                    focus->row++;
+                    if(focus->row - focus->start_row >= win_row - 3) {
+                        focus->start_row++;
+                        CodeLine *ptr = focus->buf->cur;
+                        if(ptr->next != NULL) {
+                            focus->buf->cur = ptr->next;
+                        }
+                    }
+                    code_contents_print();
+                }
+            }
+            break;
+        case 0x153: // PGUP
+            for(int i = 0; i < win_row - 3; i++) {
+                if(focus->row > 0) {
+                    focus->row--;
+                    if(focus->start_row > focus->row) {
+                        focus->start_row--;
+                        CodeLine *ptr = focus->buf->cur;
+                        if(ptr->prev != NULL) {
+                            focus->buf->cur = ptr->prev;
+                        }
+                    }
+                    code_contents_print();   
+                }  
+            }
             break;
         default:
             // print input char
