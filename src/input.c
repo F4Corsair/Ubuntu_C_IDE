@@ -14,6 +14,7 @@
 
 
 int input_control(int input_char) {
+    int idx;
 #ifdef DEBUG_INPUT
 		// print input keyname
 		// wattron(file_tab, A_UNDERLINE);
@@ -53,7 +54,7 @@ int input_control(int input_char) {
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
         if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
-            int idx = unsaved_caution_flag - 1;
+            idx = unsaved_caution_flag - 1;
             if(input_char == 's' || input_char == 'S') {
                 // save & del & refresh
                 // save_file(idx);
@@ -84,17 +85,19 @@ int input_control(int input_char) {
         switch (input_char)
         {
         case CTRL('w'):
-            int idx = opened_file_focus_idx_find();
+            idx = opened_file_focus_idx_find();
             if(idx != -1) {
                 del_opened_file_tab(idx);
             }
             break;
+        case 0x226:
         case 0x227: // ctrl + PGDN : move opened file tab focus down
             opened_file_focus_next();
             opened_file_tab_print();
             // todo : tmp save
             code_contents_print();
             break;
+        case 0x22b:
         case 0x22c: // ctrl + PGUP : move opened file tab foucs up
             opened_file_focus_prev();
             opened_file_tab_print();

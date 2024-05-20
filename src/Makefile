@@ -1,7 +1,14 @@
+# if you want to build without debug flag
+# try $ make DEBUG=0
 CC = gcc
-CFLAGS = -g -lcurses
+DEBUG ?= 1
+CFLAGS = -lcurses
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
+
+ifeq ($(DEBUG), 1)
+	CFLAGS += -g
+endif
 
 main.out : $(OBJS)
 	$(CC) -o $@ $(OBJS) $(CFLAGS)
