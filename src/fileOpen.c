@@ -26,9 +26,8 @@ void file_open_update() {
     	mvwaddstr(contents, row_pos, col_pos, "es]");
 }
 
-void file_open(char *file_name) {
+void file_open(char *file_name, int input) {
 	FileStatus temp;
-	int new_file_input;
 	char path[256];
 	
 	if (chdir(".") != 0) {
@@ -60,7 +59,7 @@ void file_open(char *file_name) {
 		file_open_update();
 		
 		wscanw(contents, "%d", &new_file_input);
-		if (new_file_input == 'y' || new_file_input == 'Y')
+		if (input == 'y' || input == 'Y')
 			del_opened_file_tab(1); // delete first-opened code file tab
 		else {
 			tab_restore();
