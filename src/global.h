@@ -14,7 +14,7 @@ typedef struct _code_line { // doubly linked list
 } CodeLine;
 
 typedef struct _code_buf {
-    int tail_row, cur_row;
+    int tail_row;
     CodeLine *head, *tail, *cur;
     int end_with_new_line;
 } CodeBuf;

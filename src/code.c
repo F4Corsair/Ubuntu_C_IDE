@@ -98,7 +98,7 @@ void code_buf_initialize(FileStatus *status) {
     read_buf[read_len] = '\0'; // just in case (prevent error)
     
     status->buf = malloc(sizeof(CodeBuf));
-    status->buf->cur_row = status->buf->tail_row = 0;
+    status->buf->tail_row = 0;
     status->buf->head = status->buf->tail = status->buf->cur = NULL;
     status->buf->end_with_new_line = 1;
     parse_buf(status->buf, read_buf, read_len);
