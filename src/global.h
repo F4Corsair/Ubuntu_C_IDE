@@ -77,6 +77,9 @@ extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;
 extern WINDOW *contents;
 
+//fileTab.c
+extern FileStatus* head;
+
 // openedFileTab.c
 extern int unsaved_caution_flag;
 
