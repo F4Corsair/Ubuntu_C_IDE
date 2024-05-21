@@ -13,5 +13,6 @@ void file_status_close(FileStatus *ptr);
 void code_buf_close(CodeBuf *buf);
 int code_next_row_exists();
 int code_next_col_exists();
+int get_cur_code_line_len();
 
 #endif

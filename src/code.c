@@ -122,7 +122,7 @@ void parse_buf(CodeBuf *code_buf ,char *buf, int read_len) {
         return;
     }
     // make head
-    CodeLine *pre = code_buf->cur;
+    CodeLine *pre = code_buf->tail;
     CodeLine *cur = NULL;
     start = strchr(buf, '\n');
     if(start == NULL) { // file has only a line
@@ -135,8 +135,13 @@ void parse_buf(CodeBuf *code_buf ,char *buf, int read_len) {
             return;
         }
         if(code_buf->end_with_new_line == 0) {
-            code_buf->cur->line = realloc(code_buf->cur->line, strlen(code_buf->cur->line) + strlen(cur->line) + 1);
-            strcat(code_buf->cur->line, cur->line);
+            cur = code_line_append(buf, start);
+            int sum_len = strlen(code_buf->cur->line) + cur->len + 1;
+            pre->line = realloc(pre->line, sizeof(char) * sum_len);
+            strcat(pre->line, cur->line);
+            pre->len = strlen(pre->line);
+            free(cur->line);
+            free(cur);
             return;
         }
         pre->next = cur;
@@ -154,9 +159,13 @@ void parse_buf(CodeBuf *code_buf ,char *buf, int read_len) {
         pre = code_buf->cur;
     } else {
         if(code_buf->end_with_new_line == 0) {
-            code_buf->cur->line = realloc(code_buf->cur->line, strlen(code_buf->cur->line) + strlen(cur->line) + 1);
-            strcat(code_buf->cur->line, cur->line);
-            pre = code_buf->cur;
+            cur = code_line_append(buf, start);
+            int sum_len = strlen(pre->line) + strlen(cur->line) + 1;
+            pre->line = realloc(pre->line, sizeof(char) * sum_len);
+            strcat(pre->line, cur->line);
+            free(cur->line);
+            free(cur);
+            pre->len = strlen(pre->line);
             row--;
         } else {
             cur = code_line_append(buf, start);
@@ -248,6 +257,15 @@ int code_next_row_exists() {
 
 int code_next_col_exists() {
     FileStatus *focus = opened_file_info->focus;
+
+    if(get_cur_code_line_len() - 1 > focus->col)
+        return 0;
+    else
+        return -1;
+}
+
+int get_cur_code_line_len() {
+    FileStatus *focus = opened_file_info->focus;
     int diff = focus->row - focus->start_row;
     CodeLine *cur_line = focus->buf->cur;
     for(int i = 0; i < diff; i++) {
@@ -256,9 +274,6 @@ int code_next_col_exists() {
             perror("code_next_col_exists() : out of idx");
         }
     }
-    if(cur_line->len - 1 > focus->col)
-        return 0;
-    else
-        return -1;
 
+    return cur_line->len;
 }

@@ -15,13 +15,6 @@
 
 int input_control(int input_char) {
     int idx;
-#ifdef DEBUG_INPUT
-		// print input keyname
-		// wattron(file_tab, A_UNDERLINE);
-		// mvwprintw(file_tab, 0, 0, "%-*s", KEY_NAME_WIDTH - 1, keyname(input_char));
-		// wattroff(file_tab, A_UNDERLINE);
-		// wrefresh(file_tab);
-#endif
     // input ignore
     if (input_char == 0x19a || winsize_flag == 1) {
         // ignore KEY_RESIZE
@@ -83,11 +76,28 @@ int input_control(int input_char) {
             unsaved_caution_flag = 0;
             return 0;
         } else if (focus->fd == -1) { // file not opened
-            if(input_char == CTRL('w')) {
+            switch (input_char)
+            {
+            case CTRL('w'):
                 idx = opened_file_focus_idx_find();
                 if(idx != -1) {
                     del_opened_file_tab(idx);
                 }
+                break;
+            case 0x226:
+            case 0x227: // ctrl + PGDN : move opened file tab focus down
+                opened_file_focus_next();
+                opened_file_tab_print();
+                // todo : tmp save
+                code_contents_print();
+                break;
+            case 0x22b:
+            case 0x22c: // ctrl + PGUP : move opened file tab foucs up
+                opened_file_focus_prev();
+                opened_file_tab_print();
+                // todo : tmp save
+                code_contents_print();
+                break;
             }
             return 0;
         }
@@ -123,6 +133,14 @@ int input_control(int input_char) {
                         focus->buf->cur = ptr->next;
                     }
                 }
+                // check col
+                int col_max_len = get_cur_code_line_len() - 1;
+                if(col_max_len < focus->col) {
+                    if(col_max_len <= 0)
+                        focus->col = 0;
+                    else
+                        focus->col = col_max_len;
+                }
                 code_contents_print();
             }
             break;
@@ -135,6 +153,14 @@ int input_control(int input_char) {
                     if(ptr->prev != NULL) {
                         focus->buf->cur = ptr->prev;
                     }
+                }
+                // check col
+                int col_max_len = get_cur_code_line_len() - 1;
+                if(col_max_len < focus->col) {
+                    if(col_max_len <= 0)
+                        focus->col = 0;
+                    else
+                        focus->col = col_max_len;
                 }
                 code_contents_print();   
             }            
