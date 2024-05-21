@@ -7,6 +7,7 @@
 
 #include "global.h"
 #include "code.h"
+#include "uibase.h"
 //#include "layout.h"
 #include "winsize.h"
 
@@ -17,7 +18,7 @@ void file_open_update() {
 	int row_pos = win_row / 2 - 2;
    	mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Code file tab is full!");
 	mvwaddstr(contents, row_pos++, win_col / 2 - 15, "Do you really want to open the file?");
-    	int col_pos = win_col / 2 - 3;
+    int col_pos = win_col / 2 - 3;
     	mvwaddch(contents, row_pos, col_pos++, '[');
     	wattron(contents, A_UNDERLINE);
     	mvwaddch(contents, row_pos, col_pos++, 'Y');
@@ -29,7 +30,7 @@ void file_open(char *file_name) {
 	FileStatus temp;
 	int new_file_input;
 	char path[256];
-
+	
 	if (chdir(".") != 0) {
 		perror("directory");
 		exit(1);
@@ -60,11 +61,9 @@ void file_open(char *file_name) {
 		
 		wscanw(contents, "%d", &new_file_input);
 		if (new_file_input == 'y' || new_file_input == 'Y')
-			del_opened_file_tab(0); // delete first-opened code file tab
+			del_opened_file_tab(1); // delete first-opened code file tab
 		else {
-			// file contents window 원상 복구
-			getcwd(path, 256);
-			//displayDirectoryContents(file_contents, path); // 영준이 demo 함수 수정 필요
+			tab_restore();
 		}
 	}
 }	
