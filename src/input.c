@@ -15,13 +15,6 @@
 
 int input_control(int input_char) {
     int idx;
-#ifdef DEBUG_INPUT
-		// print input keyname
-		// wattron(file_tab, A_UNDERLINE);
-		// mvwprintw(file_tab, 0, 0, "%-*s", KEY_NAME_WIDTH - 1, keyname(input_char));
-		// wattroff(file_tab, A_UNDERLINE);
-		// wrefresh(file_tab);
-#endif
     // input ignore
     if (input_char == 0x19a || winsize_flag == 1) {
         // ignore KEY_RESIZE
@@ -53,6 +46,7 @@ int input_control(int input_char) {
     }
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
+        FileStatus *focus = opened_file_info->focus;
         if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
             idx = unsaved_caution_flag - 1;
             if(input_char == 's' || input_char == 'S') {
@@ -81,6 +75,31 @@ int input_control(int input_char) {
             }
             unsaved_caution_flag = 0;
             return 0;
+        } else if (focus->fd == -1) { // file not opened
+            switch (input_char)
+            {
+            case CTRL('w'):
+                idx = opened_file_focus_idx_find();
+                if(idx != -1) {
+                    del_opened_file_tab(idx);
+                }
+                break;
+            case 0x226:
+            case 0x227: // ctrl + PGDN : move opened file tab focus down
+                opened_file_focus_next();
+                opened_file_tab_print();
+                // todo : tmp save
+                code_contents_print();
+                break;
+            case 0x22b:
+            case 0x22c: // ctrl + PGUP : move opened file tab foucs up
+                opened_file_focus_prev();
+                opened_file_tab_print();
+                // todo : tmp save
+                code_contents_print();
+                break;
+            }
+            return 0;
         }
         switch (input_char)
         {
@@ -104,15 +123,99 @@ int input_control(int input_char) {
             // todo : tmp save
             code_contents_print();
             break;
-        case 0x103: // up arrow
-            // todo : arrow -> change row & col
-            // it will change CodeBuf's row & col & cur(move by link)
-            // and it will decide to append buffer or not (need margine for it : near 20 line)
-            break;
         case 0x102: // down arrow
+            if(code_next_row_exists() != -1) {
+                focus->row++;
+                if(focus->row - focus->start_row >= win_row - 3) {
+                    focus->start_row++;
+                    CodeLine *ptr = focus->buf->cur;
+                    if(ptr->next != NULL) {
+                        focus->buf->cur = ptr->next;
+                    }
+                }
+                // check col
+                int col_max_len = get_cur_code_line_len() - 1;
+                if(col_max_len < focus->col) {
+                    if(col_max_len <= 0)
+                        focus->col = 0;
+                    else
+                        focus->col = col_max_len;
+                }
+                code_contents_print();
+            }
+            break;
+        case 0x103: // up arrow
+            if(focus->row > 0) {
+                focus->row--;
+                if(focus->start_row > focus->row) {
+                    focus->start_row--;
+                    CodeLine *ptr = focus->buf->cur;
+                    if(ptr->prev != NULL) {
+                        focus->buf->cur = ptr->prev;
+                    }
+                }
+                // check col
+                int col_max_len = get_cur_code_line_len() - 1;
+                if(col_max_len < focus->col) {
+                    if(col_max_len <= 0)
+                        focus->col = 0;
+                    else
+                        focus->col = col_max_len;
+                }
+                code_contents_print();   
+            }            
+            break;
+        case 0x104: // left arrow
+            if(focus->col > 0) {
+                focus->col--;
+                if(focus->start_col > focus->col) {
+                    focus->start_col--;
+                }
+                code_contents_print();
+            }
+            break;
+        case 0x105: // right arrow
+            if(code_next_col_exists() != -1) {
+                focus->col++;
+                if(focus->start_col - focus->col >= win_col) {
+                    focus->start_col++;
+                }
+                code_contents_print();
+            }
+            break;
+        case 0x152: // PGDN
+            for(int i = 0; i < win_row - 3; i++) {
+                if(code_next_row_exists() != -1) {
+                    focus->row++;
+                    if(focus->row - focus->start_row >= win_row - 3) {
+                        focus->start_row++;
+                        CodeLine *ptr = focus->buf->cur;
+                        if(ptr->next != NULL) {
+                            focus->buf->cur = ptr->next;
+                        }
+                    }
+                    code_contents_print();
+                }
+            }
+            break;
+        case 0x153: // PGUP
+            for(int i = 0; i < win_row - 3; i++) {
+                if(focus->row > 0) {
+                    focus->row--;
+                    if(focus->start_row > focus->row) {
+                        focus->start_row--;
+                        CodeLine *ptr = focus->buf->cur;
+                        if(ptr->prev != NULL) {
+                            focus->buf->cur = ptr->prev;
+                        }
+                    }
+                    code_contents_print();   
+                }  
+            }
             break;
         default:
             // print input char
+            // have to handle empty file (buf has NULL data)
             break;
         }
     } else {

@@ -75,7 +75,7 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     FileStatus *node = malloc(sizeof(FileStatus));
     strcpy(node->file_name, file_name);
     strcpy(node->full_path, full_path);
-    node->row = node->col = node->modified = 0;
+    node->row = node->col = node->modified = node->start_row = node->start_col = 0;
     node->last_saved = time(NULL);
 
     // update opened_file_info

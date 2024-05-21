@@ -5,8 +5,6 @@
 #include <curses.h>
 #include <time.h>
 
-/* MACRO CONSTANT */
-
 /* STRUCT */
 
 typedef struct _code_line { // doubly linked list
@@ -16,7 +14,7 @@ typedef struct _code_line { // doubly linked list
 } CodeLine;
 
 typedef struct _code_buf {
-    int head_row, tail_row, cur_row;
+    int tail_row;
     CodeLine *head, *tail, *cur;
     int end_with_new_line;
 } CodeBuf;
@@ -27,11 +25,10 @@ typedef struct _file_status{
     int fd;
     int buf_cnt;
     int row, col;
+    int start_row, start_col; // CodeBuf->cur <= start_row
     int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
-    CodeBuf *buf_prev;
-    CodeBuf *buf_cur;
-    CodeBuf *buf_next;
+    CodeBuf *buf;
     struct _file_status *next;
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
 
