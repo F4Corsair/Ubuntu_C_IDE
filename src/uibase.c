@@ -13,15 +13,14 @@
 #include "manual.h"
 #include "quit.h"
 
-int file_tab_cnt; // number of current file tab
-int file_tab_focus;
+OpenFileInfo *opened_file_info;
 
-WINDOW *file_tab;
+WINDOW *opened_file_tab;
 WINDOW *menu_tab;
 WINDOW *contents;
 
 void ui_init() {
-    menu_tab_focus = CODE_TAB;
+    opened_file_info = opened_file_info_init();
     
     // set base property
     initscr();
@@ -51,21 +50,26 @@ void ui_init() {
 }
 
 void ui_terminate() {
+    opened_file_info_terminate();
     delwin(menu_tab);
-    delwin(file_tab);
+    delwin(opened_file_tab);
     delwin(contents);
     endwin();
 }
 
 void ui_set_whole() {
     window_reset();
+    menu_tab_focus = FILE_TAB;
+    manual_page_focus = INTRO_MAN;
+    unsaved_caution_flag = 0;
+    code_tab_transition();
     menu_tab_update();
     wrefresh(menu_tab);
 }
 
 void window_reset() {
     delwin(menu_tab);
-    delwin(file_tab);
+    delwin(opened_file_tab);
     delwin(contents);
 
     // NOTICE : you have to call 'endwin()' before reset window size!!!
@@ -73,7 +77,7 @@ void window_reset() {
     refresh();
 
     menu_tab = newwin(2, win_col, win_row - 2, 0);
-    file_tab = newwin(1, win_col, 0 , 0);
+    opened_file_tab = newwin(1, win_col, 0 , 0);
     contents = newwin(win_row - 3, win_col, 1, 0);
 }
 
@@ -94,8 +98,6 @@ void menu_tab_update() {
 			wattron(menu_tab, A_STANDOUT);
 		mvwprintw(menu_tab, 1, startpos + 1, "%*s", tab_width - 2, "");
 		mvwprintw(menu_tab, 1, startpos + (tab_width - 8) / 2, "%s", menu_tab_names[i]);
-		wattron(menu_tab, A_UNDERLINE);
-		mvwaddch(menu_tab, 1, startpos + (tab_width - 8) / 2 + menu_tab_pos[i] , menu_tab_names[i][menu_tab_pos[i]]);
 		wattroff(menu_tab, A_UNDERLINE | A_STANDOUT);
     }
 }
