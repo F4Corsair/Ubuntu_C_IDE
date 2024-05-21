@@ -37,9 +37,16 @@ void build_tab_transition(int input) {
 // todo : compile 결과 표시 하기
 void build_compile_print() {
     int the_pipe[PIPE_ENDS], read_len;
-    char buf[BUFSIZ];
+    char buf[BUFSIZ], char executable_file_name[256];
     FileStatus *status = opened_file_info->focus;
     wclear(contents);
+
+    // executable file name to implement makefile 
+    strcpy(executable_file_name, status->file_name);
+    char *dot = strrchr(executable_file_name, '.');
+    *(dot + 1) = '\0';
+    strcat(executable_file_name, ".");
+    strcat(executable_file_name, "out");
 
     if (status == NULL) {
         // no file opened
@@ -64,6 +71,7 @@ void build_compile_print() {
                 close(the_pipe[0]);
                 dup2(the_pipe[1], 1);
                 close(the_pipe[1]);
+                // todo : makefile create + makefile 지정
                 execlp("make", "make", NULL);
                 perror("make");
                 exit(5);
