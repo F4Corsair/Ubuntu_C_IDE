@@ -15,7 +15,7 @@
 WINDOW* opened_build_tab;
 
 // 한 번에 한 개의 파일만 complie, debug 할 수 있다고 가정 하고 제작함.
-void build_tab_transition(int input) {
+void build_tab_transition() {
     if(menu_tab_focus == BUILD_TAB)
         return;
 
@@ -27,15 +27,15 @@ void build_tab_transition(int input) {
     wrefresh(menu_tab);
 
     // todo : show BUILD_TAB
-    opened_build_tab_print();
+   /* opened_build_tab_print();
     if (input == 0x10d) // f5 = compile (임시)
         build_compile_print();
     else if (input == 0x125) // ctrl + f5 = debug (임시)
-        build_debug_print();
+        build_debug_print();} */
 }
 
 // todo : compile 결과 표시 하기
-void build_compile_print() {
+/* void build_compile_print() {
     int the_pipe[PIPE_ENDS], read_len;
     char buf[BUFSIZ], char executable_file_name[256];
     FileStatus *status = opened_file_info->focus;
@@ -117,4 +117,4 @@ void build_debug_print() {
 
 void opened_build_tab_print() {
     
-}
+}*/

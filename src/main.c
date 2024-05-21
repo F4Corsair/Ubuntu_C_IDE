@@ -9,6 +9,7 @@
 #include "input.h"
 #include "errLog.h"
 #include "code.h" // for TEST
+#include "fileOpen.h" // for TEST
 
 #define DEBUG_INPUT // turn on debug mode
 
@@ -28,7 +29,10 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
-
+	file_open("fileOpen.c");
+	file_open("fileOpen.c");
+	file_open("fileOpen.c");
+	// file_open("fileOpen.c");
 	// opened_file_info->head->modified = 1;
 
 	// close_unsaved_caution(1);

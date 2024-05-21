@@ -7,7 +7,7 @@
 
 #include "global.h"
 #include "code.h"
-#include "layout.h"
+// #include "layout.h"
 #include "winsize.h"
 
 void file_open_update();
