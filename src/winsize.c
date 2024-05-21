@@ -31,6 +31,14 @@ void wininch_handler(int signum) {
     else {
         mvaddstr(row_pos, col_pos, "Window size change detected");
         refresh();
+        // pre-process
+        // window resize will update file cursor position (for buffer-safe)
+        FileStatus *ptr = opened_file_info->head;
+        while(ptr != NULL) {
+            ptr->row = ptr->start_row;
+            ptr->col = ptr->start_col;
+            ptr = ptr->next;
+        }
         // if pre-process is done : ask user to continue
         mvaddstr(row_pos + 1, col_pos, "[Press any key to Continue]");
         refresh();
