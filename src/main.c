@@ -29,10 +29,13 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
-	file_open("fileOpen.c");
-	file_open("fileOpen.c");
-	file_open("fileOpen.c");
-	// file_open("fileOpen.c");
+
+	// file open test line
+	file_open("fileOpen.c", 0);
+	file_open("fileOpen.c", 0);
+	file_open("fileOpen.c", 0);
+	file_open("main.c", 'y'); // file do not be opened when struct is full   
+	file_open("fileOpen.c", 0); // file is opened when struct is full
 	// opened_file_info->head->modified = 1;
 
 	// close_unsaved_caution(1);

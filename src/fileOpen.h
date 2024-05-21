@@ -11,4 +11,4 @@
 #include "winsize.h"
 
 void file_open_update();
-void file_open(char *file_name);
+void file_open(char *file_name, int new_file_input);

@@ -7,6 +7,7 @@
 
 #include "global.h"
 #include "code.h"
+#include "openedFileTab.h"
 #include "uibase.h"
 //#include "layout.h"
 #include "winsize.h"
@@ -18,7 +19,7 @@ void file_open_update() {
 	int row_pos = win_row / 2 - 2;
    	mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Code file tab is full!");
 	mvwaddstr(contents, row_pos++, win_col / 2 - 15, "Do you really want to open the file?");
-    int col_pos = win_col / 2 - 3;
+    	int col_pos = win_col / 2 - 3;
     	mvwaddch(contents, row_pos, col_pos++, '[');
     	wattron(contents, A_UNDERLINE);
     	mvwaddch(contents, row_pos, col_pos++, 'Y');
@@ -26,8 +27,9 @@ void file_open_update() {
     	mvwaddstr(contents, row_pos, col_pos, "es]");
 }
 
-void file_open(char *file_name, int input) {
+void file_open(char *file_name, int new_file_input) {
 	FileStatus temp;
+	// int new_file_input;
 	char path[256];
 	
 	if (chdir(".") != 0) {
@@ -58,9 +60,14 @@ void file_open(char *file_name, int input) {
 	if (new_opened_file_tab(temp.file_name, temp.full_path) == -1) {
 		file_open_update();
 		
-		wscanw(contents, "%d", &new_file_input);
-		if (input == 'y' || input == 'Y')
-			del_opened_file_tab(1); // delete first-opened code file tab
+		// new_file_input = getch();
+		if (new_file_input == 'y' || new_file_input == 'Y') {
+			del_opened_file_tab(8);	// delete first-opened code file tab
+			new_opened_file_tab(temp.file_name, temp.full_path);
+			opened_file_focus_prev();
+			opened_file_tab_print();
+			code_contents_print();
+		}
 		else {
 			tab_restore();
 		}
