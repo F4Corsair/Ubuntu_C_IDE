@@ -7,7 +7,7 @@
 
 #include "global.h"
 #include "code.h"
-#include "layout.h"
+//#include "layout.h"
 #include "winsize.h"
 
 void file_open_update() {
@@ -63,7 +63,7 @@ void file_open(char *file_name) {
 		else {
 			// file contents window 원상 복구
 			getcwd(path, 256);
-			displayDirectoryContents(file_contents, path); // 영준이 demo 함수 수정 필요
+			//displayDirectoryContents(file_contents, path); // 영준이 demo 함수 수정 필요
 		}
 	}
 }	
