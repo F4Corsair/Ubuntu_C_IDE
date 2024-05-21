@@ -1,4 +1,4 @@
 CFLAGS = -g -lcurses
 
-sample.out : sample.c
+printFile.out : printFile.c
 	cc -o $@ $< $(CFLAGS)
