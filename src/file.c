@@ -119,8 +119,6 @@ void file_open(char *file_name, int new_file_input) {
 			// todo : index 지정 정확하게 하기
             del_opened_file_tab(MAX_FILE_TAB_CNT);
 			new_opened_file_tab(file_name, path);
-			opened_file_tab_print();
-			code_contents_print();
             code_tab_transition();
 		}
 		else // todo : make new contents restore code
