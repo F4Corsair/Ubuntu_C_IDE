@@ -247,7 +247,7 @@ int input_control(int input_char) {
                     cur=cur->next;
                 }
                 file_open(cur->file_name, 'y');
-                
+                code_tab_transition();
             }
 
             break;

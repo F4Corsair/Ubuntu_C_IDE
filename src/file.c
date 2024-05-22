@@ -49,14 +49,14 @@ void file_tab_transition() {
 
 }
 
-void file_open_update() {
+void file_open_update(int *input_char) {
 	winsize_calculate();
 	wclear(contents);
 
 	int row_pos = win_row / 2 - 2;
    	mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Code file tab is full!");
 	mvwaddstr(contents, row_pos++, win_col / 2 - 15, "Do you really want to open the file?");
-    int col_pos = win_col / 2 - 3;
+    int col_pos = win_col / 2 - 1;
     	mvwaddch(contents, row_pos, col_pos++, '[');
     	wattron(contents, A_UNDERLINE);
     	mvwaddch(contents, row_pos, col_pos++, 'Y');
@@ -64,9 +64,11 @@ void file_open_update() {
     	mvwaddstr(contents, row_pos, col_pos, "es]");
 	
 	wrefresh(contents);
+
+	*(input_char) = getch();
 }
 
-int find_most_previous_file() {
+/* int find_most_previous_file() {
 	FileStatus *cur = opened_file_info->head;
 
 	// head가 가리키는 node의 prev node가 가장 나중에 만들어진 node
@@ -79,7 +81,7 @@ int find_most_previous_file() {
 	}
 
 	return index;
-}
+} */
 
 void contents_window_restore() {
 	enum MenuTab focus;
@@ -114,11 +116,12 @@ void file_open(char *file_name, int new_file_input) {
 	}
 
 	// to do : input control
-	// to do : input control
-        if (new_opened_file_tab(file_name, path) == -1) {
-                file_open_update();
-
-                if (new_file_input == 'y' || new_file_input == 'Y') {
+	int flag = new_opened_file_tab(file_name, path);
+	int input_char;
+        if (flag == -1) {
+                file_open_update(&input_char);
+		
+                if (input_char == 'y' || input_char == 'Y')  {
                         del_opened_file_tab(MAX_FILE_TAB_CNT - 1);
                         new_opened_file_tab(file_name, path);
                         opened_file_tab_print();
