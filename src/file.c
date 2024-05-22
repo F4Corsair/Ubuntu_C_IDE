@@ -25,10 +25,11 @@ int contents_row;
 int contents_col;
 int workspace_contents_row;
 int workspace_contents_col;
+int workspace_file_focus=0;     //contents win 에서 첫번째 나오는 파일이름이 연결리스트에서 몇번째 파일인지
+int workspace_file_finish=0;
 
 FileStatus* head;
 
-WINDOW* workspace_path;
 WINDOW* workspace_tab;
 
 
@@ -78,13 +79,7 @@ void file_open_update(int *input_char) {
 		most_previous_file = cur;
 		cur = cur->next;
 		index++;
-<<<<<<< HEAD
 	} while (cur->next != opened_file_info->head);
-=======
-        if (cur->next == NULL)
-            break;
-	}
->>>>>>> edeea2855636de9746e5993dcfcf9de85f6d6088
 
 	return index;
 } */
@@ -127,7 +122,6 @@ void file_open(char *file_name, int new_file_input) {
         if (flag == -1) {
                 file_open_update(&input_char);
 		
-<<<<<<< HEAD
 		// new_file_input = getch();
 		if (new_file_input == 'y' || new_file_input == 'Y') {
 			// todo : index 지정 정확하게 하기
@@ -139,31 +133,15 @@ void file_open(char *file_name, int new_file_input) {
 		else // todo : make new contents restore code
 			contents_window_restore();
 	}
-=======
-                if (input_char == 'y' || input_char == 'Y')  {
-                        del_opened_file_tab(MAX_FILE_TAB_CNT - 1);
-                        new_opened_file_tab(file_name, path);
-                        opened_file_tab_print();
-                        code_contents_print();
-                        if (menu_tab_focus == FILE_TAB) {
-                                menu_tab_focus = CODE_TAB;
-                                menu_tab_update();
-                                wrefresh(menu_tab);
-                        }
-                }
-                else
-                        contents_window_restore();
-        }
->>>>>>> edeea2855636de9746e5993dcfcf9de85f6d6088
 }
 
-void print_path(WINDOW *path_win, const char *path) {
+void print_path(const char *path) {
     int width = COLS - 2; // 테두리를 위한 공간 확보
-    wattron(path_win, A_UNDERLINE);
-    mvwprintw(path_win, 0, 0, "Path:");
-    mvwprintw(path_win, 0, 5, " %-*s", width, path); // "Path: " 공간 확보
-    wattroff(path_win, A_UNDERLINE);
-    wrefresh(path_win);
+    wattron(contents, A_UNDERLINE);
+    mvwprintw(contents, 0, 0, "Path:");
+    mvwprintw(contents, 0, 5, " %-*s", width, path); // "Path: " 공간 확보
+    wattroff(contents, A_UNDERLINE);
+    wrefresh(contents);
 }
 
 void initialize_colors() {
@@ -181,7 +159,7 @@ void opened_workspace_tab_print() {
     file_tab_cnt = 0;
     file_tab_focus = -1;
 
-	workspace_path = newwin(1, COLS, 1, 0);
+	//workspace_path = newwin(1, COLS, 1, 0);
 	workspace_tab = newwin(1, COLS, 0, 0);
 	
     wattron(workspace_tab, A_UNDERLINE);
@@ -192,7 +170,7 @@ void opened_workspace_tab_print() {
 
     char current_path[256];
     if (getcwd(current_path, sizeof(current_path)) != NULL) {
-        print_path(contents, current_path);
+        print_path(current_path);
     }
 
     attroff(COLOR_PAIR(1));
@@ -259,13 +237,13 @@ void lsR(char *path) {
         char full_path[PATH_MAX];
         snprintf(full_path, PATH_MAX, "%s/%s", path, direntp->d_name);
         
-        addToList(direntp->d_name,full_path);
+        
         
         struct stat info;
         if (stat(full_path, &info) == -1)
             continue;
-        if(contents_row<LINES-5){
-            if (S_ISDIR(info.st_mode)) {
+        addToList(direntp->d_name,full_path);
+        if (S_ISDIR(info.st_mode)) {
             wattron(contents, COLOR_PAIR(2));
             mvwprintw(contents, contents_row,contents_col, "v ");
             wattroff(contents, COLOR_PAIR(2)); 
@@ -284,7 +262,6 @@ void lsR(char *path) {
                 mvwprintw(contents, contents_row++, contents_col+2, "%s", direntp->d_name);
             }
         }
-        }
         
 
         /**/
@@ -300,7 +277,97 @@ void workspace_contents_print() {
     workspace_contents_col=1; // 파일 선택을 위한 커서
     if (getcwd(path, sizeof(path)) != NULL) {
         ls(path);
-        mvwchgat(contents, workspace_contents_row, workspace_contents_col, 5, A_BLINK, 0, NULL);
+        wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
+        wclrtoeol(contents);
+        mvwprintw(contents,workspace_contents_row,workspace_contents_col,head->file_name);
+        mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(head->file_name), A_BLINK, 0, NULL);
     }
     wrefresh(contents);
+}
+
+void workspace_key_down(){
+    if (workspace_contents_row == win_row - 2 && workspace_file_finish != -1) {
+        // 화면의 마지막 줄에 도달한 경우
+        workspace_file_focus++;
+        FileStatus* cur = head;
+
+        for (int i = 0; i < workspace_file_focus; i++) {
+            if (cur == NULL) {
+                workspace_file_finish = -1;
+                break;
+            }
+            cur = cur->next;
+        }
+
+        if (cur != NULL) {
+            for (int row = 1; row <= win_row - 2; row++) {
+                wmove(contents, row, 0); // 줄의 시작으로 이동
+                wclrtoeol(contents);
+                if (cur != NULL) {
+                    mvwprintw(contents, row, 1, cur->file_name);
+                    cur = cur->next;
+                } else {
+                    workspace_file_finish = -1;
+                    break;
+                }
+            }
+            mvwchgat(contents, win_row - 2, 1, strlen(cur->file_name), A_BLINK, 0, NULL);
+            wrefresh(contents);
+        }
+    } else if (workspace_contents_row <=win_row-3) {
+        // 화면 내에서 이동
+        wchgat(contents, -1, A_NORMAL, 0, NULL);
+        if (workspace_contents_row < win_row - 2) {
+            workspace_contents_row++;
+        }
+        FileStatus* cur = head;
+        for (int i = 0; i < workspace_contents_row - 1 + workspace_file_focus; i++) {
+            cur = cur->next;
+        }
+        if (cur != NULL) {
+            wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
+            wclrtoeol(contents);
+            mvwprintw(contents, workspace_contents_row, workspace_contents_col, cur->file_name);
+            mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
+            wrefresh(contents);
+        }
+    }
+}
+
+void workspace_key_up(){
+    if (workspace_contents_row == 1 && workspace_file_focus > 0) {
+        // 화면의 첫 줄에 도달하고, 이전 파일이 존재하는 경우
+        if(workspace_file_finish==-1)
+            workspace_file_finish=0;
+        workspace_file_focus--;
+        FileStatus* cur = head;
+        for (int i = 0; i < workspace_file_focus; i++) {
+            cur = cur->next;
+        }
+        for (int row = 1; row <= win_row - 3; row++) {
+            wmove(contents, row, 0); // 줄의 시작으로 이동
+            wclrtoeol(contents);
+            if (cur != NULL) {
+                mvwprintw(contents, row, 1, cur->file_name);
+                cur = cur->next;
+            }
+        }
+        mvwchgat(contents, 1, 1, strlen(cur->file_name), A_BLINK, 0, NULL);
+        wrefresh(contents);
+    } else if (workspace_contents_row > 1) {
+        // 화면 내에서 이동
+        wchgat(contents, -1, A_NORMAL, 0, NULL);
+        workspace_contents_row--;
+        FileStatus* cur = head;
+        for (int i = 0; i < workspace_contents_row - 1 + workspace_file_focus; i++) {
+            cur = cur->next;
+        }
+        if (cur != NULL) {
+            wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
+            wclrtoeol(contents);
+            mvwprintw(contents, workspace_contents_row, workspace_contents_col, cur->file_name);
+            mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
+            wrefresh(contents);
+        }
+    }
 }

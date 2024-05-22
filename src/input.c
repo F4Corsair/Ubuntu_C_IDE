@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "input.h"
 #include "global.h"
@@ -229,17 +230,10 @@ int input_control(int input_char) {
         {
         case FILE_TAB:
             
-            if(input_char == KEY_DOWN){
-                wchgat(contents, -1, A_NORMAL, 0, NULL);
-		        workspace_contents_row++;
-		        mvwchgat(contents, workspace_contents_row, workspace_contents_col, 10, A_BLINK, 0, NULL);
-		        wrefresh(contents);
-            }
-            else if(input_char == KEY_UP){
-                wchgat(contents, -1, A_NORMAL, 0, NULL);
-		        workspace_contents_row--;
-		        mvwchgat(contents, workspace_contents_row, workspace_contents_col, 10, A_BLINK, 0, NULL);
-		        wrefresh(contents);
+            if (input_char == KEY_DOWN) {
+                workspace_key_down();
+            } else if (input_char == KEY_UP) {
+                workspace_key_up();
             }
             else if(input_char== 'c'){  //code로 이동
                 FileStatus* cur;
@@ -247,8 +241,11 @@ int input_control(int input_char) {
                 for(int i=0;i<workspace_contents_row-1;i++){
                     cur=cur->next;
                 }
+                
                 file_open(cur->file_name, 'y');
+
                 code_tab_transition();
+                wchgat(contents, -1, A_NORMAL, 0, NULL);
             }
             
             break;

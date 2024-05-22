@@ -84,6 +84,8 @@ extern enum ManualPage manual_page_focus;
 
 extern int workspace_contents_row;
 extern int workspace_contents_col;
+extern int workspace_file_focus;
+extern int workspace_file_finish;
 #endif
 
 /* MACRO FUNCTIONS */
