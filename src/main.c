@@ -11,8 +11,6 @@
 #include "code.h" // for TEST
 #include "file.h" // for TEST
 
-#define DEBUG_INPUT // turn on debug mode
-
 int main(int argc, char **argv) {
 	int input_char;
 
@@ -23,9 +21,8 @@ int main(int argc, char **argv) {
 	winsize_init(); // handle SIGWINCH
 
 	// debug variable declare
-	
-	new_opened_file_tab("input.c", "input.c");
 	new_opened_file_tab("input.h", "input.h");
+	new_opened_file_tab("input.c", "input.c");
 	new_opened_file_tab("testFileNameIsLong", "");
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
