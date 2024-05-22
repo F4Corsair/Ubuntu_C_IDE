@@ -66,15 +66,15 @@ void file_open_update() {
 
 int find_most_previous_file() {
 	FileStatus *cur = opened_file_info->head;
+    FileStatus *most_previous_file = NULL;
 
 	// head가 가리키는 node의 prev node가 가장 나중에 만들어진 node
 	int index = 0;
-	while (1) {
+	do {
+		most_previous_file = cur;
 		cur = cur->next;
 		index++;
-        if (cur->next == opened_file_info->head)
-            break;
-	}
+	} while (cur->next != opened_file_info->head);
 
 	return index;
 }
@@ -112,7 +112,6 @@ void file_open(char *file_name, int new_file_input) {
 		exit(1);
 	}
 
-    int index = 8;
 	// to do : input control
 	if (new_opened_file_tab(file_name, path) == -1) {
 		file_open_update();
@@ -120,8 +119,7 @@ void file_open(char *file_name, int new_file_input) {
 		// new_file_input = getch();
 		if (new_file_input == 'y' || new_file_input == 'Y') {
 			// todo : index 지정 정확하게 하기
-            index = find_most_previous_file();
-            del_opened_file_tab(index);
+			del_opened_file_tab(8);
 			new_opened_file_tab(file_name, path);
 			opened_file_tab_print();
 			code_contents_print();
@@ -236,8 +234,8 @@ void lsR(char *path) {
         struct stat info;
         if (stat(full_path, &info) == -1)
             continue;
-        if(contents_row<LINES-5)
-        if (S_ISDIR(info.st_mode)) {
+        if(contents_row<LINES-5){
+            if (S_ISDIR(info.st_mode)) {
             wattron(contents, COLOR_PAIR(2));
             mvwprintw(contents, contents_row,contents_col, "v ");
             wattroff(contents, COLOR_PAIR(2)); 
@@ -256,6 +254,8 @@ void lsR(char *path) {
                 mvwprintw(contents, contents_row++, contents_col+2, "%s", direntp->d_name);
             }
         }
+        }
+        
 
         /**/
         

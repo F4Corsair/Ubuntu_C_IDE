@@ -222,6 +222,7 @@ int input_control(int input_char) {
         switch (menu_tab_focus)
         {
         case FILE_TAB:
+            
             if(input_char == KEY_DOWN){
                 wchgat(contents, -1, A_NORMAL, 0, NULL);
 		        workspace_contents_row++;
@@ -243,8 +244,9 @@ int input_control(int input_char) {
                 file_open(cur->file_name, 'y');
                 
             }
-
+            
             break;
+            
         case BUILD_TAB:
             break;
         case TERMINAL_TAB:
