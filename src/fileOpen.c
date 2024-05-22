@@ -42,7 +42,7 @@ int find_most_previous_file() {
 	return index;
 }
 
-void contents_tab_restore() {
+void contents_window_restore() {
 	enum MenuTab focus;
 	wclear(contents);
 
@@ -88,6 +88,6 @@ void file_open(char *file_name, int new_file_input) {
 			code_contents_print();
 		}
 		else // todo : make new contents restore code
-			contents_tab_restore();
+			contents_window_restore();
 	}
 }	
