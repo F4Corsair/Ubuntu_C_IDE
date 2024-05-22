@@ -26,6 +26,7 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
+	new_opened_file_tab("code_test_file.log", "code_test_file.log");
 
 	while(1) {
 		input_char = getch();

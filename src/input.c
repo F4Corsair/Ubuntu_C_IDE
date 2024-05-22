@@ -12,6 +12,7 @@
 #include "quit.h"
 #include "winsize.h"
 #include "fileSave.h"
+#include "codeEdit.h"
 
 
 int input_control(int input_char) {
@@ -165,7 +166,7 @@ int input_control(int input_char) {
                         focus->col = col_max_len;
                 }
                 code_contents_print();   
-            }            
+            }
             break;
         case 0x104: // left arrow
             if(focus->col > 0) {
@@ -174,6 +175,9 @@ int input_control(int input_char) {
                     focus->start_col--;
                 }
                 code_contents_print();
+            } else if (focus->row > 0) {
+                input_control(0x103);
+                input_control(0x168);
             }
             break;
         case 0x105: // right arrow
@@ -183,36 +187,19 @@ int input_control(int input_char) {
                     focus->start_col++;
                 }
                 code_contents_print();
+            } else if(code_next_row_exists() != -1) {
+                input_control(0x102);
+                input_control(0x106);
             }
             break;
         case 0x152: // PGDN
             for(int i = 0; i < win_row - 3; i++) {
-                if(code_next_row_exists() != -1) {
-                    focus->row++;
-                    if(focus->row - focus->start_row >= win_row - 3) {
-                        focus->start_row++;
-                        CodeLine *ptr = focus->buf->cur;
-                        if(ptr->next != NULL) {
-                            focus->buf->cur = ptr->next;
-                        }
-                    }
-                    code_contents_print();
-                }
+                input_control(0x102);
             }
             break;
         case 0x153: // PGUP
             for(int i = 0; i < win_row - 3; i++) {
-                if(focus->row > 0) {
-                    focus->row--;
-                    if(focus->start_row > focus->row) {
-                        focus->start_row--;
-                        CodeLine *ptr = focus->buf->cur;
-                        if(ptr->prev != NULL) {
-                            focus->buf->cur = ptr->prev;
-                        }
-                    }
-                    code_contents_print();   
-                }  
+                input_control(0x103);
             }
             break;
         case 0x13: // ctrl + s
@@ -235,13 +222,23 @@ int input_control(int input_char) {
             break;
         case 0x7f: // DEL
         case 0x14a: // KEY_DC
+            // move cursor to next
+            input_control(0x105);
+            // erase
+            code_edit_backspace();
+            opened_file_tab_print();
+            code_contents_print();
             break;
         case 0x107: // backspace
+        // add revised
+            code_edit_backspace();
+            opened_file_tab_print();
+            code_contents_print();
             break;
         default:
             // print character
             if(input_char >= 0x20 && input_char <= 0x7e) {
-
+            // todo : handle enter out of here (not default!!!)
             }
             break;
         }
