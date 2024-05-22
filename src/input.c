@@ -11,6 +11,7 @@
 #include "manual.h"
 #include "quit.h"
 #include "winsize.h"
+#include "fileSave.h"
 
 
 int input_control(int input_char) {
@@ -113,14 +114,12 @@ int input_control(int input_char) {
         case 0x227: // ctrl + PGDN : move opened file tab focus down
             opened_file_focus_next();
             opened_file_tab_print();
-            // todo : tmp save
             code_contents_print();
             break;
         case 0x22b:
         case 0x22c: // ctrl + PGUP : move opened file tab foucs up
             opened_file_focus_prev();
             opened_file_tab_print();
-            // todo : tmp save
             code_contents_print();
             break;
         case 0x102: // down arrow
@@ -213,9 +212,13 @@ int input_control(int input_char) {
                 }  
             }
             break;
+        case 0x13: // ctrl + s
+            file_save_focus();
+            opened_file_tab_print();
+            code_contents_print();
+            break;
         default:
-            // print input char
-            // have to handle empty file (buf has NULL data)
+            // input char handling
             break;
         }
     } else {

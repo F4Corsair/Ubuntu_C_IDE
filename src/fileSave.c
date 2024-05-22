@@ -35,7 +35,7 @@ void _file_save(FileStatus *status) {
     int fd = open(status->full_path, O_WRONLY | O_TRUNC);
     if(fd < 0) {
         perror("_file_save() : Can't open file");
-        fprintf("file name : %s\n", status->full_path);
+        fprintf(stderr, "file name : %s\n", status->full_path);
         return;
     }
 
@@ -60,5 +60,5 @@ void _file_save(FileStatus *status) {
 
     // open lock & close
     flock(fd, LOCK_UN);
-    fclose(fd);
+    close(fd);
 }
