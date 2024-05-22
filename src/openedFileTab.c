@@ -79,8 +79,8 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     node->last_saved = time(NULL);
 
     // update opened_file_info
+    opened_file_info->focus = node;
     if(opened_file_info->cnt == 0) {
-        opened_file_info->focus = node;
         opened_file_info->focus_strlen = strlen(file_name);
     }
     node->next = opened_file_info->head;
