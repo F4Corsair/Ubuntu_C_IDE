@@ -36,7 +36,6 @@ typedef struct {
     FileStatus *head;
     int cnt;
     FileStatus *focus;
-    int focus_strlen;
 } OpenFileInfo;
 
 enum MenuTab {
