@@ -59,6 +59,7 @@ void file_open_update() {
     	mvwaddch(contents, row_pos, col_pos++, 'Y');
     	wattroff(contents, A_UNDERLINE);
     	mvwaddstr(contents, row_pos, col_pos, "es]");
+	wrefresh(contents);
 }
 
 int find_most_previous_file() {
@@ -109,7 +110,6 @@ void file_open(char *file_name, int new_file_input) {
 		exit(1);
 	}
 
-    int index = 8;
 	// to do : input control
 	if (new_opened_file_tab(file_name, path) == -1) {
 		file_open_update();
@@ -117,9 +117,8 @@ void file_open(char *file_name, int new_file_input) {
 		// new_file_input = getch();
 		if (new_file_input == 'y' || new_file_input == 'Y') {
 			// todo : index 지정 정확하게 하기
-            del_opened_file_tab(MAX_FILE_TAB_CNT);
+            		del_opened_file_tab(MAX_FILE_TAB_CNT -1);
 			new_opened_file_tab(file_name, path);
-            code_tab_transition();
 		}
 		else // todo : make new contents restore code
 			contents_window_restore();
