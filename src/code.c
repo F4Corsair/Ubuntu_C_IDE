@@ -78,7 +78,7 @@ void code_contents_print() {
 
         // print row & col
         wattron(opened_file_tab, A_UNDERLINE);
-        mvwprintw(opened_file_tab, 0, 0, "%4d|%5d", status->row, status->col);
+        mvwprintw(opened_file_tab, 0, 0, "%4d|%5d", status->row + 1, status->col + 1);
         wattroff(opened_file_tab, A_UNDERLINE);
         wrefresh(opened_file_tab);
     }
