@@ -117,11 +117,11 @@ void file_open(char *file_name, int new_file_input) {
 		// new_file_input = getch();
 		if (new_file_input == 'y' || new_file_input == 'Y') {
 			// todo : index 지정 정확하게 하기
-            index = find_most_previous_file();
-            del_opened_file_tab(index);
+            del_opened_file_tab(MAX_FILE_TAB_CNT);
 			new_opened_file_tab(file_name, path);
 			opened_file_tab_print();
 			code_contents_print();
+            code_tab_transition();
 		}
 		else // todo : make new contents restore code
 			contents_window_restore();
