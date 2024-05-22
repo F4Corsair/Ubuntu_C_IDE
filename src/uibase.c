@@ -98,7 +98,7 @@ void menu_tab_update() {
 			wattron(menu_tab, A_STANDOUT);
 		mvwprintw(menu_tab, 1, startpos + 1, "%*s", tab_width - 2, "");
 		mvwprintw(menu_tab, 1, startpos + (tab_width - 8) / 2, "%s", menu_tab_names[i]);
-		wattroff(menu_tab, A_UNDERLINE | A_STANDOUT);
+		wattroff(menu_tab, A_STANDOUT);
     }
 }
 

@@ -11,6 +11,7 @@
 #include "manual.h"
 #include "quit.h"
 #include "winsize.h"
+#include "fileSave.h"
 
 
 int input_control(int input_char) {
@@ -47,12 +48,17 @@ int input_control(int input_char) {
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
         FileStatus *focus = opened_file_info->focus;
+        if(focus == NULL) {
+            return 0;
+        }
         if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
             idx = unsaved_caution_flag - 1;
             if(input_char == 's' || input_char == 'S') {
                 // save & del & refresh
-                // save_file(idx);
-                // del_opened_file_tab(idx);
+                file_save_focus();
+                del_opened_file_tab(idx);
+                opened_file_tab_print();
+                code_contents_print();
             } else if(input_char == 'c' || input_char == 'C') {
                 // don't save & del
                 // find file
@@ -88,14 +94,12 @@ int input_control(int input_char) {
             case 0x227: // ctrl + PGDN : move opened file tab focus down
                 opened_file_focus_next();
                 opened_file_tab_print();
-                // todo : tmp save
                 code_contents_print();
                 break;
             case 0x22b:
             case 0x22c: // ctrl + PGUP : move opened file tab foucs up
                 opened_file_focus_prev();
                 opened_file_tab_print();
-                // todo : tmp save
                 code_contents_print();
                 break;
             }
@@ -113,14 +117,12 @@ int input_control(int input_char) {
         case 0x227: // ctrl + PGDN : move opened file tab focus down
             opened_file_focus_next();
             opened_file_tab_print();
-            // todo : tmp save
             code_contents_print();
             break;
         case 0x22b:
         case 0x22c: // ctrl + PGUP : move opened file tab foucs up
             opened_file_focus_prev();
             opened_file_tab_print();
-            // todo : tmp save
             code_contents_print();
             break;
         case 0x102: // down arrow
@@ -213,9 +215,13 @@ int input_control(int input_char) {
                 }  
             }
             break;
+        case 0x13: // ctrl + s
+            file_save_focus();
+            opened_file_tab_print();
+            code_contents_print();
+            break;
         default:
-            // print input char
-            // have to handle empty file (buf has NULL data)
+            // input char handling
             break;
         }
     } else {
@@ -242,7 +248,7 @@ int input_control(int input_char) {
                     cur=cur->next;
                 }
                 file_open(cur->file_name, 'y');
-                
+                code_tab_transition();
             }
             
             break;

@@ -26,7 +26,7 @@ typedef struct _file_status{
     int buf_cnt;
     int row, col;
     int start_row, start_col; // CodeBuf->cur <= start_row
-    int modified; // 0 : unmodified  1 : tmp saved  2 : modified
+    int modified; // 0 : unmodified  1 : modified
     time_t last_saved;
     CodeBuf *buf;
     struct _file_status *next;
