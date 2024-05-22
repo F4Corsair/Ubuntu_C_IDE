@@ -23,6 +23,8 @@ int file_tab_cnt;
 int file_tab_focus;
 int contents_row;
 int contents_col;
+int workspace_contents_row;
+int workspace_contents_col;
 
 FileStatus* head;
 
@@ -44,6 +46,7 @@ void file_tab_transition() {
     // todo : show FILE_TAB
     opened_workspace_tab_print();
     workspace_contents_print();
+
 }
 
 void file_open_update() {
@@ -159,7 +162,7 @@ void opened_workspace_tab_print() {
 
     char current_path[256];
     if (getcwd(current_path, sizeof(current_path)) != NULL) {
-        print_path(workspace_path, current_path);
+        print_path(contents, current_path);
     }
 
     attroff(COLOR_PAIR(1));
@@ -169,16 +172,17 @@ void ls( char *path) {
     contents_row = 1;
 
     head=NULL;
-	contents=newwin(LINES - 4, COLS, 2, 0);
     start_color();
     init_pair(2, COLOR_RED, COLOR_BLACK);
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
     lsR(path);
+    /*
     FileStatus *cur;
         cur=head;
         for(;cur;cur=cur->next){
             mvwprintw(contents,contents_row++,contents_col,"%s %s",cur->file_name,cur->full_path);
         }
+    */
     wrefresh(contents);
 }
 
@@ -229,6 +233,7 @@ void lsR(char *path) {
         struct stat info;
         if (stat(full_path, &info) == -1)
             continue;
+        if(contents_row<LINES-5)
         if (S_ISDIR(info.st_mode)) {
             wattron(contents, COLOR_PAIR(2));
             mvwprintw(contents, contents_row,contents_col, "v ");
@@ -260,10 +265,11 @@ void lsR(char *path) {
 
 void workspace_contents_print() {
 	char path[256];
-    int contents_row = 1, contents_col = 1; // 파일 선택을 위한 커서
+    workspace_contents_row=1;
+    workspace_contents_col=1; // 파일 선택을 위한 커서
     if (getcwd(path, sizeof(path)) != NULL) {
         ls(path);
-        mvwchgat(contents, contents_row, contents_col, 5, A_BLINK, 0, NULL);
+        mvwchgat(contents, workspace_contents_row, workspace_contents_col, 5, A_BLINK, 0, NULL);
     }
     wrefresh(contents);
 }

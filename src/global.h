@@ -82,6 +82,8 @@ extern int unsaved_caution_flag;
 // manual.c
 extern enum ManualPage manual_page_focus;
 
+extern int workspace_contents_row;
+extern int workspace_contents_col;
 #endif
 
 /* MACRO FUNCTIONS */
