@@ -23,6 +23,8 @@ int file_tab_cnt;
 int file_tab_focus;
 int contents_row;
 int contents_col;
+int workspace_contents_row;
+int workspace_contents_col;
 
 FileStatus* head;
 
@@ -44,6 +46,7 @@ void file_tab_transition() {
     // todo : show FILE_TAB
     opened_workspace_tab_print();
     workspace_contents_print();
+
 }
 
 void file_open_update() {
@@ -170,7 +173,6 @@ void ls( char *path) {
     contents_row = 1;
 
     head=NULL;
-	contents=newwin(LINES - 4, COLS, 2, 0);
     start_color();
     init_pair(2, COLOR_RED, COLOR_BLACK);
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
@@ -261,10 +263,11 @@ void lsR(char *path) {
 
 void workspace_contents_print() {
 	char path[256];
-    int contents_row = 1, contents_col = 1; // 파일 선택을 위한 커서
+    workspace_contents_row=1;
+    workspace_contents_col=1; // 파일 선택을 위한 커서
     if (getcwd(path, sizeof(path)) != NULL) {
         ls(path);
-        mvwchgat(contents, contents_row, contents_col, 5, A_BLINK, 0, NULL);
+        mvwchgat(contents, workspace_contents_row, workspace_contents_col, 5, A_BLINK, 0, NULL);
     }
     wrefresh(contents);
 }
