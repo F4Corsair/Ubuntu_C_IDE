@@ -73,7 +73,7 @@ int find_most_previous_file() {
 	while (1) {
 		cur = cur->next;
 		index++;
-        if (cur->next == opened_file_info->head)
+        if (cur->next == NULL)
             break;
 	}
 
@@ -89,7 +89,6 @@ void contents_window_restore() {
 		code_contents_print();
 	}
 	else if (menu_tab_focus == FILE_TAB) {
-		// todo : add function : file.c에서 만든 사용자 정의 함수
 		opened_workspace_tab_print();
 		workspace_contents_print();
 	}
@@ -120,7 +119,7 @@ void file_open(char *file_name, int new_file_input) {
 		// new_file_input = getch();
 		if (new_file_input == 'y' || new_file_input == 'Y') {
 			// todo : index 지정 정확하게 하기
-            		del_opened_file_tab(MAX_FILE_TAB_CNT -1);
+            del_opened_file_tab(MAX_FILE_TAB_CNT);
 			new_opened_file_tab(file_name, path);
 		}
 		else // todo : make new contents restore code
@@ -136,6 +135,7 @@ void print_path(WINDOW *path_win, const char *path) {
     wattroff(path_win, A_UNDERLINE);
     wrefresh(path_win);
 }
+
 void initialize_colors() {
     start_color(); // 색상 사용을 위해 초기화
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
@@ -167,7 +167,8 @@ void opened_workspace_tab_print() {
 
     attroff(COLOR_PAIR(1));
 }
-void ls( char *path) {
+
+void ls(char *path) {
     contents_col = 1;
     contents_row = 1;
 
@@ -260,8 +261,6 @@ void lsR(char *path) {
 
     closedir(dir_ptr);
 }
-
-
 
 void workspace_contents_print() {
 	char path[256];
