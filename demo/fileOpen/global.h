@@ -5,30 +5,20 @@
 #include <curses.h>
 #include <time.h>
 
+/* MACRO CONSTANT */
+// flag offset
+#define WINSIZE_CHANGED 0x0
+#define WAIT_ANY_INPUT 0x1
+
 /* STRUCT */
-
-typedef struct _code_line { // doubly linked list
-    char *line;
-    int len;
-    struct _code_line *prev, *next;
-} CodeLine;
-
-typedef struct _code_buf {
-    int tail_row;
-    CodeLine *head, *tail, *cur;
-    int end_with_new_line;
-} CodeBuf;
 
 typedef struct _file_status{
 	char file_name[256];
 	char full_path[256];
     int fd;
-    int buf_cnt;
     int row, col;
-    int start_row, start_col; // CodeBuf->cur <= start_row
     int modified; // 0 : unmodified  1 : tmp saved  2 : modified
     time_t last_saved;
-    CodeBuf *buf;
     struct _file_status *next;
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
 
@@ -48,13 +38,6 @@ enum MenuTab {
     WINSIZE_TAB
 };
 
-enum ManualPage {
-    INTRO_MAN,
-    CODE_MAN,
-    FILE_MAN,
-    BUILD_MAN
-};
-
 /* GLOBAL VARIABLES */
 
 // global.c
@@ -66,21 +49,12 @@ extern enum MenuTab menu_tab_focus_backup[2];
 extern int win_row;
 extern int win_col;
 
-// uibase.c
+// uibase.h
 extern OpenFileInfo *opened_file_info;
 
 extern WINDOW *opened_file_tab;
 extern WINDOW *menu_tab;
 extern WINDOW *contents;
-
-//fileTab.c
-extern FileStatus* head;
-
-// openedFileTab.c
-extern int unsaved_caution_flag;
-
-// manual.c
-extern enum ManualPage manual_page_focus;
 
 #endif
 

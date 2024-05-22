@@ -1,106 +1,118 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 #include <curses.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "global.h"
+#include "code.h"
+#include "winsize.h"
+#include "openedFileTab.h"
 #include "file.h"
 #include "uibase.h"
-#include "ls.h"
-
-int max_file_tab; // 현재 창 크기에 따라 결정됨
-int file_tab_cnt;
-int file_tab_focus;
 
 void file_tab_transition() {
-    if (menu_tab_focus == FILE_TAB)
+    if(menu_tab_focus == FILE_TAB)
         return;
 
     erase();
     refresh();
+
     menu_tab_focus = FILE_TAB;
     menu_tab_update();
     wrefresh(menu_tab);
 
-    initialize_colors();
-
-    max_file_tab = 5;
-    file_tab_cnt = 0;
-    file_tab_focus = -1;
-
-    file_contents = newwin(LINES - 4, COLS, 2, 0);
-    file_path = newwin(1, COLS, 1, 0);
-    file_tab = newwin(1, COLS, 0, 0);
-
-    wattron(file_tab, A_UNDERLINE);
-    mvwprintw(file_tab, 0, 0, "WorkSpace1    ");
-    wattroff(file_tab, A_UNDERLINE);
-    mvwprintw(file_tab, 0, KEY_NAME_WIDTH - 1, "/");
-    wrefresh(file_tab);
-
-    char current_path[256];
-    if (getcwd(current_path, sizeof(current_path)) != NULL) {
-        print_path(file_path, current_path);
-        print_contents(file_contents, current_path);
-    }
-
-    attroff(COLOR_PAIR(1));
+    // todo : show FILE_TAB
+    opened_workspace_tab_print();
+    workspace_contents_print();
 }
 
+void file_open_update() {
+	winsize_calculate();
+	wclear(contents);
 
-
-void initialize_colors() {
-    start_color(); // 색상 사용을 위해 초기화
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-    attron(COLOR_PAIR(1));
-    refresh();
+	int row_pos = win_row / 2 - 2;
+   	mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Code file tab is full!");
+	mvwaddstr(contents, row_pos++, win_col / 2 - 15, "Do you really want to open the file?");
+    int col_pos = win_col / 2 - 3;
+    	mvwaddch(contents, row_pos, col_pos++, '[');
+    	wattron(contents, A_UNDERLINE);
+    	mvwaddch(contents, row_pos, col_pos++, 'Y');
+    	wattroff(contents, A_UNDERLINE);
+    	mvwaddstr(contents, row_pos, col_pos, "es]");
 }
 
-void print_path(WINDOW *path_win, const char *path) {
-    int width = COLS - 2; // 테두리를 위한 공간 확보
-    wattron(path_win, A_UNDERLINE);
-    mvwprintw(path_win, 0, 0, "Path:");
-    mvwprintw(path_win, 0, 5, " %-*s", width, path); // "Path: " 공간 확보
-    wattroff(path_win, A_UNDERLINE);
-    wrefresh(path_win);
+int find_most_previous_file() {
+	FileStatus *cur = opened_file_info->head;
+    FileStatus *most_previous_file = NULL;
+
+	// head가 가리키는 node의 prev node가 가장 나중에 만들어진 node
+	int index = 0;
+	do {
+		most_previous_file = cur;
+		cur = cur->next;
+		index++;
+	} while (cur->next != opened_file_info->head);
+
+	return index;
 }
 
-void print_contents(WINDOW *contents_win, const char *path) {
-    FileStatus work_space_file;
-    int contents_row = 1, contents_col = 1; // 파일 선택을 위한 커서
-    if (getcwd(work_space_file.full_path, sizeof(work_space_file.full_path)) != NULL) {
-        ls(contents_win, work_space_file.full_path);
-        mvwchgat(contents_win, contents_row, contents_col, 5, A_BLINK, 0, NULL);
-    }
-    wrefresh(contents_win);
+void contents_window_restore() {
+	enum MenuTab focus;
+	wclear(contents);
+
+	if (menu_tab_focus == CODE_TAB) {
+		opened_file_tab_print();
+		code_contents_print();
+	}
+	else if (menu_tab_focus == FILE_TAB) {
+		// todo : add function : file.c에서 만든 사용자 정의 함수
+		opened_workspace_tab_print();
+		workspace_contents_print();
+	}
 }
 
+void file_open(char *file_name, int new_file_input) {
+	// int new_file_input;
+	char path[256];
 
-void pathContents() {
-    file_contents = newwin(LINES - 4, COLS, 2, 0);
-    file_path = newwin(1, COLS, 1, 0);
+	// full_path
+	if (getcwd(path, 256) == NULL) {
+		perror("getcwd");
+		exit(1);
+	}
+	strcat(path, "/");
+	strcat(path, file_name);
+	
+	// file existence check - exception handling
+	if (access(path, F_OK) != 0) {
+		perror("file does not exist");
+		exit(1);
+	}
+
+	// to do : input control
+	if (new_opened_file_tab(file_name, path) == -1) {
+		file_open_update();
+		
+		// new_file_input = getch();
+		if (new_file_input == 'y' || new_file_input == 'Y') {
+			// todo : index 지정 정확하게 하기
+			del_opened_file_tab(find_most_previous_file());
+			new_opened_file_tab(file_name, path);
+			opened_file_tab_print();
+			code_contents_print();
+		}
+		else // todo : make new contents restore code
+			contents_window_restore();
+	}
+}	
+
+// 영준이 todo
+void opened_workspace_tab_print() {
+
 }
 
-void newFileTab(WINDOW *file_tab) {
-    int start_pos = 0;
-    char file_name[FILE_TAB_WIDTH];
+void workspace_contents_print() {
 
-    if (file_tab_cnt >= max_file_tab) {
-        // TODO: 정책에 따라 탭 삭제
-    } else {
-        file_tab_cnt++;
-    }
-
-    // 시작 위치 계산
-    start_pos = KEY_NAME_WIDTH + FILE_TAB_WIDTH * (file_tab_cnt - 1);
-
-    // 탭 출력
-    snprintf(file_name, sizeof(file_name), "WorkSpace%d", file_tab_cnt + 1);
-    mvwprintw(file_tab, 0, start_pos, "\\");
-    wattron(file_tab, A_UNDERLINE);
-    mvwprintw(file_tab, 0, start_pos + 1, "%-*s", FILE_TAB_WIDTH - 2, file_name);
-    wattroff(file_tab, A_UNDERLINE);
-    mvwprintw(file_tab, 0, start_pos + FILE_TAB_WIDTH - 1, "/");
-
-    wrefresh(file_tab);
 }

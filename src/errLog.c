@@ -7,7 +7,7 @@
 #include "errLog.h"
 
 void start_logging() {
-    int log_fd = open(LOG_FILE_NAME, O_CREAT | O_WRONLY | O_TRUNC);
+    int log_fd = open(LOG_FILE_NAME, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU | S_IRWXG | S_IRWXO);
     dup2(log_fd, 2);
     close(log_fd);
 }

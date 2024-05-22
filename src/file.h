@@ -1,22 +1,14 @@
 #ifndef __FILE_TAB
 #define __FILE_TAB
 
-#define KEY_NAME_WIDTH 14
-#define FILE_TAB_WIDTH 15
-
 #include "global.h"
 
 void file_tab_transition();
-void newFileTab(WINDOW *file_tab);
-void printPath(WINDOW *path_win, char *path);
-
-WINDOW *file_contents;
-WINDOW *file_path;
-WINDOW *file_tab;
-//WINDOW *file_menu_tab;
-
-int max_file_tab; // cur window size determine this
-int file_tab_cnt;
-int file_tab_focus;
+void file_open_update();
+int find_most_previous_file();
+void contents_window_restore();
+void file_open(char *file_name, int new_file_input);
+void opened_workspace_tab_print();
+void workspace_contents_print();
 
 #endif

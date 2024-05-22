@@ -75,14 +75,11 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     FileStatus *node = malloc(sizeof(FileStatus));
     strcpy(node->file_name, file_name);
     strcpy(node->full_path, full_path);
-    node->row = node->col = node->modified = 0;
+    node->row = node->col = node->modified = node->start_row = node->start_col = 0;
     node->last_saved = time(NULL);
 
     // update opened_file_info
-    if(opened_file_info->cnt == 0) {
-        opened_file_info->focus = node;
-        opened_file_info->focus_strlen = strlen(file_name);
-    }
+    opened_file_info->focus = node;
     node->next = opened_file_info->head;
     opened_file_info->head = node;
     opened_file_info->cnt++;
@@ -140,7 +137,6 @@ void del_opened_file_tab(int idx) {
     if(focus_flag == 1) {
         if(opened_file_info->cnt > 0) {
             opened_file_info->focus = opened_file_info->head;
-            opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
         } else {
             opened_file_info->focus = NULL;
         }
