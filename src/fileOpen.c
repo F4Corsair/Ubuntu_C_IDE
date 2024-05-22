@@ -26,6 +26,21 @@ void file_open_update() {
     	mvwaddstr(contents, row_pos, col_pos, "es]");
 }
 
+int find_most_previous_file() {
+	FileStatus *cur = opened_file_info->head;
+    FileStatus *most_previous_file = NULL;
+
+	// head가 가리키는 node의 prev node가 가장 나중에 만들어진 node
+	int index = 0;
+	do {
+		most_previous_file = cur;
+		cur = cur->next;
+		index++;
+	} while (cur->next != opened_file_info->head);
+
+	return index;
+}
+
 void file_open(char *file_name, int new_file_input) {
 	// int new_file_input;
 	char path[256];
@@ -51,7 +66,7 @@ void file_open(char *file_name, int new_file_input) {
 		// new_file_input = getch();
 		if (new_file_input == 'y' || new_file_input == 'Y') {
 			// todo : index 지정 정확하게 하기
-			del_opened_file_tab(8);
+			del_opened_file_tab(find_most_previous_file());
 			new_opened_file_tab(file_name, path);
 			opened_file_focus_prev();
 			opened_file_tab_print();
