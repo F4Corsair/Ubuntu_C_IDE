@@ -80,9 +80,6 @@ int new_opened_file_tab(char *file_name, char *full_path) {
 
     // update opened_file_info
     opened_file_info->focus = node;
-    if(opened_file_info->cnt == 0) {
-        opened_file_info->focus_strlen = strlen(file_name);
-    }
     node->next = opened_file_info->head;
     opened_file_info->head = node;
     opened_file_info->cnt++;
@@ -140,7 +137,6 @@ void del_opened_file_tab(int idx) {
     if(focus_flag == 1) {
         if(opened_file_info->cnt > 0) {
             opened_file_info->focus = opened_file_info->head;
-            opened_file_info->focus_strlen = strlen(opened_file_info->head->file_name);
         } else {
             opened_file_info->focus = NULL;
         }
