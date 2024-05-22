@@ -222,6 +222,28 @@ int input_control(int input_char) {
         switch (menu_tab_focus)
         {
         case FILE_TAB:
+            if(input_char == KEY_DOWN){
+                wchgat(contents, -1, A_NORMAL, 0, NULL);
+		        workspace_contents_row++;
+		        mvwchgat(contents, workspace_contents_row, workspace_contents_col, 10, A_BLINK, 0, NULL);
+		        wrefresh(contents);
+            }
+            else if(input_char == KEY_UP){
+                wchgat(contents, -1, A_NORMAL, 0, NULL);
+		        workspace_contents_row--;
+		        mvwchgat(contents, workspace_contents_row, workspace_contents_col, 10, A_BLINK, 0, NULL);
+		        wrefresh(contents);
+            }
+            else if(input_char== 'c'){  //code로 이동
+                FileStatus* cur;
+                cur=head;
+                for(int i=0;i<workspace_contents_row-1;i++){
+                    cur=cur->next;
+                }
+                file_open(cur->file_name, 'y');
+                
+            }
+
             break;
         case BUILD_TAB:
             break;
