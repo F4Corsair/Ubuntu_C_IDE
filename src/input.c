@@ -220,8 +220,29 @@ int input_control(int input_char) {
             opened_file_tab_print();
             code_contents_print();
             break;
+        case 0x106: // HOME
+            focus->col = focus->start_col = 0;
+            code_contents_print();
+            break;
+        case 0x168: // END
+            while(code_next_col_exists() != -1) {
+                focus->col++;
+                if(focus->start_col - focus->col >= win_col) {
+                    focus->start_col++;
+                }
+            }
+            code_contents_print();
+            break;
+        case 0x7f: // DEL
+        case 0x14a: // KEY_DC
+            break;
+        case 0x107: // backspace
+            break;
         default:
-            // input char handling
+            // print character
+            if(input_char >= 0x20 && input_char <= 0x7e) {
+
+            }
             break;
         }
     } else {

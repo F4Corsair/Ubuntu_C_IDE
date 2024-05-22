@@ -264,6 +264,10 @@ int code_next_col_exists() {
 }
 
 int get_cur_code_line_len() {
+    return get_cur_code_line()->len;
+}
+
+CodeLine *get_cur_code_line() {
     FileStatus *focus = opened_file_info->focus;
     int diff = focus->row - focus->start_row;
     CodeLine *cur_line = focus->buf->cur;
@@ -274,5 +278,5 @@ int get_cur_code_line_len() {
         }
     }
 
-    return cur_line->len;
+    return cur_line;
 }
