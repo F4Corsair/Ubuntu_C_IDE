@@ -112,6 +112,8 @@ void code_buf_initialize(FileStatus *status) {
         read_buf[read_len] = '\0'; // just in case (prevent error)
         parse_buf(status->buf, read_buf, read_len);
     }
+
+    close(status->fd);
 }
 
 void parse_buf(CodeBuf *code_buf ,char *buf, int read_len) {
@@ -225,7 +227,7 @@ CodeLine* code_line_append(char *start, char *end) {
 
 void file_status_close(FileStatus *ptr) {
     if(ptr->fd != -1) {
-        close(ptr->fd);
+        // close(ptr->fd);
         code_buf_close(ptr->buf);
     }
     free(ptr);
