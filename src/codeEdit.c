@@ -8,7 +8,6 @@
 void code_edit_backspace() {
     FileStatus *status = opened_file_info->focus;
     CodeLine *cur_line = get_cur_code_line();
-    int cur_col = status->col;
     int tail_flag = 0;
 
     if(cur_line == NULL) {
@@ -65,6 +64,8 @@ void code_edit_backspace() {
 
         // adjust cursor position
         status->row--;
+        status->buf->tail_row--;
+        
         if(status->start_row > status->row) {
             status->start_row--;
             CodeLine *ptr = status->buf->cur;
@@ -85,15 +86,25 @@ void code_edit_backspace() {
             free(cur_line);
         }
     } else {
-        // erase char in a line
-        char *mid = &(cur_line->line[status->row]);
-        cur_line->line[status->row] = '\0';
-        strcat(cur_line->line, mid + 1);
-        cur_line->len = strlen(cur_line->line);
+        if(status->col >= cur_line->len) {
+            cur_line->line[status->col - 1] = '\0';
+            cur_line->len = strlen(cur_line->line);
 
-        status->col--;
-        if(status->start_col > status->col) {
-            status->start_col--;
+            status->col--;
+            if(status->start_col > status->col) {
+                status->start_col--;
+            }
+        } else {
+            // erase char in a line
+            char *mid = &(cur_line->line[status->col]);
+            cur_line->line[status->col] = '\0';
+            strcat(cur_line->line, mid + 1);
+            cur_line->len = strlen(cur_line->line);
+
+            status->col--;
+            if(status->start_col > status->col) {
+                status->start_col--;
+            }
         }
     }
 }

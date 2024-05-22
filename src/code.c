@@ -257,7 +257,7 @@ int code_next_row_exists() {
 int code_next_col_exists() {
     FileStatus *focus = opened_file_info->focus;
 
-    if(get_cur_code_line_len() - 1 > focus->col)
+    if(get_cur_code_line_len() > focus->col)
         return 0;
     else
         return -1;
