@@ -165,7 +165,7 @@ void opened_workspace_tab_print() {
 
     char current_path[256];
     if (getcwd(current_path, sizeof(current_path)) != NULL) {
-        print_path(workspace_path, current_path);
+        print_path(contents, current_path);
     }
 
     attroff(COLOR_PAIR(1));
@@ -179,11 +179,13 @@ void ls( char *path) {
     init_pair(2, COLOR_RED, COLOR_BLACK);
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
     lsR(path);
+    /*
     FileStatus *cur;
         cur=head;
         for(;cur;cur=cur->next){
             mvwprintw(contents,contents_row++,contents_col,"%s %s",cur->file_name,cur->full_path);
         }
+    */
     wrefresh(contents);
 }
 
@@ -234,6 +236,7 @@ void lsR(char *path) {
         struct stat info;
         if (stat(full_path, &info) == -1)
             continue;
+        if(contents_row<LINES-5)
         if (S_ISDIR(info.st_mode)) {
             wattron(contents, COLOR_PAIR(2));
             mvwprintw(contents, contents_row,contents_col, "v ");
