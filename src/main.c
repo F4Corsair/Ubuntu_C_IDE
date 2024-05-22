@@ -10,8 +10,6 @@
 #include "errLog.h"
 #include "code.h" // for TEST
 
-#define DEBUG_INPUT // turn on debug mode
-
 int main(int argc, char **argv) {
 	int input_char;
 
@@ -28,9 +26,6 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
-	new_opened_file_tab("save_test.log", "save_test.log");
-
-	opened_file_info->focus->modified = 1; // force modified for debug
 
 	while(1) {
 		input_char = getch();

@@ -48,6 +48,9 @@ int input_control(int input_char) {
 
     if(menu_tab_focus == CODE_TAB) { // code tab requires numerous input - so check it first
         FileStatus *focus = opened_file_info->focus;
+        if(focus == NULL) {
+            return 0;
+        }
         if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
             idx = unsaved_caution_flag - 1;
             if(input_char == 's' || input_char == 'S') {
@@ -91,14 +94,12 @@ int input_control(int input_char) {
             case 0x227: // ctrl + PGDN : move opened file tab focus down
                 opened_file_focus_next();
                 opened_file_tab_print();
-                // todo : tmp save
                 code_contents_print();
                 break;
             case 0x22b:
             case 0x22c: // ctrl + PGUP : move opened file tab foucs up
                 opened_file_focus_prev();
                 opened_file_tab_print();
-                // todo : tmp save
                 code_contents_print();
                 break;
             }

@@ -218,9 +218,6 @@ CodeLine* code_line_append(char *start, char *end) {
     code_line->line[len] = '\0';
     code_line->len = len;
 
-    // for debug
-    // fprintf(stderr, "line : %s\n", code_line->line);
-
     return code_line;
 }
 
