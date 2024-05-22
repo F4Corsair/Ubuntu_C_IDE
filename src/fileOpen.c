@@ -3,10 +3,11 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
+#include <curses.h>
 
 #include "global.h"
 #include "code.h"
+#include "file.h"
 #include "openedFileTab.h"
 #include "uibase.h"
 #include "winsize.h"
@@ -41,6 +42,21 @@ int find_most_previous_file() {
 	return index;
 }
 
+void contents_tab_restore() {
+	enum MenuTab focus;
+	wclear(contents);
+
+	if (menu_tab_focus == CODE_TAB) {
+		opened_file_tab_print();
+		code_contents_print();
+	}
+	else if (menu_tab_focus == FILE_TAB) {
+		// todo : add function : file.c에서 만든 사용자 정의 함수
+		opened_workspace_tab_print();
+		workspace_contents_print();
+	}
+}
+
 void file_open(char *file_name, int new_file_input) {
 	// int new_file_input;
 	char path[256];
@@ -68,13 +84,10 @@ void file_open(char *file_name, int new_file_input) {
 			// todo : index 지정 정확하게 하기
 			del_opened_file_tab(find_most_previous_file());
 			new_opened_file_tab(file_name, path);
-			opened_file_focus_prev();
 			opened_file_tab_print();
 			code_contents_print();
 		}
-		else {
-			// todo : make new contents restore code
-			tab_restore();
-		}
+		else // todo : make new contents restore code
+			contents_tab_restore();
 	}
 }	
