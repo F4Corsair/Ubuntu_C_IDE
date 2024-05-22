@@ -2,6 +2,14 @@
 #define __FILE_TAB
 
 #include "global.h"
+#include "code.h"
+#include "winsize.h"
+#include "openedFileTab.h"
+#include "file.h"
+#include "uibase.h"
+
+#define KEY_NAME_WIDTH 14
+#define FILE_TAB_WIDTH 15
 
 void file_tab_transition();
 void file_open_update();
