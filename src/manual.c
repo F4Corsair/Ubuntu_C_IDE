@@ -67,15 +67,15 @@ void manual_page_print() {
 
         break;
     case FILE_MAN:
-        mvwprintw(contents, 0, 0, "File Tab Manual");
-        mvwprintw(contents, 1, 0, "This program can read ASCII characters only - be careful when you select file to open");
+        mvwprintw(contents, 0, 0, "Notice : This program can read ASCII characters only - be careful when you select file to open");
         break;
     case CODE_MAN:
         mvwprintw(contents, 0, 0, "You can handle Opened File Tab (You need to open file from File Tab)");
         mvwprintw(contents, 1, 0, "Change file tab focus : Ctrl + PGDN / Ctrl + PGUP");
         mvwprintw(contents, 2, 0, "Delete focused file tab : Ctrl + w");
         mvwprintw(contents, 3, 0, "If file unsaved, program will ask how to handle it : press underlined character");
-        mvwprintw(contents, 5, 0, "You can move file cursor using Arrow & PageUp & PageDown key");
+        mvwprintw(contents, 4, 0, "Save current file : Ctrl + s");
+        mvwprintw(contents, 6, 0, "You can move file cursor using Arrow & PageUp & PageDown key");
         break;
     case BUILD_MAN:
         mvwprintw(contents, 0, 0, "Build Tab Manual");
