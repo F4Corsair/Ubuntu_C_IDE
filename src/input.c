@@ -228,18 +228,22 @@ int input_control(int input_char) {
             code_edit_backspace();
             opened_file_tab_print();
             code_contents_print();
+            // focus->modified = 1;
             break;
         case 0x107: // backspace
-        // add revised
             code_edit_backspace();
             opened_file_tab_print();
             code_contents_print();
+            // focus->modified = 1;
             break;
         default:
             // print character
             if(input_char >= 0x20 && input_char <= 0x7e) {
-            // todo : handle enter out of here (not default!!!)
+
+            } else if (input_char == 0xa) { // enter
+
             }
+            // focus->modified = 1;
             break;
         }
     } else {
