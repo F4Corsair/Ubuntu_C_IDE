@@ -48,11 +48,15 @@ void _file_save(FileStatus *status) {
 
     // save file - overwrite original file
     CodeLine *ptr = status->buf->head;
-    while (ptr != NULL)
-    {
-        write(fd, ptr->line, ptr->len);
-        write(fd, "\n", 1);
-        ptr = ptr->next;
+
+    if(ptr != NULL) {
+        while (1) {
+            write(fd, ptr->line, ptr->len);
+            if(ptr->next == NULL)
+                break;
+            write(fd, "\n", 1);
+            ptr = ptr->next;
+        }
     }
 
     // make file unmodified

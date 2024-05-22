@@ -52,8 +52,10 @@ int input_control(int input_char) {
             idx = unsaved_caution_flag - 1;
             if(input_char == 's' || input_char == 'S') {
                 // save & del & refresh
-                // save_file(idx);
-                // del_opened_file_tab(idx);
+                file_save_focus();
+                del_opened_file_tab(idx);
+                opened_file_tab_print();
+                code_contents_print();
             } else if(input_char == 'c' || input_char == 'C') {
                 // don't save & del
                 // find file
