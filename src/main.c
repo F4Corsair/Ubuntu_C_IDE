@@ -29,11 +29,6 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
 
-	// opened_file_info->head->modified = 1;
-
-	// close_unsaved_caution(1);
-
-
 	while(1) {
 		input_char = getch();
 		if(input_control(input_char) == -1)
