@@ -243,7 +243,7 @@ int input_control(int input_char) {
                 }
                 
                 if(has_extension(cur->file_name,".c") || has_extension(cur->file_name,".h")||has_extension(cur->file_name,".log")||has_extension(cur->file_name,".txt")){
-                    file_open(cur->file_name, 'y');
+                    file_open(cur->file_name);
                     code_tab_transition();
                     wchgat(contents, -1, A_NORMAL, 0, NULL);
                 }

@@ -99,7 +99,7 @@ void contents_window_restore() {
 	}
 }
 
-void file_open(char *file_name, int new_file_input) {
+void file_open(char *file_name) {
 	// int new_file_input;
 	char path[256];
 
@@ -382,7 +382,7 @@ void workspace_key_up(){
             wmove(contents, row, 0); // 줄의 시작으로 이동
             wclrtoeol(contents);
             if (cur != NULL) {
-                mvwprintw(contents, row, 1, cur->file_name);
+                mvwprintw(contents, row, 1, "%s", cur->file_name);
                 cur = cur->next;
             }
         }
