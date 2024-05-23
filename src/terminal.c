@@ -16,4 +16,7 @@ void terminal_tab_transition() {
     wrefresh(menu_tab);
 
     // todo : show TERMINAL_TAB
+    wclear(contents);
+    mvwprintw(contents, (win_row - 3)/ 2, win_col / 2 - 12, "[Terminal Tab is in dev]");
+    wrefresh(contents);
 }

@@ -12,6 +12,7 @@
 #include "quit.h"
 #include "winsize.h"
 #include "fileSave.h"
+#include "codeEdit.h"
 
 
 int input_control(int input_char) {
@@ -36,7 +37,7 @@ int input_control(int input_char) {
     case CTRL('t'):
         terminal_tab_transition();
         return 0;
-    case 0xa: // to recognize CTRL_M
+    case 0x8:
         manual_tab_transition();
         return 0;
     case CTRL('q'):
@@ -52,29 +53,19 @@ int input_control(int input_char) {
             return 0;
         }
         if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
-            idx = unsaved_caution_flag - 1;
+            // idx = opened_file_focus_idx_find();
             if(input_char == 's' || input_char == 'S') {
                 // save & del & refresh
                 file_save_focus();
-                del_opened_file_tab(idx);
+                del_opend_file_tab_fileStatus(opened_file_info->focus);
                 opened_file_tab_print();
                 code_contents_print();
             } else if(input_char == 'c' || input_char == 'C') {
                 // don't save & del
-                // find file
-                FileStatus *ptr = opened_file_info->head;
-                while (idx > 0)
-                {
-                    if(ptr == NULL) {
-                        perror("close unsaved file : out of index");
-                        unsaved_caution_flag = 0;
-                        return 0;
-                    }
-                    ptr = ptr->next;
-                    idx--;
-                }
-                ptr->modified = 0; // force status change as unmodified(saved)
-                del_opened_file_tab(idx);
+                opened_file_info->focus->modified = 0; // force status change as unmodified(saved)
+                del_opend_file_tab_fileStatus(opened_file_info->focus);
+                opened_file_tab_print();
+                code_contents_print();
             } else {
                 opened_file_tab_print();
                 code_contents_print();
@@ -85,9 +76,12 @@ int input_control(int input_char) {
             switch (input_char)
             {
             case CTRL('w'):
-                idx = opened_file_focus_idx_find();
-                if(idx != -1) {
-                    del_opened_file_tab(idx);
+                if(opened_file_info->focus != NULL) {
+                    del_opend_file_tab_fileStatus(opened_file_info->focus);
+                    if(unsaved_caution_flag == 0) {
+                        opened_file_tab_print();
+                        code_contents_print();
+                    }
                 }
                 break;
             case 0x226:
@@ -108,9 +102,12 @@ int input_control(int input_char) {
         switch (input_char)
         {
         case CTRL('w'):
-            idx = opened_file_focus_idx_find();
-            if(idx != -1) {
-                del_opened_file_tab(idx);
+            if(opened_file_info->focus != NULL) {
+                del_opend_file_tab_fileStatus(opened_file_info->focus);
+                if(unsaved_caution_flag == 0) {
+                    opened_file_tab_print();
+                    code_contents_print();
+                }
             }
             break;
         case 0x226:
@@ -165,7 +162,7 @@ int input_control(int input_char) {
                         focus->col = col_max_len;
                 }
                 code_contents_print();   
-            }            
+            }
             break;
         case 0x104: // left arrow
             if(focus->col > 0) {
@@ -174,6 +171,9 @@ int input_control(int input_char) {
                     focus->start_col--;
                 }
                 code_contents_print();
+            } else if (focus->row > 0) {
+                input_control(0x103);
+                input_control(0x168);
             }
             break;
         case 0x105: // right arrow
@@ -183,36 +183,19 @@ int input_control(int input_char) {
                     focus->start_col++;
                 }
                 code_contents_print();
+            } else if(code_next_row_exists() != -1) {
+                input_control(0x102);
+                input_control(0x106);
             }
             break;
         case 0x152: // PGDN
             for(int i = 0; i < win_row - 3; i++) {
-                if(code_next_row_exists() != -1) {
-                    focus->row++;
-                    if(focus->row - focus->start_row >= win_row - 3) {
-                        focus->start_row++;
-                        CodeLine *ptr = focus->buf->cur;
-                        if(ptr->next != NULL) {
-                            focus->buf->cur = ptr->next;
-                        }
-                    }
-                    code_contents_print();
-                }
+                input_control(0x102);
             }
             break;
         case 0x153: // PGUP
             for(int i = 0; i < win_row - 3; i++) {
-                if(focus->row > 0) {
-                    focus->row--;
-                    if(focus->start_row > focus->row) {
-                        focus->start_row--;
-                        CodeLine *ptr = focus->buf->cur;
-                        if(ptr->prev != NULL) {
-                            focus->buf->cur = ptr->prev;
-                        }
-                    }
-                    code_contents_print();   
-                }  
+                input_control(0x103);
             }
             break;
         case 0x13: // ctrl + s
@@ -220,8 +203,49 @@ int input_control(int input_char) {
             opened_file_tab_print();
             code_contents_print();
             break;
+        case 0x106: // HOME
+            focus->col = focus->start_col = 0;
+            code_contents_print();
+            break;
+        case 0x168: // END
+            while(code_next_col_exists() != -1) {
+                focus->col++;
+                if(focus->start_col - focus->col >= win_col) {
+                    focus->start_col++;
+                }
+            }
+            code_contents_print();
+            break;
+        case 0x7f: // DEL
+        case 0x14a: // KEY_DC
+            // move cursor to next
+            input_control(0x105);
+            // erase
+            code_edit_backspace();
+            focus->modified = 1;
+            opened_file_tab_print();
+            code_contents_print();
+            break;
+        case 0x107: // backspace
+            code_edit_backspace();
+            focus->modified = 1;
+            opened_file_tab_print();
+            code_contents_print();
+            break;
         default:
-            // input char handling
+            // print character
+            if(input_char >= 0x20 && input_char <= 0x7e) {
+                code_edit_char_append(input_char);
+                focus->modified = 1;
+                opened_file_tab_print();
+                code_contents_print();
+            } else if (input_char == 0xa) { // enter
+                // Issue : curses recognize ctrl + j as same as enter key input
+                code_edit_append_new_line();
+                focus->modified = 1;
+                opened_file_tab_print();
+                code_contents_print();
+            }
             break;
         }
     } else {

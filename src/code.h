@@ -14,5 +14,6 @@ void code_buf_close(CodeBuf *buf);
 int code_next_row_exists();
 int code_next_col_exists();
 int get_cur_code_line_len();
+CodeLine *get_cur_code_line();
 
 #endif
