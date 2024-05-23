@@ -313,7 +313,7 @@ void workspace_contents_print() {
         ls(path);
         wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
         wclrtoeol(contents);
-        mvwprintw(contents,workspace_contents_row,workspace_contents_col,contents_head->file_name);
+        mvwprintw(contents,workspace_contents_row,workspace_contents_col, "%s", contents_head->file_name);
         mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(contents_head->file_name), A_BLINK, 0, NULL);
     }
     wrefresh(contents);
@@ -338,7 +338,7 @@ void workspace_key_down(){
                 wmove(contents, row, 0); // 줄의 시작으로 이동
                 wclrtoeol(contents);
                 if (cur != NULL) {
-                    mvwprintw(contents, row, 1, cur->file_name);
+                    mvwprintw(contents, row, 1, "%s", cur->file_name);
                     cur = cur->next;
                 } else {
                     workspace_file_finish = -1;
@@ -361,7 +361,7 @@ void workspace_key_down(){
         if (cur != NULL) {
             wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
             wclrtoeol(contents);
-            mvwprintw(contents, workspace_contents_row, workspace_contents_col, cur->file_name);
+            mvwprintw(contents, workspace_contents_row, workspace_contents_col, "%s", cur->file_name);
             mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
             wrefresh(contents);
         }
@@ -399,7 +399,7 @@ void workspace_key_up(){
         if (cur != NULL) {
             wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
             wclrtoeol(contents);
-            mvwprintw(contents, workspace_contents_row, workspace_contents_col, cur->file_name);
+            mvwprintw(contents, workspace_contents_row, workspace_contents_col, "%s", cur->file_name);
             mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
             wrefresh(contents);
         }
