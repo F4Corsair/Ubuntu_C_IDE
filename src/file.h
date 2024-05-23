@@ -20,7 +20,7 @@ void opened_workspace_tab_print();
 void workspace_contents_print();
 void print_path(const char *path);
 void ls( char *path);
-void addToList(char *file_name, char *full_path);
+void addToList(FileStatus **head,char *file_name, char *full_path);
 void lsR(char *path);
 void initialize_colors();
 void workspace_key_down();

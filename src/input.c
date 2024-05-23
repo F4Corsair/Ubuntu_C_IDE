@@ -237,7 +237,7 @@ int input_control(int input_char) {
             }
             else if(input_char== 'c'){  //code로 이동
                 FileStatus* cur;
-                cur=head;
+                cur=contents_head;
                 for(int i=0;i<workspace_contents_row-1;i++){
                     cur=cur->next;
                 }

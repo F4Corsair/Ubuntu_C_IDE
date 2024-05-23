@@ -28,7 +28,8 @@ int workspace_contents_col;
 int workspace_file_focus=0;     //contents win 에서 첫번째 나오는 파일이름이 연결리스트에서 몇번째 파일인지
 int workspace_file_finish=0;
 
-FileStatus* head;
+FileStatus* contents_head;
+FileStatus* filetab_head;
 
 WINDOW* workspace_tab;
 
@@ -70,16 +71,16 @@ void file_open_update(int *input_char) {
 }
 
 /* int find_most_previous_file() {
-	FileStatus *cur = opened_file_info->head;
+	FileStatus *cur = opened_file_info->contents_head;
     FileStatus *most_previous_file = NULL;
 
-	// head가 가리키는 node의 prev node가 가장 나중에 만들어진 node
+	// contents_head가 가리키는 node의 prev node가 가장 나중에 만들어진 node
 	int index = 0;
 	do {
 		most_previous_file = cur;
 		cur = cur->next;
 		index++;
-	} while (cur->next != opened_file_info->head);
+	} while (cur->next != opened_file_info->contents_head);
 
 	return index;
 } */
@@ -179,8 +180,19 @@ void new_file_tab(){
     // print tab
         snprintf(file_name, sizeof(file_name), "WorkSpace%d", file_tab_focus+1);  
         mvwprintw(opened_file_tab, 0, start_pos, "\\");
-        if(file_tab_focus==file_tab_cnt-1)
+        if(file_tab_focus==file_tab_cnt-1){
              wattron(opened_file_tab, A_STANDOUT|A_UNDERLINE);
+             addToList(&filetab_head,".",".");   //fullpath 입력 받아야함
+             werase(contents);
+             FileStatus *cur=filetab_head;
+             for(int i=0;i<file_tab_focus;i++){
+                cur=cur->next;
+             }
+             chdir(cur->full_path);
+             workspace_contents_print();
+            
+        }
+            
         else
             wattron(opened_file_tab, A_UNDERLINE);
         mvwprintw(opened_file_tab, 0, start_pos+1, "%-*s", FILE_TAB_WIDTH - 2, file_name);
@@ -200,14 +212,14 @@ void ls(char *path) {
     contents_col = 1;
     contents_row = 1;
 
-    head=NULL;
+    contents_head=NULL;
     start_color();
     init_pair(2, COLOR_RED, COLOR_BLACK);
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
     lsR(path);
     /*
     FileStatus *cur;
-        cur=head;
+        cur=contents_head;
         for(;cur;cur=cur->next){
             mvwprintw(contents,contents_row++,contents_col,"%s %s",cur->file_name,cur->full_path);
         }
@@ -215,7 +227,7 @@ void ls(char *path) {
     wrefresh(contents);
 }
 
-void addToList(char *file_name, char *full_path) {
+void addToList(FileStatus **head,char *file_name, char *full_path) {
     FileStatus *new_node = (FileStatus*) malloc(sizeof(FileStatus));
    
     if (!new_node) {
@@ -231,10 +243,10 @@ void addToList(char *file_name, char *full_path) {
     //new_node->position = contents_row; // Store the position if necessary
     new_node->next = NULL;
 
-    if (!head) {
-        head = new_node;
+    if (!*head) {
+        *head = new_node;
     } else {
-        FileStatus *current = head;
+        FileStatus *current = *head;
         while (current->next) {
             current = current->next;
         }
@@ -263,7 +275,7 @@ void lsR(char *path) {
         struct stat info;
         if (stat(full_path, &info) == -1)
             continue;
-        addToList(direntp->d_name,full_path);
+        addToList(&contents_head,direntp->d_name,full_path);
         if (S_ISDIR(info.st_mode)) {
             wattron(contents, COLOR_PAIR(2));
             mvwprintw(contents, contents_row,contents_col, "v ");
@@ -301,8 +313,8 @@ void workspace_contents_print() {
         ls(path);
         wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
         wclrtoeol(contents);
-        mvwprintw(contents,workspace_contents_row,workspace_contents_col,head->file_name);
-        mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(head->file_name), A_BLINK, 0, NULL);
+        mvwprintw(contents,workspace_contents_row,workspace_contents_col,contents_head->file_name);
+        mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(contents_head->file_name), A_BLINK, 0, NULL);
     }
     wrefresh(contents);
 }
@@ -311,7 +323,7 @@ void workspace_key_down(){
     if (workspace_contents_row == win_row - 2 && workspace_file_finish != -1) {
         // 화면의 마지막 줄에 도달한 경우
         workspace_file_focus++;
-        FileStatus* cur = head;
+        FileStatus* cur = contents_head;
 
         for (int i = 0; i < workspace_file_focus; i++) {
             if (cur == NULL) {
@@ -342,7 +354,7 @@ void workspace_key_down(){
         if (workspace_contents_row < win_row - 2) {
             workspace_contents_row++;
         }
-        FileStatus* cur = head;
+        FileStatus* cur = contents_head;
         for (int i = 0; i < workspace_contents_row - 1 + workspace_file_focus; i++) {
             cur = cur->next;
         }
@@ -362,7 +374,7 @@ void workspace_key_up(){
         if(workspace_file_finish==-1)
             workspace_file_finish=0;
         workspace_file_focus--;
-        FileStatus* cur = head;
+        FileStatus* cur = contents_head;
         for (int i = 0; i < workspace_file_focus; i++) {
             cur = cur->next;
         }
@@ -380,7 +392,7 @@ void workspace_key_up(){
         // 화면 내에서 이동
         wchgat(contents, -1, A_NORMAL, 0, NULL);
         workspace_contents_row--;
-        FileStatus* cur = head;
+        FileStatus* cur = contents_head;
         for (int i = 0; i < workspace_contents_row - 1 + workspace_file_focus; i++) {
             cur = cur->next;
         }

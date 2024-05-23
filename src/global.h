@@ -38,6 +38,7 @@ typedef struct {
     FileStatus *focus;
 } OpenFileInfo;
 
+
 enum MenuTab {
     CODE_TAB,
     FILE_TAB,
@@ -74,7 +75,8 @@ extern WINDOW *menu_tab;
 extern WINDOW *contents;
 
 //fileTab.c
-extern FileStatus* head;
+extern FileStatus* contents_head;
+extern FileStatus* filetab_head;
 
 extern WINDOW* workspace_tab;
 
