@@ -172,3 +172,105 @@ void code_edit_append_new_line() {
         }
     }
 }
+
+void code_edit_line_swap_up() {
+    FileStatus *status = opened_file_info->focus;
+    CodeLine *cur_line = get_cur_code_line();
+    CodeLine *prev_line = cur_line->prev;
+    
+    if(prev_line == NULL) {
+        return;
+    }
+
+    if(prev_line == status->buf->cur) {
+        status->buf->cur = cur_line;
+    } else if(cur_line == status->buf->cur) {
+        status->buf->cur = prev_line;
+    }
+
+    CodeLine *pprev_line = prev_line->prev;
+    CodeLine *next_line = cur_line->next;
+
+    if(pprev_line == NULL) {
+        // adjust head
+        cur_line->prev = NULL;
+        status->buf->head = cur_line;
+    } else {
+        cur_line->prev = pprev_line;
+        pprev_line->next = cur_line;
+    }
+
+    if(next_line == NULL) {
+        // adjust tail
+        prev_line->next = NULL;
+        status->buf->tail = prev_line;
+    } else {
+        prev_line->next = next_line;
+        next_line->prev = prev_line;
+    }
+
+    // change order between 2 elements
+    cur_line->next = prev_line;
+    prev_line->prev = cur_line;
+
+    // row adjust
+    status->row--;
+    if(status->start_row > status->row) {
+        status->start_row--;
+        CodeLine *ptr = status->buf->cur;
+        if(ptr->prev != NULL) {
+            status->buf->cur = ptr->prev;
+        }
+    }
+}
+
+void code_edit_line_swap_down() {
+    FileStatus *status = opened_file_info->focus;
+    CodeLine *cur_line = get_cur_code_line();
+    CodeLine *next_line = cur_line->next;
+
+    if(next_line == NULL) {
+        return;
+    }
+    
+    if(next_line == status->buf->cur) {
+        status->buf->cur = cur_line;
+    } else if(cur_line == status->buf->cur) {
+        status->buf->cur = next_line;
+    }
+
+    CodeLine *prev_line = cur_line->prev;
+    CodeLine *nnext_line = next_line->next;
+
+    if(prev_line == NULL) {
+        // adjust head
+        next_line->prev = NULL;
+        status->buf->head = next_line;
+    } else {
+        next_line->prev = prev_line;
+        prev_line->next = next_line;
+    }
+
+    if(nnext_line == NULL) {
+        // adjust tail
+        cur_line->next = NULL;
+        status->buf->tail = cur_line;
+    } else {
+        cur_line->next = nnext_line;
+        nnext_line->prev = cur_line;
+    }
+
+    // change order between 2 elements
+    next_line->next = cur_line;
+    cur_line->prev = next_line;
+
+    // row adjust
+    status->row++;
+    if(status->row - status->start_row >= win_row - 3) {
+        status->start_row++;
+        CodeLine *ptr = status->buf->cur;
+        if(ptr->next != NULL) {
+            status->buf->cur = ptr->next;
+        }
+    }
+}
