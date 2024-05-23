@@ -168,12 +168,43 @@ void opened_workspace_tab_print() {
     attroff(COLOR_PAIR(1));
 }
 void new_file_tab(){
-    int start_pos = 0;
+    
+    int start_pos=0;
+    char file_path[256] = {0};
     char file_name[FILE_TAB_WIDTH];
+    int input_row = (win_row - 3) / 2;
+    int input_col = (win_col - 20) / 2;
+
+    mvwprintw(contents, input_row, input_col, "Enter WorkSpace path: ");
+    wrefresh(contents);
+
+    int ch, idx = 0;
+    while ((ch = wgetch(contents)) != '\n') {
+        if (ch == KEY_BACKSPACE || ch == 127) {
+            if (idx > 0) {
+                idx--;
+                file_path[idx] = '\0';
+                mvwaddch(contents, input_row, input_col + strlen("Enter WorkSpace path: ") + idx, ' ');
+                wmove(contents, input_row, input_col + strlen("Enter WorkSpace path: ") + idx);
+            }
+        } else if (idx < sizeof(file_path) - 1) {
+            file_path[idx++] = ch;
+            waddch(contents, ch);
+        }
+        wrefresh(contents);
+    }
+
+    // 입력된 내용 출력
+    werase(contents);
+    mvwprintw(contents, input_row, (win_col - strlen(file_path)) / 2, "You entered: %s", file_path);
+    wrefresh(contents);
+    
     if(file_tab_cnt >= max_file_tab) {
         // todo : delete tab by policy
     } else
         file_tab_cnt++;
+    
+    
     for(file_tab_focus=0;file_tab_focus<file_tab_cnt;file_tab_focus++){
         start_pos = KEY_NAME_WIDTH + FILE_TAB_WIDTH * (file_tab_focus - 1); 
         
@@ -182,7 +213,7 @@ void new_file_tab(){
         mvwprintw(opened_file_tab, 0, start_pos, "\\");
         if(file_tab_focus==file_tab_cnt-1){
              wattron(opened_file_tab, A_STANDOUT|A_UNDERLINE);
-             addToList(&filetab_head,".","./1");   //fullpath 입력 받아야함
+             addToList(&filetab_head,file_name,file_path);   //fullpath 입력 받아야함    file_name 바꿔야함 지금은 임의로 workspace1이런식으로 넣어놓음
              werase(contents);
              FileStatus *cur=filetab_head;
              for(int i=0;i<file_tab_focus;i++){
@@ -190,7 +221,6 @@ void new_file_tab(){
              }
              chdir(cur->full_path);
              workspace_contents_print();
-            
         }
             
         else

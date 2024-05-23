@@ -90,6 +90,8 @@ extern int workspace_contents_row;
 extern int workspace_contents_col;
 extern int workspace_file_focus;
 extern int workspace_file_finish;
+extern int file_tab_cnt;
+extern int file_tab_focus;
 #endif
 
 /* MACRO FUNCTIONS */

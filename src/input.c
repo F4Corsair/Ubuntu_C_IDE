@@ -273,6 +273,14 @@ int input_control(int input_char) {
             }else if(input_char==CTRL('n')){
                 new_file_tab();
             }
+            else if(input_char==KEY_LEFT){
+                file_tab_cnt--;
+                new_file_tab();
+            }
+            else if( input_char==KEY_RIGHT){
+                file_tab_cnt++;
+                new_file_tab();
+            }
             
             break;
             
