@@ -136,7 +136,7 @@ void build_compile_print() {
         while (fgets(buf, BUFSIZ, pipe_fp) != NULL) { // 프로세스의 출력을 한 줄씩 읽어옴
 		// already up to date - handling
 
-		append(&compile_result, buf);
+		// append(&compile_result, buf);
 		mvwprintw(contents, row++, 0, "\t%s", buf);
             	if (row >= win_row - 1) {
                		wclear(contents); // clear the window if it fills up
