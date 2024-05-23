@@ -68,6 +68,7 @@ void build_compile_print() {
             case 0: // child = only writing makefile's results
                 close(the_pipe[0]);
                 dup2(the_pipe[1], 1);
+                dup2(the_pipe[1], 2);
                 close(the_pipe[1]);
                 // todo : makefile create + makefile 지정
                 execlp("make", "make", NULL);
@@ -78,14 +79,11 @@ void build_compile_print() {
                 close(the_pipe[1]);
                 dup2(the_pipe[0], 0);
                 close(the_pipe[0]);
-                while (1) {
-                    int row = 0;
-                    read_len = read(the_pipe[0], buf, BUFSIZ);
-                    if (read_len <= 0) break;
+                int row = 0;
+                while ((read_len = read(the_pipe[0], buf, BUFSIZ)) > 0) {
                     mvwprintw(contents, row++, 0, "%s", buf);
                 }
         }
-
     }
 
     wrefresh(contents);
