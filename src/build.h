@@ -9,6 +9,11 @@
 void build_tab_transition();
 void opened_build_tab_print();
 void build_compile_print();
-void build_debug_print();
+// void build_debug_print();
+
+extern int max_file_tab;
+extern int file_tab_cnt;
+extern int file_tab_focus;
+extern FileStatus* filetab_head;
 
 #endif
