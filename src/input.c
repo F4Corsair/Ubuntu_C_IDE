@@ -242,10 +242,36 @@ int input_control(int input_char) {
                     cur=cur->next;
                 }
                 
-                file_open(cur->file_name, 'y');
+                if(has_extension(cur->file_name,".c") || has_extension(cur->file_name,".h")||has_extension(cur->file_name,".log")||has_extension(cur->file_name,".txt")){
+                    file_open(cur->file_name, 'y');
+                    code_tab_transition();
+                    wchgat(contents, -1, A_NORMAL, 0, NULL);
+                }
+                else{
+                    
+                    
+                    const char *message1 = "file open error";
+                    const char *message2 = "extention:c, h, log, txt";
+        
+                    int msg1_row = (win_row - 3) / 2 - 1;
+                    int msg2_row = (win_row - 3) / 2;
+                    int msg_col = (win_col - strlen(message1)) / 2;
 
-                code_tab_transition();
-                wchgat(contents, -1, A_NORMAL, 0, NULL);
+                    mvwprintw(contents, msg1_row, msg_col, "%s", message1);
+                    mvwprintw(contents, msg2_row, msg_col-4, "%s", message2);
+                    wrefresh(contents);
+                    sleep(1);
+
+        // 메시지 지우기
+                    werase(contents);
+                    workspace_contents_print();
+                    wrefresh(contents);
+                    return 0;                    
+                    
+                }
+                
+
+               
             }
             
             break;

@@ -168,10 +168,6 @@ void opened_workspace_tab_print() {
     mvwprintw(workspace_tab, 0, KEY_NAME_WIDTH - 1, "/");
     wrefresh(workspace_tab);
 
-    char current_path[256];
-    if (getcwd(current_path, sizeof(current_path)) != NULL) {
-        print_path(current_path);
-    }
 
     attroff(COLOR_PAIR(1));
 }
@@ -202,6 +198,7 @@ void addToList(char *file_name, char *full_path) {
         perror("Failed to allocate memory");
         exit(EXIT_FAILURE);
     }
+    
 
     strcpy(new_node->file_name,file_name);
     //new_node->file_name = strdu(file_name);
@@ -276,6 +273,7 @@ void workspace_contents_print() {
     workspace_contents_row=1;
     workspace_contents_col=1; // 파일 선택을 위한 커서
     if (getcwd(path, sizeof(path)) != NULL) {
+        print_path(path);
         ls(path);
         wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
         wclrtoeol(contents);
@@ -371,3 +369,15 @@ void workspace_key_up(){
         }
     }
 }
+
+
+
+// 파일 이름이 .h로 끝나는지 확인하는 함수
+bool has_extension(const char *filename, const char *extension) {
+    size_t len = strlen(filename);
+    size_t ext_len = strlen(extension);
+    if (len < ext_len) return false;
+    return strcmp(filename + len - ext_len, extension) == 0;
+}
+
+// 파일 이름이 .c 또는 .h로 끝나는지 확인하는 함수
