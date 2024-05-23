@@ -108,8 +108,29 @@ void code_edit_backspace() {
 }
 
 void code_edit_char_append(int _input_char) {
-    char in_char = (char)_input_char;
+    FileStatus *status = opened_file_info->focus;
+    CodeLine *cur_line = get_cur_code_line();
 
+    char input_char = (char)_input_char;
+
+    // make new line
+    int new_len = cur_line->len + 1;
+    char *new_line = malloc(sizeof(char) * new_len);
+    strncat(new_line, cur_line->line, status->col);
+    new_line[status->col] = input_char;
+    new_line[status->col + 1] = '\0';
+    strcat(new_line, &(cur_line->line[status->col]));
+
+    // substitute
+    free(cur_line->line);
+    cur_line->line = new_line;
+    cur_line->len = strlen(new_line);
+
+    // col adjust
+    status->col++;
+    if(status->start_col - status->col >= win_col) {
+        status->start_col++;
+    }
 }
 
 void code_edit_append_new_line() {
