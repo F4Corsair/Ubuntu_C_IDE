@@ -27,15 +27,12 @@ void build_tab_transition() {
     wrefresh(menu_tab);
 
     // todo : show BUILD_TAB
-   /* opened_build_tab_print();
-    if (input == 0x10d) // f5 = compile (임시)
-        build_compile_print();
-    else if (input == 0x125) // ctrl + f5 = debug (임시)
-        build_debug_print();} */
+    opened_build_tab_print();
+    build_compile_print();
 }
 
 // todo : compile 결과 표시 하기
-/* void build_compile_print() {
+void build_compile_print() {
     int the_pipe[PIPE_ENDS], read_len;
     char buf[BUFSIZ], char executable_file_name[256];
     FileStatus *status = opened_file_info->focus;
@@ -93,8 +90,7 @@ void build_tab_transition() {
     wrefresh(contents);
 }
 
-// debug는 code print 하는 함수와 엮여서 해볼까?
-void build_debug_print() {
+/* void build_debug_print() {
     int the_pipe[PIPE_ENDS], newfd, pid, read_len;
     char buf[BUFSIZ];
     FileStatus *status = opened_file_info->focus;
@@ -113,8 +109,8 @@ void build_debug_print() {
     }
 
     wrefresh(contents);
-}
+} */
 
 void opened_build_tab_print() {
     
-}*/
+}
