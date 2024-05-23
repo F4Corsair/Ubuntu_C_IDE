@@ -23,6 +23,11 @@ int main() {
 		if (input_char == CTRL('q'))
 			break;
 		else {
+			clear();
+
+			mvprintw(0, 0, "Press Ctrl + ");
+			addch('q' | A_BOLD);
+			addstr(" to Quit");
 			mvprintw(1, 0, "Input : %s\nHex : 0x%x", keyname(input_char), input_char); // you don't need to refresh with this method
 		}
 	}

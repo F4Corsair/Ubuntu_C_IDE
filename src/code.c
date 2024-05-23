@@ -35,7 +35,7 @@ void code_contents_print() {
     if (status == NULL) {
         // no file opened
         mvwaddstr(contents, (win_row - 3) / 2 - 1, win_col / 2 - 18, "Open File from File Tab [Ctrl + F]");
-        mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 17, "If you are first, try [Ctrl + M]");
+        mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 17, "If you are first, try [Ctrl + H]");
     } else if(status->fd == -1) {
         mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 10, "File does not exist");
     } else {
@@ -248,7 +248,7 @@ void code_buf_close(CodeBuf *buf) {
 int code_next_row_exists() {
     FileStatus *focus = opened_file_info->focus;
     int row = focus->row;
-    if (row + 1 >= focus->buf->tail_row)
+    if (row + 1 >= focus->buf->tail_row) // row starts from 0. but tail_row starts from 1
         return -1;
     else
         return 0;
@@ -257,13 +257,17 @@ int code_next_row_exists() {
 int code_next_col_exists() {
     FileStatus *focus = opened_file_info->focus;
 
-    if(get_cur_code_line_len() - 1 > focus->col)
+    if(get_cur_code_line_len() > focus->col)
         return 0;
     else
         return -1;
 }
 
 int get_cur_code_line_len() {
+    return get_cur_code_line()->len;
+}
+
+CodeLine *get_cur_code_line() {
     FileStatus *focus = opened_file_info->focus;
     int diff = focus->row - focus->start_row;
     CodeLine *cur_line = focus->buf->cur;
@@ -274,5 +278,5 @@ int get_cur_code_line_len() {
         }
     }
 
-    return cur_line->len;
+    return cur_line;
 }

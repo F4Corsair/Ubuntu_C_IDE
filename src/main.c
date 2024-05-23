@@ -9,7 +9,6 @@
 #include "input.h"
 #include "errLog.h"
 #include "code.h" // for TEST
-#include "file.h" // for TEST
 
 int main(int argc, char **argv) {
 	int input_char;
@@ -27,11 +26,7 @@ int main(int argc, char **argv) {
 	new_opened_file_tab("testFileNameIsLong2", "");
 	new_opened_file_tab("testFile.c", "");
 	new_opened_file_tab("testFile2.c", "");
-	file_open("main.c"); // testing compile
-	// opened_file_info->head->modified = 1;
-	
-	// close_unsaved_caution(1);
-
+	new_opened_file_tab("code_test_file.log", "code_test_file.log");
 
 	while(1) {
 		input_char = getch();

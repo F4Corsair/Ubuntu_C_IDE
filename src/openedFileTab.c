@@ -95,27 +95,20 @@ int new_opened_file_tab(char *file_name, char *full_path) {
     return 0;
 }
 
-void del_opened_file_tab(int idx) {
-    int focus_flag = 0;
-    FileStatus *cur = opened_file_info->head;
+void del_opend_file_tab_fileStatus(FileStatus *cur) {
+    FileStatus *ptr = opened_file_info->head;
     FileStatus *pre = NULL;
-    if(cur == NULL) {
-        perror("del_opened_file_tab : out of index");
-        return;
+
+    while(ptr != cur) {
+        pre = ptr;
+        ptr = ptr->next;
     }
 
-    for(int i = 0; i < idx; i++) {
-        if(cur == NULL) {
-            perror("del_opened_file_tab : out of index");
-            return;
-        }
-        pre = cur;
-        cur = cur->next;
-    }
+    int focus_flag = 0;
 
     // check file is saved
     if(cur->modified != 0) {
-        close_unsaved_caution(idx);
+        close_unsaved_caution();
         return;
     }
 
@@ -135,14 +128,32 @@ void del_opened_file_tab(int idx) {
 
     // focus update if needed
     if(focus_flag == 1) {
-        if(opened_file_info->cnt > 0) {
-            opened_file_info->focus = opened_file_info->head;
+        if(pre != NULL) {
+            opened_file_info->focus = pre;
         } else {
-            opened_file_info->focus = NULL;
+            opened_file_info->focus = opened_file_info->head;
         }
     }
-    opened_file_tab_print();
-    code_contents_print();
+}
+
+void del_opened_file_tab(int idx) {
+    FileStatus *cur = opened_file_info->head;
+    FileStatus *pre = NULL;
+    if(cur == NULL) {
+        perror("del_opened_file_tab : out of index");
+        return;
+    }
+
+    for(int i = 0; i < idx; i++) {
+        if(cur == NULL) {
+            perror("del_opened_file_tab : out of index");
+            return;
+        }
+        pre = cur;
+        cur = cur->next;
+    }
+
+    del_opend_file_tab_fileStatus(cur);
 }
 
 OpenFileInfo *opened_file_info_init() {
@@ -220,8 +231,8 @@ void opened_file_focus_prev() {
     opened_file_info->focus = pre;
 }
 
-void close_unsaved_caution(int idx) {
-    unsaved_caution_flag = idx + 1; // change input handle procedure
+void close_unsaved_caution() {
+    unsaved_caution_flag = 1; // change input handle procedure
     // print caution msg
     wclear(contents);
     int row = (win_row - 3) / 2;
