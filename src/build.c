@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+#include "build.h"
 #include "global.h"
 #include "uibase.h"
 
@@ -27,14 +28,14 @@ void build_tab_transition() {
     wrefresh(menu_tab);
 
     // todo : show BUILD_TAB
-    opened_build_tab_print();
+    // opened_build_tab_print();
     build_compile_print();
 }
 
 // todo : compile 결과 표시 하기
 void build_compile_print() {
     int the_pipe[PIPE_ENDS], read_len;
-    char buf[BUFSIZ], char executable_file_name[256];
+    char buf[BUFSIZ]; char executable_file_name[256];
     FileStatus *status = opened_file_info->focus;
     wclear(contents);
 
