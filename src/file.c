@@ -182,7 +182,7 @@ void new_file_tab(){
         mvwprintw(opened_file_tab, 0, start_pos, "\\");
         if(file_tab_focus==file_tab_cnt-1){
              wattron(opened_file_tab, A_STANDOUT|A_UNDERLINE);
-             addToList(&filetab_head,".",".");   //fullpath 입력 받아야함
+             addToList(&filetab_head,".","./1");   //fullpath 입력 받아야함
              werase(contents);
              FileStatus *cur=filetab_head;
              for(int i=0;i<file_tab_focus;i++){
