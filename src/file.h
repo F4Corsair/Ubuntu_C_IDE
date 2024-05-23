@@ -26,5 +26,6 @@ void initialize_colors();
 void workspace_key_down();
 void workspace_key_up();
 bool has_extension(const char *filename, const char *extension);
+void new_file_tab();
 
 #endif

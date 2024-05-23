@@ -155,21 +155,45 @@ void initialize_colors() {
 void opened_workspace_tab_print() {
 	initialize_colors();
 
-    max_file_tab = 5;
+    max_file_tab = COLS/FILE_TAB_WIDTH-1;
     file_tab_cnt = 0;
     file_tab_focus = -1;
 
-	//workspace_path = newwin(1, COLS, 1, 0);
-	workspace_tab = newwin(1, COLS, 0, 0);
-	
-    wattron(workspace_tab, A_UNDERLINE);
-    mvwprintw(workspace_tab, 0, 0, "WorkSpace1    ");
-    wattroff(workspace_tab, A_UNDERLINE);
-    mvwprintw(workspace_tab, 0, KEY_NAME_WIDTH - 1, "/");
-    wrefresh(workspace_tab);
+    new_file_tab();
+    //mvwprintw(opened_file_tab, 0, KEY_NAME_WIDTH - 1, "/");
+    wrefresh(opened_file_tab);
 
 
     attroff(COLOR_PAIR(1));
+}
+void new_file_tab(){
+    int start_pos = 0;
+    char file_name[FILE_TAB_WIDTH];
+    if(file_tab_cnt >= max_file_tab) {
+        // todo : delete tab by policy
+    } else
+        file_tab_cnt++;
+    for(file_tab_focus=0;file_tab_focus<file_tab_cnt;file_tab_focus++){
+        start_pos = KEY_NAME_WIDTH + FILE_TAB_WIDTH * (file_tab_focus - 1); 
+        
+    // print tab
+        snprintf(file_name, sizeof(file_name), "WorkSpace%d", file_tab_focus+1);  
+        mvwprintw(opened_file_tab, 0, start_pos, "\\");
+        if(file_tab_focus==file_tab_cnt-1)
+             wattron(opened_file_tab, A_STANDOUT|A_UNDERLINE);
+        else
+            wattron(opened_file_tab, A_UNDERLINE);
+        mvwprintw(opened_file_tab, 0, start_pos+1, "%-*s", FILE_TAB_WIDTH - 2, file_name);
+        if(file_tab_focus==file_tab_cnt-1)
+             wattroff(opened_file_tab, A_STANDOUT|A_UNDERLINE);
+        else
+            wattroff(opened_file_tab, A_UNDERLINE);
+        mvwprintw(opened_file_tab, 0, start_pos+FILE_TAB_WIDTH-1, "/");
+
+        wrefresh(opened_file_tab);
+    }
+    // calculate start_pos
+    
 }
 
 void ls(char *path) {
@@ -379,5 +403,6 @@ bool has_extension(const char *filename, const char *extension) {
     if (len < ext_len) return false;
     return strcmp(filename + len - ext_len, extension) == 0;
 }
+
 
 // 파일 이름이 .c 또는 .h로 끝나는지 확인하는 함수

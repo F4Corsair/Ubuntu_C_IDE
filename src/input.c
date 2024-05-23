@@ -264,14 +264,14 @@ int input_control(int input_char) {
 
         // 메시지 지우기
                     werase(contents);
+
                     workspace_contents_print();
                     wrefresh(contents);
                     return 0;                    
                     
                 }
-                
-
-               
+            }else if(input_char==CTRL('n')){
+                new_file_tab();
             }
             
             break;

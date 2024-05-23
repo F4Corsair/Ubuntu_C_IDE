@@ -71,7 +71,6 @@ void window_reset() {
     delwin(menu_tab);
     delwin(opened_file_tab);
     delwin(contents);
-
     // NOTICE : you have to call 'endwin()' before reset window size!!!
     endwin();
     refresh();
