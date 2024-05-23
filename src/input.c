@@ -53,29 +53,19 @@ int input_control(int input_char) {
             return 0;
         }
         if(unsaved_caution_flag != 0) { // caution if user tried to close unsaved file
-            idx = unsaved_caution_flag - 1;
+            // idx = opened_file_focus_idx_find();
             if(input_char == 's' || input_char == 'S') {
                 // save & del & refresh
                 file_save_focus();
-                del_opened_file_tab(idx);
+                del_opend_file_tab_fileStatus(opened_file_info->focus);
                 opened_file_tab_print();
                 code_contents_print();
             } else if(input_char == 'c' || input_char == 'C') {
                 // don't save & del
-                // find file
-                FileStatus *ptr = opened_file_info->head;
-                while (idx > 0)
-                {
-                    if(ptr == NULL) {
-                        perror("close unsaved file : out of index");
-                        unsaved_caution_flag = 0;
-                        return 0;
-                    }
-                    ptr = ptr->next;
-                    idx--;
-                }
-                ptr->modified = 0; // force status change as unmodified(saved)
-                del_opened_file_tab(idx);
+                opened_file_info->focus->modified = 0; // force status change as unmodified(saved)
+                del_opend_file_tab_fileStatus(opened_file_info->focus);
+                opened_file_tab_print();
+                code_contents_print();
             } else {
                 opened_file_tab_print();
                 code_contents_print();
@@ -86,9 +76,12 @@ int input_control(int input_char) {
             switch (input_char)
             {
             case CTRL('w'):
-                idx = opened_file_focus_idx_find();
-                if(idx != -1) {
-                    del_opened_file_tab(idx);
+                if(opened_file_info->focus != NULL) {
+                    del_opend_file_tab_fileStatus(opened_file_info->focus);
+                    if(unsaved_caution_flag == 0) {
+                        opened_file_tab_print();
+                        code_contents_print();
+                    }
                 }
                 break;
             case 0x226:
@@ -109,9 +102,12 @@ int input_control(int input_char) {
         switch (input_char)
         {
         case CTRL('w'):
-            idx = opened_file_focus_idx_find();
-            if(idx != -1) {
-                del_opened_file_tab(idx);
+            if(opened_file_info->focus != NULL) {
+                del_opend_file_tab_fileStatus(opened_file_info->focus);
+                if(unsaved_caution_flag == 0) {
+                    opened_file_tab_print();
+                    code_contents_print();
+                }
             }
             break;
         case 0x226:
@@ -226,29 +222,30 @@ int input_control(int input_char) {
             input_control(0x105);
             // erase
             code_edit_backspace();
+            focus->modified = 1;
             opened_file_tab_print();
             code_contents_print();
-            // focus->modified = 1;
             break;
         case 0x107: // backspace
             code_edit_backspace();
+            focus->modified = 1;
             opened_file_tab_print();
             code_contents_print();
-            // focus->modified = 1;
             break;
         default:
             // print character
             if(input_char >= 0x20 && input_char <= 0x7e) {
                 code_edit_char_append(input_char);
+                focus->modified = 1;
                 opened_file_tab_print();
                 code_contents_print();
             } else if (input_char == 0xa) { // enter
                 // Issue : curses recognize ctrl + j as same as enter key input
                 code_edit_append_new_line();
+                focus->modified = 1;
                 opened_file_tab_print();
                 code_contents_print();
             }
-            // focus->modified = 1;
             break;
         }
     } else {
