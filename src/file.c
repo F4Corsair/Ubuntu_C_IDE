@@ -124,9 +124,9 @@ void file_open(char *file_name, int new_file_input) {
                 file_open_update(&input_char);
 		
 		// new_file_input = getch();
-		if (new_file_input == 'y' || new_file_input == 'Y') {
+		if (input_char == 'y' || input_char == 'Y') {
 			// todo : index 지정 정확하게 하기
-			del_opened_file_tab(8);
+			del_opened_file_tab(MAX_FILE_TAB_CNT - 1);
 			new_opened_file_tab(file_name, path);
 			opened_file_tab_print();
 			code_contents_print();
