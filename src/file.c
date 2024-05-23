@@ -99,7 +99,7 @@ void contents_window_restore() {
 	}
 }
 
-void file_open(char *file_name, int new_file_input) {
+void file_open(char *file_name) {
 	// int new_file_input;
 	char path[256];
 
@@ -124,9 +124,9 @@ void file_open(char *file_name, int new_file_input) {
                 file_open_update(&input_char);
 		
 		// new_file_input = getch();
-		if (new_file_input == 'y' || new_file_input == 'Y') {
+		if (input_char == 'y' || input_char == 'Y') {
 			// todo : index 지정 정확하게 하기
-			del_opened_file_tab(8);
+			del_opened_file_tab(MAX_FILE_TAB_CNT - 1);
 			new_opened_file_tab(file_name, path);
 			opened_file_tab_print();
 			code_contents_print();
@@ -313,7 +313,7 @@ void workspace_contents_print() {
         ls(path);
         wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
         wclrtoeol(contents);
-        mvwprintw(contents,workspace_contents_row,workspace_contents_col,contents_head->file_name);
+        mvwprintw(contents,workspace_contents_row,workspace_contents_col, "%s", contents_head->file_name);
         mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(contents_head->file_name), A_BLINK, 0, NULL);
     }
     wrefresh(contents);
@@ -338,7 +338,7 @@ void workspace_key_down(){
                 wmove(contents, row, 0); // 줄의 시작으로 이동
                 wclrtoeol(contents);
                 if (cur != NULL) {
-                    mvwprintw(contents, row, 1, cur->file_name);
+                    mvwprintw(contents, row, 1, "%s", cur->file_name);
                     cur = cur->next;
                 } else {
                     workspace_file_finish = -1;
@@ -361,7 +361,7 @@ void workspace_key_down(){
         if (cur != NULL) {
             wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
             wclrtoeol(contents);
-            mvwprintw(contents, workspace_contents_row, workspace_contents_col, cur->file_name);
+            mvwprintw(contents, workspace_contents_row, workspace_contents_col, "%s", cur->file_name);
             mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
             wrefresh(contents);
         }
@@ -382,7 +382,7 @@ void workspace_key_up(){
             wmove(contents, row, 0); // 줄의 시작으로 이동
             wclrtoeol(contents);
             if (cur != NULL) {
-                mvwprintw(contents, row, 1, cur->file_name);
+                mvwprintw(contents, row, 1, "%s", cur->file_name);
                 cur = cur->next;
             }
         }
@@ -399,7 +399,7 @@ void workspace_key_up(){
         if (cur != NULL) {
             wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
             wclrtoeol(contents);
-            mvwprintw(contents, workspace_contents_row, workspace_contents_col, cur->file_name);
+            mvwprintw(contents, workspace_contents_row, workspace_contents_col, "%s", cur->file_name);
             mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
             wrefresh(contents);
         }

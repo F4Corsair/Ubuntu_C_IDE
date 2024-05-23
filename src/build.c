@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+#include "build.h"
 #include "global.h"
 #include "uibase.h"
 
@@ -27,17 +28,14 @@ void build_tab_transition() {
     wrefresh(menu_tab);
 
     // todo : show BUILD_TAB
-   /* opened_build_tab_print();
-    if (input == 0x10d) // f5 = compile (임시)
-        build_compile_print();
-    else if (input == 0x125) // ctrl + f5 = debug (임시)
-        build_debug_print();} */
+    // opened_build_tab_print();
+    build_compile_print();
 }
 
 // todo : compile 결과 표시 하기
-/* void build_compile_print() {
+void build_compile_print() {
     int the_pipe[PIPE_ENDS], read_len;
-    char buf[BUFSIZ], char executable_file_name[256];
+    char buf[BUFSIZ]; char executable_file_name[256];
     FileStatus *status = opened_file_info->focus;
     wclear(contents);
 
@@ -70,6 +68,7 @@ void build_tab_transition() {
             case 0: // child = only writing makefile's results
                 close(the_pipe[0]);
                 dup2(the_pipe[1], 1);
+                dup2(the_pipe[1], 2);
                 close(the_pipe[1]);
                 // todo : makefile create + makefile 지정
                 execlp("make", "make", NULL);
@@ -80,21 +79,17 @@ void build_tab_transition() {
                 close(the_pipe[1]);
                 dup2(the_pipe[0], 0);
                 close(the_pipe[0]);
-                while (1) {
-                    int row = 0;
-                    read_len = read(the_pipe[0], buf, BUFSIZ);
-                    if (read_len <= 0) break;
+                int row = 0;
+                while ((read_len = read(the_pipe[0], buf, BUFSIZ)) > 0) {
                     mvwprintw(contents, row++, 0, "%s", buf);
                 }
         }
-
     }
 
     wrefresh(contents);
 }
 
-// debug는 code print 하는 함수와 엮여서 해볼까?
-void build_debug_print() {
+/* void build_debug_print() {
     int the_pipe[PIPE_ENDS], newfd, pid, read_len;
     char buf[BUFSIZ];
     FileStatus *status = opened_file_info->focus;
@@ -113,8 +108,8 @@ void build_debug_print() {
     }
 
     wrefresh(contents);
-}
+} */
 
 void opened_build_tab_print() {
     
-}*/
+}
