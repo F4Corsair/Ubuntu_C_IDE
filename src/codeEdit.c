@@ -25,8 +25,6 @@ void code_edit_backspace() {
         // tail row check
         if(status->buf->tail == cur_line) {
             tail_flag = 1;
-            status->buf->tail = prev_line;
-            status->buf->tail_row--;
         }
 
         // empty line check

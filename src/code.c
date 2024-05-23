@@ -248,7 +248,7 @@ void code_buf_close(CodeBuf *buf) {
 int code_next_row_exists() {
     FileStatus *focus = opened_file_info->focus;
     int row = focus->row;
-    if (row + 1 >= focus->buf->tail_row)
+    if (row + 1 >= focus->buf->tail_row) // row starts from 0. but tail_row starts from 1
         return -1;
     else
         return 0;
