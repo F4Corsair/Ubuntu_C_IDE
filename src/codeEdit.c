@@ -117,10 +117,14 @@ void code_edit_append_new_line() {
     CodeLine *prev_line = get_cur_code_line();
     CodeLine *next_line = prev_line->next;
 
+    char* start_pos = &(prev_line->line[status->col]);
+
     CodeLine *cur_line = malloc(sizeof(CodeLine));
-    cur_line->line = malloc(sizeof(char) * 1);
-    cur_line->line = '\0';
-    cur_line->len = strlen(cur_line->line);
+    cur_line->len = strlen(start_pos);
+    cur_line->line = malloc(sizeof(char) * (cur_line->len + 1));
+    strcpy(cur_line->line, start_pos);
+    prev_line->line[status->col] = '\0';
+    prev_line->len = strlen(prev_line->line);
 
     cur_line->prev = prev_line;
     prev_line->next = cur_line;
@@ -136,9 +140,7 @@ void code_edit_append_new_line() {
 
     // row & col adjust
     status->col = 0;
-    if(status->start_col > status->col) {
-        status->start_col--;
-    }
+    status->start_col = 0;
 
     status->row++;
     if(status->row - status->start_row >= win_row - 3) {

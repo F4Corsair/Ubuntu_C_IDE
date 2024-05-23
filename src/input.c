@@ -242,7 +242,9 @@ int input_control(int input_char) {
 
             } else if (input_char == 0xa) { // enter
                 // Issue : curses recognize ctrl + j as same as enter key input
-                // code_edit_append_new_line();
+                code_edit_append_new_line();
+                opened_file_tab_print();
+                code_contents_print();
             }
             // focus->modified = 1;
             break;
