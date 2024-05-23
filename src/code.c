@@ -35,7 +35,7 @@ void code_contents_print() {
     if (status == NULL) {
         // no file opened
         mvwaddstr(contents, (win_row - 3) / 2 - 1, win_col / 2 - 18, "Open File from File Tab [Ctrl + F]");
-        mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 17, "If you are first, try [Ctrl + M]");
+        mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 17, "If you are first, try [Ctrl + H]");
     } else if(status->fd == -1) {
         mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 10, "File does not exist");
     } else {

@@ -37,7 +37,7 @@ int input_control(int input_char) {
     case CTRL('t'):
         terminal_tab_transition();
         return 0;
-    case 0xa: // to recognize CTRL_M
+    case 0x8:
         manual_tab_transition();
         return 0;
     case CTRL('q'):
@@ -241,7 +241,8 @@ int input_control(int input_char) {
             if(input_char >= 0x20 && input_char <= 0x7e) {
 
             } else if (input_char == 0xa) { // enter
-
+                // Issue : curses recognize ctrl + j as same as enter key input
+                // code_edit_append_new_line();
             }
             // focus->modified = 1;
             break;
