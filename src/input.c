@@ -218,16 +218,35 @@ int input_control(int input_char) {
             break;
         case 0x7f: // DEL
         case 0x14a: // KEY_DC
-            // move cursor to next
-            input_control(0x105);
             // erase
-            code_edit_backspace();
+            if (code_next_col_exists() == -1) {
+                input_control(0x105);
+                code_edit_del();
+            } else {
+                code_edit_del();
+                // move cursor right
+                input_control(0x105);
+            }
             focus->modified = 1;
             opened_file_tab_print();
             code_contents_print();
             break;
         case 0x107: // backspace
-            code_edit_backspace();
+            // move cursor to left
+            if(focus->col > 0) {
+                focus->col--;
+                if(focus->start_col > focus->col) {
+                    focus->start_col--;
+                }
+            }
+            code_edit_del();
+            // move cursor to right
+            if(code_next_col_exists() != -1) {
+                focus->col++;
+                if(focus->start_col - focus->col >= win_col) {
+                    focus->start_col++;
+                }
+            }
             focus->modified = 1;
             opened_file_tab_print();
             code_contents_print();

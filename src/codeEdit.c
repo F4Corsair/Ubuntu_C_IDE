@@ -5,7 +5,7 @@
 
 #include "codeEdit.h"
 
-void code_edit_backspace() {
+void code_edit_del() {
     FileStatus *status = opened_file_info->focus;
     CodeLine *cur_line = get_cur_code_line();
     int tail_flag = 0;
