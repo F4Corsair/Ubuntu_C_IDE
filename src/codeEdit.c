@@ -16,11 +16,13 @@ void code_edit_del() {
     
     //erase line
     if(status->col == 0) {
+        int len_save = 0;
         if(cur_line->prev == NULL) {
             return; // first line
         }
         // prev + cur line
         CodeLine *prev_line = cur_line->prev;
+        len_save = prev_line->len;
 
         // tail row check
         if(status->buf->tail == cur_line) {
@@ -71,19 +73,14 @@ void code_edit_del() {
                 status->buf->cur = ptr->prev;
             }
         }
-        status->col = 0;
-        while(code_next_col_exists() != -1) {
-            status->col++;
-            if(status->start_col - status->col >= win_col) {
-                status->start_col++;
-            }
-        }
+        status->col = len_save;
 
         if(cur_line != NULL) {
             free(cur_line->line);
             free(cur_line);
         }
     } else {
+        // if cursor place one end of line
         if(status->col >= cur_line->len) {
             cur_line->line[status->col - 1] = '\0';
             cur_line->len = strlen(cur_line->line);
@@ -94,9 +91,13 @@ void code_edit_del() {
             }
         } else {
             // erase char in a line
+            fprintf(stderr, "cur:%s\n", cur_line->line);
             char *mid = &(cur_line->line[status->col]);
-            cur_line->line[status->col] = '\0';
-            strcat(cur_line->line, mid + 1);
+            cur_line->line[status->col - 1] = '\0';
+            fprintf(stderr, "head:%s\n", cur_line->line);
+            fprintf(stderr, "mid:%s\n", mid);
+            strcat(cur_line->line, mid);
+            fprintf(stderr, "cat:%s\n", cur_line->line);
             cur_line->len = strlen(cur_line->line);
 
             status->col--;
