@@ -7,5 +7,7 @@
 void code_edit_del();
 void code_edit_char_append(int _input_char);
 void code_edit_append_new_line();
+void code_edit_line_swap_up();
+void code_edit_line_swap_down();
 
 #endif

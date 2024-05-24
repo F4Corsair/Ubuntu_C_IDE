@@ -232,6 +232,20 @@ int input_control(int input_char) {
             opened_file_tab_print();
             code_contents_print();
             break;
+        case 0x20b: // alt + down arrow
+        case 0x150: // shift + down arrow
+            code_edit_line_swap_down();
+            focus->modified = 1;
+            opened_file_tab_print();
+            code_contents_print();
+            break;
+        case 0x234: // alt + up arrow
+        case 0x151: // shift + up arrow
+            code_edit_line_swap_up();
+            focus->modified = 1;
+            opened_file_tab_print();
+            code_contents_print();
+            break;
         default:
             // print character
             if(input_char >= 0x20 && input_char <= 0x7e) {
