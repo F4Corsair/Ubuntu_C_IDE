@@ -58,12 +58,11 @@ void manual_page_print() {
         mvwprintw(contents, 4, 0, "File Tab : Ctrl + f");
         mvwprintw(contents, 5, 0, "Build Tab : Ctrl + b");
         mvwprintw(contents, 6, 0, "Terminal Tab : Ctrl + t");
-        mvwprintw(contents, 7, 0, "Manual Tab : Ctrl + m");
-        mvwprintw(contents, 8, 0, "Manual Tab : Ctrl + m");
-        mvwprintw(contents, 10, 0, "If you want to quit program, press Ctrl + q");
-        mvwprintw(contents, 11, 0, "after that, press y or Y will Quit, else will let you back");
-        mvwprintw(contents, 13, 0, "This program supports Dynamic window size");
-        mvwprintw(contents, 14, 0, "If you resized terminal, just press any key input to restore program");
+        mvwprintw(contents, 7, 0, "Help Tab (Manual) : Ctrl + h");
+        mvwprintw(contents, 9, 0, "If you want to quit program, press Ctrl + q");
+        mvwprintw(contents, 10, 0, "after that, press y or Y will Quit, else will let you back");
+        mvwprintw(contents, 12, 0, "This program supports Dynamic window size");
+        mvwprintw(contents, 13, 0, "If you resized terminal, just press any key input to restore program");
 
         break;
     case FILE_MAN:
@@ -76,6 +75,8 @@ void manual_page_print() {
         mvwprintw(contents, 3, 0, "If file unsaved, program will ask how to handle it : press underlined character");
         mvwprintw(contents, 4, 0, "Save current file : Ctrl + s");
         mvwprintw(contents, 6, 0, "You can move file cursor using Arrow & PageUp & PageDown key");
+        mvwprintw(contents, 7, 0, "You can edit files with key input but only ascii defined character are allowed");
+        mvwprintw(contents, 8, 0, "Alt + up/down arrow can let you swap 2 code line");
         break;
     case BUILD_MAN:
         mvwprintw(contents, 0, 0, "Build Tab Manual");
