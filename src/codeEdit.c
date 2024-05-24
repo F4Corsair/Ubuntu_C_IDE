@@ -91,13 +91,9 @@ void code_edit_del() {
             }
         } else {
             // erase char in a line
-            fprintf(stderr, "cur:%s\n", cur_line->line);
             char *mid = &(cur_line->line[status->col]);
             cur_line->line[status->col - 1] = '\0';
-            fprintf(stderr, "head:%s\n", cur_line->line);
-            fprintf(stderr, "mid:%s\n", mid);
             strcat(cur_line->line, mid);
-            fprintf(stderr, "cat:%s\n", cur_line->line);
             cur_line->len = strlen(cur_line->line);
 
             status->col--;
