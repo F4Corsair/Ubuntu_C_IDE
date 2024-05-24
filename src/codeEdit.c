@@ -114,8 +114,8 @@ void code_edit_char_append(int _input_char) {
     char input_char = (char)_input_char;
 
     // make new line
-    int new_len = cur_line->len + 1;
-    char *new_line = malloc(sizeof(char) * new_len);
+    int new_len = cur_line->len + 2;
+    char *new_line = calloc(sizeof(char), new_len);
     strncat(new_line, cur_line->line, status->col);
     new_line[status->col] = input_char;
     new_line[status->col + 1] = '\0';
