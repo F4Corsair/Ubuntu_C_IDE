@@ -68,6 +68,14 @@ void manual_page_print() {
         break;
     case FILE_MAN:
         mvwprintw(contents, 0, 0, "Notice : This program can read ASCII characters only - be careful when you select file to open");
+        mvwprintw(contents, 2, 0, "To navigate directories:");
+        mvwprintw(contents, 3, 0, "Press 'd' to move to the directory.");
+        mvwprintw(contents, 4, 0, "Press the left arrow key to move to the previous directory.");
+        mvwprintw(contents, 5, 0, "Press 'w' to set the workspace directory.");
+        mvwprintw(contents, 7, 0, "To open files in the Code Tab:");
+        mvwprintw(contents, 8, 0, "Press 'c' in the File Tab to open files in the Code Tab.");
+
+
         break;
     case CODE_MAN:
         mvwprintw(contents, 0, 0, "You can handle Opened File Tab (You need to open file from File Tab)");

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "input.h"
 #include "global.h"
@@ -231,21 +232,58 @@ int input_control(int input_char) {
         case FILE_TAB:
             
             if (input_char == KEY_DOWN) {
-                workspace_key_down();
+                    workspace_key_down();
             } else if (input_char == KEY_UP) {
-                workspace_key_up();
+                    workspace_key_up();
             }
             else if(input_char== 'c'){  //code로 이동
-                FileStatus* cur;
-                cur=contents_head;
-                for(int i=0;i<workspace_contents_row;i++){
-                    cur=cur->next;
-                }
+                if(workspace_flag==1){
+                    FileStatus* cur;
+                    cur=contents_head;
+                    for(int i=0;i<workspace_contents_row;i++){
+                        cur=cur->next;
+                    }
                 
-                file_open(cur->file_name);
-                code_tab_transition();
-                wchgat(contents, -1, A_NORMAL, 0, NULL);
-    
+                    file_open(cur->file_name);
+                    code_tab_transition();
+                    wchgat(contents, -1, A_NORMAL, 0, NULL);
+                }
+            }
+            else if(input_char=='d'){
+                if(workspace_flag==0){
+                    FileStatus* cur;
+                    cur=contents_head;
+                    for(int i=0;i<workspace_contents_row;i++){
+                        cur=cur->next;
+                    }
+                    char full_path[256];
+                    strcpy(full_path,cur->full_path);
+                    free_list(contents_head);
+                    chdir(full_path);
+                    opened_workspace_tab_print();
+                    workspace_contents_print();
+                    
+                }
+            }
+            else if(input_char=='w'){
+                workspace_flag=1;
+                FileStatus* cur;
+                    cur=contents_head;
+                    for(int i=0;i<workspace_contents_row;i++){
+                        cur=cur->next;
+                    }
+                char full_path[256];
+                workspace_directory=malloc(sizeof(FileStatus));
+                strcpy(workspace_directory->full_path,cur->full_path);
+                free_list(contents_head);
+                chdir(workspace_directory->full_path);
+                opened_workspace_tab_print();
+                workspace_contents_print();
+            }
+            else if(input_char==KEY_LEFT){
+                chdir("..");
+                opened_workspace_tab_print();
+                workspace_contents_print();
             }
             
             

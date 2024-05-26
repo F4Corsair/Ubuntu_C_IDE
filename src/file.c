@@ -27,7 +27,9 @@ int workspace_contents_row;
 int workspace_contents_col;
 int workspace_file_focus;   //contents win 에서 첫번째 나오는 파일이름이 연결리스트에서 몇번째 파일인지
 int workspace_file_finish;
+int workspace_flag=0;
 
+FileStatus* workspace_directory;
 FileStatus* contents_head;
 FileStatus* filetab_head;
 
@@ -44,11 +46,15 @@ void file_tab_transition() {
     menu_tab_focus = FILE_TAB;
     menu_tab_update();
     wrefresh(menu_tab);
-
+    
+    if(workspace_flag==0)
+        chdir("/home");
+    else{
+        chdir(workspace_directory->full_path);
+    }
     // todo : show FILE_TAB
-    opened_workspace_tab_print();
+    opened_workspace_tab_print("/home");
     workspace_contents_print();
-
 }
 
 void file_open_update(int *input_char) {
@@ -138,6 +144,7 @@ void file_open(char *file_name) {
 
 void print_path(const char *path) {
     int width = COLS - 2; // 테두리를 위한 공간 확보
+    werase(opened_file_tab);
     wattron(opened_file_tab, A_UNDERLINE);
     mvwprintw(opened_file_tab, 0, 0, "Path:");
     mvwprintw(opened_file_tab, 0, 5, " %-*s", width, path); // "Path: " 공간 확보
@@ -154,88 +161,14 @@ void initialize_colors() {
 
 // 영준이 todo
 void opened_workspace_tab_print() {
-	initialize_colors();
+	char path[256];
 
-    print_path(".");
+    initialize_colors();
+    if (getcwd(path, sizeof(path)) != NULL)
+    print_path(path);
     wrefresh(opened_file_tab);
-
-
     attroff(COLOR_PAIR(1));
 }
-/*
-void new_file_tab(){
-    
-    int start_pos=0;
-    char file_path[256] = {0};
-    char file_name[FILE_TAB_WIDTH];
-    int input_row = (win_row - 3) / 2;
-    int input_col = (win_col - 20) / 2;
-
-    mvwprintw(contents, input_row, input_col, "Enter WorkSpace path: ");
-    wrefresh(contents);
-
-    int ch, idx = 0;
-    while ((ch = wgetch(contents)) != '\n') {
-        if (ch == KEY_BACKSPACE || ch == 127) {
-            if (idx > 0) {
-                idx--;
-                file_path[idx] = '\0';
-                mvwaddch(contents, input_row, input_col + strlen("Enter WorkSpace path: ") + idx, ' ');
-                wmove(contents, input_row, input_col + strlen("Enter WorkSpace path: ") + idx);
-            }
-        } else if (idx < sizeof(file_path) - 1) {
-            file_path[idx++] = ch;
-            waddch(contents, ch);
-        }
-        wrefresh(contents);
-    }
-
-    // 입력된 내용 출력
-    werase(contents);
-    mvwprintw(contents, input_row, (win_col - strlen(file_path)) / 2, "You entered: %s", file_path);
-    wrefresh(contents);
-    
-    if(file_tab_cnt >= max_file_tab) {
-        // todo : delete tab by policy
-    } else
-        file_tab_cnt++;
-    
-    
-    for(file_tab_focus=0;file_tab_focus<file_tab_cnt;file_tab_focus++){
-        start_pos = KEY_NAME_WIDTH + FILE_TAB_WIDTH * (file_tab_focus - 1); 
-        
-    // print tab
-        snprintf(file_name, sizeof(file_name), "WorkSpace%d", file_tab_focus+1);  
-        mvwprintw(opened_file_tab, 0, start_pos, "\\");
-        if(file_tab_focus==file_tab_cnt-1){
-             wattron(opened_file_tab, A_STANDOUT|A_UNDERLINE);
-             addToList(&filetab_head,file_name,file_path);   //fullpath 입력 받아야함    file_name 바꿔야함 지금은 임의로 workspace1이런식으로 넣어놓음
-             werase(contents);
-             FileStatus *cur=filetab_head;
-             for(int i=0;i<file_tab_focus;i++){
-                cur=cur->next;
-             }
-             chdir(cur->full_path);
-             workspace_contents_print();
-        }
-            
-        else
-            wattron(opened_file_tab, A_UNDERLINE);
-        mvwprintw(opened_file_tab, 0, start_pos+1, "%-*s", FILE_TAB_WIDTH - 2, file_name);
-        if(file_tab_focus==file_tab_cnt-1)
-             wattroff(opened_file_tab, A_STANDOUT|A_UNDERLINE);
-        else
-            wattroff(opened_file_tab, A_UNDERLINE);
-        mvwprintw(opened_file_tab, 0, start_pos+FILE_TAB_WIDTH-1, "/");
-
-        wrefresh(opened_file_tab);
-    }
-    // calculate start_pos
-    
-}
-*/
-
-
 
 void addToList(FileStatus **head,char *file_name, char *full_path) {
     FileStatus *new_node = (FileStatus*) malloc(sizeof(FileStatus));
@@ -328,14 +261,57 @@ void ls(char *path) {
 }
 
 
+void ls_directory(char *path) {
+    DIR *dir_ptr;
+    struct dirent *direntp;
+
+    if ((dir_ptr = opendir(path)) == NULL) {
+        fprintf(stderr, "ls: cannot open %s\n", path);
+        return;
+    }
+
+    contents_col = 1;
+    contents_row = 0;
+    contents_head=NULL;
+    werase(contents);  // 윈도우 지우기
+
+    start_color();
+
+    while ((direntp = readdir(dir_ptr)) != NULL) {
+        if (strcmp(direntp->d_name, ".") == 0 || strcmp(direntp->d_name, "..") == 0)
+            continue;
+
+        char full_path[PATH_MAX];
+        snprintf(full_path, PATH_MAX, "%s/%s", path, direntp->d_name);
+
+        struct stat info;
+        if (stat(full_path, &info) == -1)
+            continue;
+
+        if (S_ISDIR(info.st_mode)) {
+            addToList(&contents_head, direntp->d_name, full_path);
+
+            if (contents_row <= win_row - 4) {
+                mvwprintw(contents, contents_row++, contents_col, "%s", direntp->d_name);
+            }
+        }
+    }
+
+    closedir(dir_ptr);
+    wrefresh(contents);
+}
 void workspace_contents_print() {
 	char path[256];
     workspace_contents_row=0;
     workspace_contents_col=1;
     workspace_file_focus=0;
     workspace_file_finish=0;
-    if (getcwd(path, sizeof(path)) != NULL) {
-        //print_path(path);
+    contents_head=NULL;
+
+    if (getcwd(path, sizeof(path)) != NULL)
+    if(workspace_flag==0)
+        ls_directory(path);
+    else{
         ls(path);
         wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
         wclrtoeol(contents);
@@ -344,6 +320,9 @@ void workspace_contents_print() {
     }
     wrefresh(contents);
 }
+   
+    
+
 
 
 void workspace_key_up() {
@@ -420,7 +399,7 @@ void workspace_key_down() {
             }
             wrefresh(contents);
         }
-    } else if (workspace_contents_row < win_row - 4) {
+    } else if (workspace_contents_row < win_row - 4 && workspace_file_finish !=-1 && workspace_contents_row<num_files_to_display()) {
         // 화면 내에서 이동
         wchgat(contents, -1, A_NORMAL, 0, NULL);
         workspace_contents_row++;
@@ -428,6 +407,7 @@ void workspace_key_down() {
         for (int i = 0; i < workspace_contents_row + workspace_file_focus; i++) {
             cur = cur->next;
         }
+    
         if (cur != NULL) {
             wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
             wclrtoeol(contents);
@@ -435,5 +415,24 @@ void workspace_key_down() {
             mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
             wrefresh(contents);
         }
+    }
+}
+
+int num_files_to_display() {
+    int count = 0;
+    FileStatus* cur = contents_head;
+    while (cur != NULL && count < win_row - 4) {
+        count++;
+        cur = cur->next;
+    }
+    return count;
+}
+
+void free_list(FileStatus* head) {
+    FileStatus* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
     }
 }
