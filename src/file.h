@@ -27,6 +27,7 @@ void initialize_colors();
 void workspace_key_down();
 void workspace_key_up();
 int num_files_to_display();
+void new_file_open(char *file_name);
 
 void free_list(FileStatus* head);
 

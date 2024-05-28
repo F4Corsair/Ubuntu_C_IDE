@@ -309,10 +309,20 @@ int input_control(int input_char) {
                 opened_workspace_tab_print();
                 workspace_contents_print();
             }
-            
-            
-            break;
-            
+	    else if (input_char == 'n') {
+		int x, y;
+		char file_name[256];
+
+		getyx(contents, y, x);
+		echo();
+		mvwscanw(contents, y++, x, "%s", file_name);
+		
+		noecho();	
+		new_file_open(file_name);
+		code_tab_transition();
+	    }
+         
+            break;   
         case BUILD_TAB:
             break;
         case TERMINAL_TAB:

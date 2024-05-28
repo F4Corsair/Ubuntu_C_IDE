@@ -4,6 +4,7 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
@@ -435,4 +436,21 @@ void free_list(FileStatus* head) {
         head = head->next;
         free(temp);
     }
+}
+
+void new_file_open(char *file_name) {
+    int fd;
+
+    fd = creat(file_name, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (fd == -1) {
+        perror("file creat fail");
+        return;
+    }
+    
+    if (close(fd) == -1) {
+    	perror("file close fail");
+	return;
+    }
+
+    file_open(file_name);
 }
