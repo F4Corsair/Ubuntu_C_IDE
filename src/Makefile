@@ -1,24 +1,18 @@
-# if you want to build without debug flag
-# try $ make DEBUG=0
+# 변수 정의
 CC = gcc
-DEBUG ?= 1
-CFLAGS = -lcurses
+CFLAGS = -lcurses -lpthread
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
+TARGET = main.out
 
-ifeq ($(DEBUG), 1)
-	CFLAGS += -g
-endif
-
-main.out : $(OBJS)
+$(TARGET) : $(OBJS)
 	$(CC) -o $@ $(OBJS) $(CFLAGS)
 
-%.o : %.c %.h
+# 개별 오브젝트 파일 생성 규칙
+%.o: %.c %.h
 	$(CC) -c $< $(CFLAGS)
 
-%.o : %.c
+%.o: %.c
 	$(CC) -c $< $(CFLAGS)
 
-.PHONY : clean
-clean :
-	rm -f $(OBJS) main.out
+.PHONY: all clean

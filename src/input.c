@@ -312,7 +312,8 @@ int input_control(int input_char) {
 	    else if (input_char == 'n') {
 		int x, y;
 		char file_name[256];
-
+		
+		// todo : cursor position correction
 		getyx(contents, y, x);
 		echo();
 		mvwscanw(contents, y++, x, "%s", file_name);
@@ -321,7 +322,35 @@ int input_control(int input_char) {
 		new_file_open(file_name);
 		code_tab_transition();
 	    }
-         
+	    else if (input_char == 'm') {
+	    	int temp;
+		char file_name[256];
+		winsize_calculate();
+        	wclear(contents);
+
+        	int row_pos = win_row / 2 - 2; int col_pos = win_col / 2 - 1;
+        	mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Do you want to make a makefile?");
+		mvwaddch(contents, row_pos, col_pos++, '[');
+        	wattron(contents, A_UNDERLINE);
+        	mvwaddch(contents, row_pos, col_pos++, 'Y');
+        	wattroff(contents, A_UNDERLINE);
+        	mvwaddstr(contents, row_pos++, col_pos, "es]");
+		wrefresh(contents);
+		temp = getch();
+
+		if (temp == 'y' || temp == 'Y') {
+			wclear(contents);
+			row_pos = win_row / 2 - 2;
+			col_pos = win_col / 2 - 1;
+
+			mvwaddstr(contents, row_pos++, win_col / 2 - 12, "write down executable file name");
+			echo();
+                	mvwscanw(contents, row_pos, col_pos, "%s", file_name);
+			make_makefile(file_name);
+		}
+		noecho();
+		workspace_contents_print();	
+	    }
             break;   
         case BUILD_TAB:
             break;
