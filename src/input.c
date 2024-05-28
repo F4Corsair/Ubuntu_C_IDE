@@ -304,6 +304,15 @@ int input_control(int input_char) {
                 opened_workspace_tab_print();
                 workspace_contents_print();
             }
+            else if(input_char=='r'){
+                if(workspace_flag==1){
+                    workspace_flag=0;
+                    free_list(contents_head);
+                    chdir("/home");
+                    opened_workspace_tab_print();
+                    workspace_contents_print();
+                }
+            }
             else if(input_char==KEY_LEFT){
                 if(workspace_flag==0){
                     chdir("..");
