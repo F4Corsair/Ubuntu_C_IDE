@@ -413,12 +413,16 @@ void workspace_contents_print() {
             mvwchgat(contents, 0, workspace_key_col, strlen(cur->file_name), A_BLINK, 0, NULL);
     } else if (workspace_contents_row > 0) {
         // 화면 내에서 이동
+         if (workspace_file_finish == -1) {
+            workspace_file_finish = 0;
+        }       
         wchgat(contents, -1, A_NORMAL, 0, NULL);
         workspace_contents_row--;
         FileStatus* cur = contents_head;
         for (int i = 0; i < workspace_contents_row + workspace_file_focus; i++) {
             cur = cur->next;
         }
+
         
         if (cur != NULL) {
             wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
@@ -510,10 +514,9 @@ void workspace_key_down() {
                 else
                     mvwchgat(contents, win_row - 4, workspace_key_col, strlen(cur->file_name), A_BLINK, 0, NULL);
             }
-        }
-             else {
+        }else {
                 workspace_file_focus--; // 초과 이동 방지
-            }
+        }
             wrefresh(contents);
 
 
