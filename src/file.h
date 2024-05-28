@@ -22,10 +22,13 @@ void print_path(const char *path);
 void ls( char *path);
 void addToList(FileStatus **head,char *file_name, char *full_path);
 void lsR(char *path);
+void ls_directory(char *path);
 void initialize_colors();
 void workspace_key_down();
 void workspace_key_up();
-bool has_extension(const char *filename, const char *extension);
-void new_file_tab();
+int num_files_to_display();
+
+void free_list(FileStatus* head);
+
 
 #endif

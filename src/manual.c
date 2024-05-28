@@ -68,12 +68,14 @@ void manual_page_print() {
         break;
     case FILE_MAN:
         mvwprintw(contents, 0, 0, "Notice : This program can read ASCII characters only - be careful when you select file to open");
-	mvwprintw(contents, 2, 0, "You can switch file cursor and open source file!");
-	mvwprintw(contents, 3, 0, "Change file cursor : arrow key (up and down)");
-	mvwprintw(contents, 4, 0, "Open source file on cursor, press c");
-	mvwprintw(contents, 5, 0, "(But! If your code file tab count is over max count and you want to open file anyway, press y or Y, else press any key.)"); 
-	mvwprintw(contents, 6, 0, "Open new Work Space, press n");
-	mvwprintw(contents, 7, 0, "after that, copy and paste Work Space path that you want to open.");
+        mvwprintw(contents, 2, 0, "To navigate directories:");
+        mvwprintw(contents, 3, 0, "Press 'd' to move to the directory.");
+        mvwprintw(contents, 4, 0, "Press the left arrow key to move to the previous directory.");
+        mvwprintw(contents, 5, 0, "Press 'w' to set the workspace directory.");
+        mvwprintw(contents, 7, 0, "To open files in the Code Tab:");
+        mvwprintw(contents, 8, 0, "Press 'c' in the File Tab to open files in the Code Tab.");
+
+
         break;
     case CODE_MAN:
         mvwprintw(contents, 0, 0, "You can handle Opened File Tab (You need to open file from File Tab)");
@@ -84,9 +86,7 @@ void manual_page_print() {
         mvwprintw(contents, 6, 0, "You can move file cursor using Arrow & PageUp & PageDown key");
         break;
     case BUILD_MAN:
-        mvwprintw(contents, 0, 0, "You can compile source file with Makefile");
-	mvwprintw(contents, 2, 0, "In code tab, switch focusd code file that has main function");
-	mvwprintw(contents, 3, 0, "and press Ctrl + b, then you can see compile results");
+        mvwprintw(contents, 0, 0, "Build Tab Manual");
         break;
     default:
         perror("manual_page_print() : page out of index");

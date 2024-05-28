@@ -77,6 +77,7 @@ extern WINDOW *contents;
 //fileTab.c
 extern FileStatus* contents_head;
 extern FileStatus* filetab_head;
+extern FileStatus* workspace_directory;
 
 extern WINDOW* workspace_tab;
 
@@ -86,10 +87,14 @@ extern int unsaved_caution_flag;
 // manual.c
 extern enum ManualPage manual_page_focus;
 
+//file.c
 extern int workspace_contents_row;
 extern int workspace_contents_col;
 extern int workspace_file_focus;
 extern int workspace_file_finish;
+extern int file_tab_cnt;
+extern int file_tab_focus;
+extern int workspace_flag;
 #endif
 
 /* MACRO FUNCTIONS */

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "input.h"
 #include "global.h"
@@ -255,48 +256,60 @@ int input_control(int input_char) {
         case FILE_TAB:
             
             if (input_char == KEY_DOWN) {
-                workspace_key_down();
+                    workspace_key_down();
             } else if (input_char == KEY_UP) {
-                workspace_key_up();
+                    workspace_key_up();
             }
             else if(input_char== 'c'){  //code로 이동
-                FileStatus* cur;
-                cur=contents_head;
-                for(int i=0;i<workspace_contents_row-1;i++){
-                    cur=cur->next;
-                }
+                if(workspace_flag==1){
+                    FileStatus* cur;
+                    cur=contents_head;
+                    for(int i=0;i<workspace_contents_row;i++){
+                        cur=cur->next;
+                    }
                 
-                if(has_extension(cur->file_name,".c") || has_extension(cur->file_name,".h")||has_extension(cur->file_name,".log")||has_extension(cur->file_name,".txt")){
                     file_open(cur->file_name);
                     code_tab_transition();
                     wchgat(contents, -1, A_NORMAL, 0, NULL);
                 }
-                else{
-                    
-                    
-                    const char *message1 = "file open error";
-                    const char *message2 = "extention:c, h, log, txt";
-        
-                    int msg1_row = (win_row - 3) / 2 - 1;
-                    int msg2_row = (win_row - 3) / 2;
-                    int msg_col = (win_col - strlen(message1)) / 2;
-
-                    mvwprintw(contents, msg1_row, msg_col, "%s", message1);
-                    mvwprintw(contents, msg2_row, msg_col-4, "%s", message2);
-                    wrefresh(contents);
-                    sleep(1);
-
-        // 메시지 지우기
-                    werase(contents);
-
+            }
+            else if(input_char=='d'){
+                if(workspace_flag==0){
+                    FileStatus* cur;
+                    cur=contents_head;
+                    for(int i=0;i<workspace_contents_row;i++){
+                        cur=cur->next;
+                    }
+                    char full_path[256];
+                    strcpy(full_path,cur->full_path);
+                    free_list(contents_head);
+                    chdir(full_path);
+                    opened_workspace_tab_print();
                     workspace_contents_print();
-                    wrefresh(contents);
-                    return 0;                    
                     
                 }
-            }else if(input_char==CTRL('n')){
-                new_file_tab();
             }
+            else if(input_char=='w'){
+                workspace_flag=1;
+                FileStatus* cur;
+                    cur=contents_head;
+                    for(int i=0;i<workspace_contents_row;i++){
+                        cur=cur->next;
+                    }
+                char full_path[256];
+                workspace_directory=malloc(sizeof(FileStatus));
+                strcpy(workspace_directory->full_path,cur->full_path);
+                free_list(contents_head);
+                chdir(workspace_directory->full_path);
+                opened_workspace_tab_print();
+                workspace_contents_print();
+            }
+            else if(input_char==KEY_LEFT){
+                chdir("..");
+                opened_workspace_tab_print();
+                workspace_contents_print();
+            }
+            
             
             break;
             
