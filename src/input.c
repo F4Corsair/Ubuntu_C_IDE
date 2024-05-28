@@ -305,9 +305,12 @@ int input_control(int input_char) {
                 workspace_contents_print();
             }
             else if(input_char==KEY_LEFT){
-                chdir("..");
-                opened_workspace_tab_print();
-                workspace_contents_print();
+                if(workspace_flag==0){
+                    chdir("..");
+                    opened_workspace_tab_print();
+                    workspace_contents_print();
+                }
+            
             }
             
             

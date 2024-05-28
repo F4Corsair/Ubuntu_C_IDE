@@ -35,7 +35,6 @@ void build_tab_transition() {
     wrefresh(menu_tab);
 
     // todo : show BUILD_TAB
-    opened_build_tab_print();
     build_compile_print();
 }
 
@@ -176,17 +175,3 @@ void build_compile_print() {
     wrefresh(contents);
 } */
 
-void opened_build_tab_print() {
-    initialize_colors();
-
-    max_file_tab = COLS/FILE_TAB_WIDTH-1;
-    file_tab_cnt = 0;
-    file_tab_focus = -1;
-
-    new_file_tab();
-    //mvwprintw(opened_file_tab, 0, KEY_NAME_WIDTH - 1, "/");
-    wrefresh(opened_file_tab);
-
-
-    attroff(COLOR_PAIR(1));
-}

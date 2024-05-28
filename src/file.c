@@ -309,8 +309,13 @@ void workspace_contents_print() {
     contents_head=NULL;
 
     if (getcwd(path, sizeof(path)) != NULL)
-    if(workspace_flag==0)
+    if(workspace_flag==0){
         ls_directory(path);
+        wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
+        wclrtoeol(contents);
+        mvwprintw(contents,workspace_contents_row,workspace_contents_col, "%s", contents_head->file_name);
+        mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(contents_head->file_name), A_BLINK, 0, NULL);
+    }
     else{
         ls(path);
         wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
@@ -321,11 +326,7 @@ void workspace_contents_print() {
     wrefresh(contents);
 }
    
-    
-
-
-
-void workspace_key_up() {
+   void workspace_key_up() {
     if (workspace_contents_row == 0 && workspace_file_focus > 0) {
         // 화면의 첫 줄에 도달하고, 이전 파일이 존재하는 경우
         if (workspace_file_finish == -1) {
@@ -337,7 +338,7 @@ void workspace_key_up() {
             cur = cur->next;
         }
         werase(contents); // 윈도우 지우기
-        for (int row = 0; row < win_row - 4; row++) {
+        for (int row = 0; row < win_row - 3; row++) {
             if (cur != NULL) {
                 mvwprintw(contents, row, 1, "%s", cur->file_name);
                 cur = cur->next;
@@ -374,7 +375,6 @@ void workspace_key_down() {
         // 화면의 마지막 줄에 도달한 경우
         workspace_file_focus++;
         FileStatus* cur = contents_head;
-
         for (int i = 0; i < workspace_file_focus; i++) {
             if (cur == NULL) {
                 workspace_file_finish = -1;
@@ -382,10 +382,9 @@ void workspace_key_down() {
             }
             cur = cur->next;
         }
-
         if (cur != NULL) {
             werase(contents); // 윈도우 지우기
-            for (int row = 0; row < win_row - 4; row++) {
+            for (int row = 0; row < win_row - 3; row++) {
                 if (cur != NULL) {
                     mvwprintw(contents, row, 1, "%s", cur->file_name);
                     cur = cur->next;
@@ -395,25 +394,32 @@ void workspace_key_down() {
                 }
             }
             if (cur != NULL) {
-                mvwchgat(contents, win_row - 5, 1, strlen(cur->file_name), A_BLINK, 0, NULL);
+                mvwchgat(contents, win_row - 4, 1, strlen(cur->file_name), A_BLINK, 0, NULL);
             }
             wrefresh(contents);
+        } else {
+            workspace_file_focus--; // 초과 이동 방지
         }
-    } else if (workspace_contents_row < win_row - 4 && workspace_file_finish !=-1 && workspace_contents_row<num_files_to_display()) {
+    } else if (workspace_contents_row < win_row - 4 && workspace_file_finish != -1 && workspace_contents_row < num_files_to_display() - 1) {
         // 화면 내에서 이동
-        wchgat(contents, -1, A_NORMAL, 0, NULL);
-        workspace_contents_row++;
         FileStatus* cur = contents_head;
-        for (int i = 0; i < workspace_contents_row + workspace_file_focus; i++) {
+        for (int i = 0; i < workspace_contents_row + workspace_file_focus + 1; i++) {
             cur = cur->next;
         }
-    
         if (cur != NULL) {
-            wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
-            wclrtoeol(contents);
-            mvwprintw(contents, workspace_contents_row, workspace_contents_col, "%s", cur->file_name);
-            mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
-            wrefresh(contents);
+            wchgat(contents, -1, A_NORMAL, 0, NULL);
+            workspace_contents_row++;
+            cur = contents_head;
+            for (int i = 0; i < workspace_contents_row + workspace_file_focus; i++) {
+                cur = cur->next;
+            }
+            if (cur != NULL) {
+                wmove(contents, workspace_contents_row, 0); // 줄의 시작으로 이동
+                wclrtoeol(contents);
+                mvwprintw(contents, workspace_contents_row, workspace_contents_col, "%s", cur->file_name);
+                mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(cur->file_name), A_BLINK, 0, NULL);
+                wrefresh(contents);
+            }
         }
     }
 }
@@ -421,12 +427,13 @@ void workspace_key_down() {
 int num_files_to_display() {
     int count = 0;
     FileStatus* cur = contents_head;
-    while (cur != NULL && count < win_row - 4) {
+    while (cur != NULL && count < win_row - 3) {
         count++;
         cur = cur->next;
     }
     return count;
 }
+
 
 void free_list(FileStatus* head) {
     FileStatus* temp;

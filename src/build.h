@@ -7,7 +7,6 @@
 #define PIPE_ENDS 2
 
 void build_tab_transition();
-void opened_build_tab_print();
 void build_compile_print();
 // void build_debug_print();
 
