@@ -264,7 +264,7 @@ int input_control(int input_char) {
                 if(workspace_flag==1){
                     FileStatus* cur;
                     cur=contents_head;
-                    for(int i=0;i<workspace_contents_row;i++){
+                    for(int i=0;i<workspace_contents_row+workspace_file_focus;i++){
                         cur=cur->next;
                     }
                 
@@ -274,7 +274,8 @@ int input_control(int input_char) {
                 }
             }
             else if(input_char=='d'){
-                if(workspace_flag==0){
+                
+                if(workspace_flag==0 && directory_check!=0){
                     FileStatus* cur;
                     cur=contents_head;
                     for(int i=0;i<workspace_contents_row;i++){

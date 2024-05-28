@@ -27,9 +27,11 @@ typedef struct _file_status{
     int row, col;
     int start_row, start_col; // CodeBuf->cur <= start_row
     int modified; // 0 : unmodified  1 : modified
+    int position;
     time_t last_saved;
     CodeBuf *buf;
     struct _file_status *next;
+
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
 
 typedef struct {

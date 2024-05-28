@@ -28,7 +28,10 @@ void workspace_key_down();
 void workspace_key_up();
 int num_files_to_display();
 
+
 void free_list(FileStatus* head);
+
+extern int directory_check;
 
 
 #endif
