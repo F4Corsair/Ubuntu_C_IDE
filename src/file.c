@@ -42,7 +42,7 @@ void file_tab_transition()
     erase();
     refresh();
 
-    file_tab_init();
+    //file_tab_init();
 
     menu_tab_focus = FILE_TAB;
     menu_tab_update();
@@ -60,7 +60,7 @@ void file_tab_transition()
 }
 void file_tab_init()
 {
-
+    workspace_flag=0;
     start_color();
 }
 void file_open_update(int *input_char)
@@ -282,7 +282,7 @@ void ls(char *path)
 {
     contents_col = 1;
     contents_row = 0;
-    file_check=0;
+    file_check = 0;
     contents_head = NULL;
 
     werase(contents);
@@ -372,14 +372,16 @@ void workspace_contents_print()
         else
         {
             ls(path);
-            if(file_check>0){
+            if (file_check > 0)
+            {
                 wmove(contents, workspace_contents_row, 0);
                 wclrtoeol(contents);
                 mvwprintw(contents, workspace_contents_row, workspace_contents_col, "%s", contents_head->file_name);
                 mvwchgat(contents, workspace_contents_row, workspace_contents_col, strlen(contents_head->file_name), A_STANDOUT, 0, NULL);
             }
-            else{
-                workspace_flag=0;
+            else
+            {
+                workspace_flag = 0;
                 wattron(contents, COLOR_PAIR(3));
                 char *message1 = "There is no file in this directory.";
                 char *message2 = "Please press the left arrow key to go back.";
@@ -392,7 +394,6 @@ void workspace_contents_print()
                 wrefresh(contents);
                 wattroff(contents, COLOR_PAIR(3));
             }
-            
         }
     wrefresh(contents);
 }
@@ -608,7 +609,7 @@ void workspace_key_down()
         {
             cur = cur->next;
         }
-        if (cur != NULL && cur->next!=NULL)
+        if (cur != NULL && cur->next != NULL)
         {
             wchgat(contents, -1, A_NORMAL, 0, NULL);
             workspace_contents_row++;
