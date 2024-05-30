@@ -116,10 +116,13 @@ void contents_window_restore()
     }
 }
 
-void file_open(char *file_name) {
+void file_open(char *file_name, char *full_path) {
 	// int new_file_input;
 	char path[256];
-	
+	char subdirectory[256];
+	char *ptr;
+	int flag, input_char;
+
 	// full_path
 	if (getcwd(path, 256) == NULL) {
 		perror("getcwd");
@@ -128,38 +131,57 @@ void file_open(char *file_name) {
 	strcat(path, "/");
 	strcat(path, file_name);
 	
-	// file existence check - exception handling
-	if (access(path, F_OK) != 0) {
-		perror("file does not exist");
-		exit(1);
+	if (strcmp(path, full_path) != 0) {
+		strcpy(subdirectory, full_path);
+		ptr = strrchr(subdirectory, '/');
+		ptr = '\0';
+		
+		if (access(full_path, F_OK) != 0) {
+                	perror("file does not exist");
+                	exit(1);
+       	 	
+		}
+
+		flag = new_opened_file_tab(file_name, subdirectory);		
+		if (flag == -1) {
+                        file_open_update(&input_char);
+
+                // new_file_input = getch();
+                if (input_char == 'y' || input_char == 'Y') {
+                        // todo : index 지정 정확하게 하기
+                        del_opened_file_tab(MAX_FILE_TAB_CNT - 1);
+                        new_opened_file_tab(file_name, subdirectory);
+                        opened_file_tab_print();
+                        code_contents_print();
+                }
+                else
+                        contents_window_restore();
+                }
 	}
+	else {
+		// file existence check - exception handling
+    		if (access(path, F_OK) != 0) {
+        	perror("file does not exist");
+        	exit(1);
+   	 	}
+    		
+		flag = new_opened_file_tab(file_name, path);
 
-    // file existence check - exception handling
-    if (access(path, F_OK) != 0)
-    {
-        perror("file does not exist");
-        exit(1);
-    }
+		if (flag == -1) {	
+        		file_open_update(&input_char);
 
-    // to do : input control
-    int flag = new_opened_file_tab(file_name, path);
-    int input_char;
-    if (flag == -1)
-    {
-        file_open_update(&input_char);
-
-        // new_file_input = getch();
-        if (input_char == 'y' || input_char == 'Y')
-        {
-            // todo : index 지정 정확하게 하기
-            del_opened_file_tab(MAX_FILE_TAB_CNT - 1);
-            new_opened_file_tab(file_name, path);
-            opened_file_tab_print();
-            code_contents_print();
-        }
-        else // todo : make new contents restore code
-            contents_window_restore();
-    }
+        	// new_file_input = getch();
+        	if (input_char == 'y' || input_char == 'Y') {
+            		// todo : index 지정 정확하게 하기
+            		del_opened_file_tab(MAX_FILE_TAB_CNT - 1);
+           		new_opened_file_tab(file_name, path);
+            		opened_file_tab_print();
+            		code_contents_print();
+        	}
+        	else
+            		contents_window_restore();
+    		}
+	}
 }
 
 void print_path(const char *path)
@@ -689,7 +711,7 @@ void free_list(WorkSpaceFile *head)
 
 void new_file_open() {
     int fd;
-    char file_name[256];
+    char file_name[256], full_path[256];
     winsize_calculate();
     wclear(contents);
 	
@@ -699,6 +721,11 @@ void new_file_open() {
     wrefresh(contents);
     echo();
     mvwscanw(contents, row_pos, col_pos, "%s", file_name);
+    
+    if (getcwd(full_path, 256) == NULL) {
+	perror("getcwd");
+	return;
+    }
 
     fd = creat(file_name, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (fd == -1) {
@@ -711,7 +738,7 @@ void new_file_open() {
 	return;
     }
     noecho();
-    file_open(file_name);
+    file_open(file_name, full_path);
     code_tab_transition();
 }
 

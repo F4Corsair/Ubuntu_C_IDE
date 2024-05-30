@@ -314,7 +314,7 @@ int input_control(int input_char)
                         cur = cur->next;
                     }
 
-                    file_open(cur->file_name);
+                    file_open(cur->file_name, cur->full_path);
                     code_tab_transition();
                     wchgat(contents, -1, A_NORMAL, 0, NULL);
                 }
