@@ -34,7 +34,7 @@ void build_tab_transition() {
     menu_tab_update();
     wrefresh(menu_tab);
 
-    // todo : show BUILD_TAB
+    opened_workspace_tab_print();
     build_compile_print();
 }
 
@@ -90,38 +90,6 @@ void build_compile_print() {
         mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 10, "File does not exist");
     } 
     else {
-        // print to contents - using pipe!
-        /*if (pipe(the_pipe) == -1) {
-            perror("pipe");
-            exit(1);
-        }
-
-        switch (fork()) {
-            case -1:
-                perror("fork");
-                exit(1);
-            case 0: // child = only writing makefile's results
-                close(the_pipe[0]);
-                dup2(the_pipe[1], 1);
-                dup2(the_pipe[1], 2);
-                close(the_pipe[1]);
-                // todo : makefile create + makefile 지정
-                execlp("make", "make", NULL);
-                perror("make");
-                exit(5);
-                break;
-            default: // parent = write results from child's make command on window
-                close(the_pipe[1]);
-                dup2(the_pipe[0], 0);
-                close(the_pipe[0]);
-                int row = 0;
-                while ((read_len = read(the_pipe[0], buf, BUFSIZ)) > 0) {
-                    buf[read_len] = '\0';
-		    mvwprintw(contents, row++, 0, "%s", buf);
-		    wrefresh(contents);
-                }
-		wait(NULL);
-        }*/
 	results *compile_result = (results*)malloc(sizeof(results));
 
 	pipe_fp = popen("make", "r"); // "make" 명령어를 실행하고 해당 출력을 읽을 파일 스트림을 생성
@@ -153,25 +121,3 @@ void build_compile_print() {
 
     wrefresh(contents);
 }
-
-/* void build_debug_print() {
-    int the_pipe[PIPE_ENDS], newfd, pid, read_len;
-    char buf[BUFSIZ];
-    FileStatus *status = opened_file_info->focus;
-    wclear(contents);
-
-    if (status == NULL) {
-        // no file opened
-        mvwaddstr(contents, (win_row - 3) / 2 - 1, win_col / 2 - 18, "Open File from File Tab [Ctrl + F]");
-        mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 17, "If you are first, try [Ctrl + M]");
-    } 
-    else if(status->fd == -1) {
-        mvwaddstr(contents, (win_row - 3) / 2, win_col / 2 - 10, "File does not exist");
-    } 
-    else {
-        // print to contents - using pipe!
-    }
-
-    wrefresh(contents);
-} */
-

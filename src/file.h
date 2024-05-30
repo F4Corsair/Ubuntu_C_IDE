@@ -27,7 +27,7 @@ void ls_directory(char *path);
 void workspace_key_down();
 void workspace_key_up();
 int num_files_to_display();
-void new_file_open(char *file_name);
+void new_file_open();
 void make_makefile();
 
 void free_list(WorkSpaceFile* head);

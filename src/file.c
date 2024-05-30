@@ -687,8 +687,18 @@ void free_list(WorkSpaceFile *head)
     }
 }
 
-void new_file_open(char *file_name) {
+void new_file_open() {
     int fd;
+    char file_name[256];
+    winsize_calculate();
+    wclear(contents);
+	
+    int row_pos = win_row / 2 - 2;
+    int col_pos = win_col / 2 - 1;
+    mvwaddstr(contents, row_pos++, win_col / 2 - 15, "write down file name you want to make");
+    wrefresh(contents);
+    echo();
+    mvwscanw(contents, row_pos, col_pos, "%s", file_name);
 
     fd = creat(file_name, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (fd == -1) {
@@ -700,8 +710,9 @@ void new_file_open(char *file_name) {
     	perror("file close fail");
 	return;
     }
-
+    noecho();
     file_open(file_name);
+    code_tab_transition();
 }
 
 void make_makefile() {
@@ -713,7 +724,7 @@ void make_makefile() {
     wclear(contents);
 
     int row_pos = win_row / 2 - 2; int col_pos = win_col / 2 - 1;
-    mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Do you want to make a makefile?");
+    mvwaddstr(contents, row_pos++, win_col / 2 - 14, "Do you want to make a makefile?");
     mvwaddch(contents, row_pos, col_pos++, '[');
     wattron(contents, A_UNDERLINE);
     mvwaddch(contents, row_pos, col_pos++, 'Y');

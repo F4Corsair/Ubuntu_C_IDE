@@ -371,17 +371,7 @@ int input_control(int input_char)
                 }
             }
 	    else if (input_char == 'n') {
-		int x, y;
-		char file_name[256];
-		
-		// todo : cursor position correction
-		getyx(contents, y, x);
-		echo();
-		mvwscanw(contents, y++, x, "%s", file_name);
-		
-		noecho();	
-		new_file_open(file_name);
-		code_tab_transition();
+		new_file_open();
 	    }
             //break;   
             else if (input_char == KEY_LEFT)
