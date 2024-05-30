@@ -28,9 +28,9 @@ int workspace_flag = 0; // 고쳐야함
 int directory_check;
 int file_check;
 
-FileStatus *workspace_directory;
-FileStatus *contents_head;
-FileStatus *filetab_head;
+WorkSpaceFile *workspace_directory;
+WorkSpaceFile *contents_head;
+WorkSpaceFile *filetab_head;
 
 WINDOW *workspace_tab;
 
@@ -84,8 +84,8 @@ void file_open_update(int *input_char)
 }
 
 /* int find_most_previous_file() {
-    FileStatus *cur = opened_file_info->contents_head;
-    FileStatus *most_previous_file = NULL;
+    WorkSpaceFile *cur = opened_file_info->contents_head;
+    WorkSpaceFile *most_previous_file = NULL;
 
     // contents_head가 가리키는 node의 prev node가 가장 나중에 만들어진 node
     int index = 0;
@@ -177,9 +177,9 @@ void opened_workspace_tab_print()
     wrefresh(opened_file_tab);
 }
 
-void addToList(FileStatus **head, char *file_name, char *full_path)
+void addToList(WorkSpaceFile **head, char *file_name, char *full_path)
 {
-    FileStatus *new_node = (FileStatus *)malloc(sizeof(FileStatus));
+    WorkSpaceFile *new_node = (WorkSpaceFile *)malloc(sizeof(WorkSpaceFile));
 
     if (!new_node)
     {
@@ -211,7 +211,7 @@ void addToList(FileStatus **head, char *file_name, char *full_path)
     }
     else
     {
-        FileStatus *current = *head;
+        WorkSpaceFile *current = *head;
         while (current->next)
         {
             current = current->next;
@@ -408,7 +408,7 @@ void workspace_key_up()
             workspace_file_finish = 0;
         }
         workspace_file_focus--;
-        FileStatus *cur = contents_head;
+        WorkSpaceFile *cur = contents_head;
         for (int i = 0; i < workspace_file_focus; i++)
         {
             cur = cur->next;
@@ -474,7 +474,7 @@ void workspace_key_up()
         }
         wchgat(contents, -1, A_NORMAL, 0, NULL);
         workspace_contents_row--;
-        FileStatus *cur = contents_head;
+        WorkSpaceFile *cur = contents_head;
         for (int i = 0; i < workspace_contents_row + workspace_file_focus; i++)
         {
             cur = cur->next;
@@ -527,7 +527,7 @@ void workspace_key_down()
     if (workspace_contents_row == win_row - 4 && workspace_file_finish != -1)
     {
         workspace_file_focus++;
-        FileStatus *cur = contents_head;
+        WorkSpaceFile *cur = contents_head;
         for (int i = 0; i < workspace_file_focus; i++)
         {
             if (cur == NULL)
@@ -603,7 +603,7 @@ void workspace_key_down()
     else if (workspace_contents_row < win_row - 4 && workspace_file_finish != -1 && workspace_contents_row < num_files_to_display() - 1)
     {
 
-        FileStatus *cur = contents_head;
+        WorkSpaceFile *cur = contents_head;
         for (int i = 0; i < workspace_contents_row + workspace_file_focus; i++)
         {
             cur = cur->next;
@@ -661,7 +661,7 @@ void workspace_key_down()
 int num_files_to_display()
 {
     int count = 0;
-    FileStatus *cur = contents_head;
+    WorkSpaceFile *cur = contents_head;
     while (cur != NULL && count < win_row - 3)
     {
         count++;
@@ -670,9 +670,9 @@ int num_files_to_display()
     return count;
 }
 
-void free_list(FileStatus *head)
+void free_list(WorkSpaceFile *head)
 {
-    FileStatus *temp;
+    WorkSpaceFile *temp;
     while (head != NULL)
     {
         temp = head;

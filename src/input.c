@@ -307,7 +307,7 @@ int input_control(int input_char)
             { // code로 이동
                 if (workspace_flag == 1)
                 {
-                    FileStatus *cur;
+                    WorkSpaceFile *cur;
                     cur = contents_head;
                     for (int i = 0; i < workspace_contents_row + workspace_file_focus; i++)
                     {
@@ -324,7 +324,7 @@ int input_control(int input_char)
 
                 if (workspace_flag == 0 && directory_check != 0)
                 {
-                    FileStatus *cur;
+                    WorkSpaceFile *cur;
                     cur = contents_head;
                     for (int i = 0; i < workspace_contents_row; i++)
                     {
@@ -340,17 +340,17 @@ int input_control(int input_char)
             }
             else if (input_char == '\n')
             {
-                if (workspace_flag == 0 && file_check!=0)
+                if (workspace_flag == 0)
                 {
                     workspace_flag = 1;
-                    FileStatus *cur;
+                    WorkSpaceFile *cur;
                     cur = contents_head;
                     for (int i = 0; i < workspace_contents_row; i++)
                     {
                         cur = cur->next;
                     }
                     char full_path[256];
-                    workspace_directory = malloc(sizeof(FileStatus));
+                    workspace_directory = malloc(sizeof(WorkSpaceFile));
                     strcpy(workspace_directory->full_path, cur->full_path);
                     free_list(contents_head);
                     chdir(workspace_directory->full_path);

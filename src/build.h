@@ -13,6 +13,6 @@ void build_compile_print();
 extern int max_file_tab;
 extern int file_tab_cnt;
 extern int file_tab_focus;
-extern FileStatus* filetab_head;
+extern WorkSpaceFile* filetab_head;
 
 #endif

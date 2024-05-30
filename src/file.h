@@ -21,7 +21,7 @@ void opened_workspace_tab_print();
 void workspace_contents_print();
 void print_path(const char *path);
 void ls( char *path);
-void addToList(FileStatus **head,char *file_name, char *full_path);
+void addToList(WorkSpaceFile **head,char *file_name, char *full_path);
 void lsR(char *path);
 void ls_directory(char *path);
 void workspace_key_down();
@@ -29,7 +29,7 @@ void workspace_key_up();
 int num_files_to_display();
 
 
-void free_list(FileStatus* head);
+void free_list(WorkSpaceFile* head);
 
 extern int directory_check;
 extern int file_check;
