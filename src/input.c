@@ -326,7 +326,7 @@ int input_control(int input_char)
                 {
                     WorkSpaceFile *cur;
                     cur = contents_head;
-                    for (int i = 0; i < workspace_contents_row; i++)
+                    for (int i = 0; i < workspace_contents_row+workspace_file_focus; i++)
                     {
                         cur = cur->next;
                     }
@@ -345,7 +345,7 @@ int input_control(int input_char)
                     workspace_flag = 1;
                     WorkSpaceFile *cur;
                     cur = contents_head;
-                    for (int i = 0; i < workspace_contents_row; i++)
+                    for (int i = 0; i < workspace_contents_row+workspace_file_focus; i++)
                     {
                         cur = cur->next;
                     }
