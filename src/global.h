@@ -27,10 +27,22 @@ typedef struct _file_status{
     int row, col;
     int start_row, start_col; // CodeBuf->cur <= start_row
     int modified; // 0 : unmodified  1 : modified
+    int position;
     time_t last_saved;
     CodeBuf *buf;
     struct _file_status *next;
+
 } FileStatus; // saves opened file status - uses at file open & menu tab print ...
+
+typedef struct WorkSpaceFile{
+    char file_name[256];
+    char full_path[256];
+    int row;
+    int col;
+    int position;
+    struct WorkSpaceFile* next;
+}WorkSpaceFile;
+
 
 typedef struct {
     FileStatus *head;
@@ -75,11 +87,10 @@ extern WINDOW *menu_tab;
 extern WINDOW *contents;
 
 //fileTab.c
-extern FileStatus* contents_head;
-extern FileStatus* filetab_head;
-extern FileStatus* workspace_directory;
+extern WorkSpaceFile* contents_head;
+extern WorkSpaceFile* filetab_head;
+extern WorkSpaceFile* workspace_directory;
 
-extern WINDOW* workspace_tab;
 
 // openedFileTab.c
 extern int unsaved_caution_flag;
@@ -92,8 +103,6 @@ extern int workspace_contents_row;
 extern int workspace_contents_col;
 extern int workspace_file_focus;
 extern int workspace_file_finish;
-extern int file_tab_cnt;
-extern int file_tab_focus;
 extern int workspace_flag;
 #endif
 
