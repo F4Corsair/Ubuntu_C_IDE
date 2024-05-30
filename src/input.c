@@ -354,6 +354,7 @@ int input_control(int input_char)
                     strcpy(workspace_directory->full_path, cur->full_path);
                     free_list(contents_head);
                     chdir(workspace_directory->full_path);
+		    make_makefile();
                     opened_workspace_tab_print();
                     workspace_contents_print();
                 }
@@ -382,36 +383,7 @@ int input_control(int input_char)
 		new_file_open(file_name);
 		code_tab_transition();
 	    }
-	    else if (input_char == 'm') {
-	    	int temp;
-		char file_name[256];
-		winsize_calculate();
-        	wclear(contents);
-
-        	int row_pos = win_row / 2 - 2; int col_pos = win_col / 2 - 1;
-        	mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Do you want to make a makefile?");
-		mvwaddch(contents, row_pos, col_pos++, '[');
-        	wattron(contents, A_UNDERLINE);
-        	mvwaddch(contents, row_pos, col_pos++, 'Y');
-        	wattroff(contents, A_UNDERLINE);
-        	mvwaddstr(contents, row_pos++, col_pos, "es]");
-		wrefresh(contents);
-		temp = getch();
-
-		if (temp == 'y' || temp == 'Y') {
-			wclear(contents);
-			row_pos = win_row / 2 - 2;
-			col_pos = win_col / 2 - 1;
-
-			mvwaddstr(contents, row_pos++, win_col / 2 - 12, "write down executable file name");
-			echo();
-                	mvwscanw(contents, row_pos, col_pos, "%s", file_name);
-			make_makefile(file_name);
-		}
-		noecho();
-		workspace_contents_print();	
-	    }
-            break;   
+            //break;   
             else if (input_char == KEY_LEFT)
             {
                 if (workspace_flag == 0)
@@ -421,7 +393,6 @@ int input_control(int input_char)
                     workspace_contents_print();
                 }
             }
-
             break;
 
         case BUILD_TAB:

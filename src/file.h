@@ -28,8 +28,7 @@ void workspace_key_down();
 void workspace_key_up();
 int num_files_to_display();
 void new_file_open(char *file_name);
-void make_makefile(char *exe_file_name);
-
+void make_makefile();
 
 void free_list(WorkSpaceFile* head);
 

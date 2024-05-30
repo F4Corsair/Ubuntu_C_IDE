@@ -704,10 +704,24 @@ void new_file_open(char *file_name) {
     file_open(file_name);
 }
 
-void make_makefile(char *exe_file_name) {
-    FILE *fp;
-    char exe_file[256]; char main_file[256];
-    // 각 부분의 내용을 스트링 변수로 정의
+void make_makefile() {
+    FILE *fp; int temp;
+    char file_name[256];
+    char exe_file[256];
+    
+    winsize_calculate();
+    wclear(contents);
+
+    int row_pos = win_row / 2 - 2; int col_pos = win_col / 2 - 1;
+    mvwaddstr(contents, row_pos++, win_col / 2 - 10, "Do you want to make a makefile?");
+    mvwaddch(contents, row_pos, col_pos++, '[');
+    wattron(contents, A_UNDERLINE);
+    mvwaddch(contents, row_pos, col_pos++, 'Y');
+    wattroff(contents, A_UNDERLINE);
+    mvwaddstr(contents, row_pos, col_pos, "es]");
+    wrefresh(contents);
+    temp = getch();
+	
     const char *variables =
         "# 변수 정의\n"
         "CC = gcc\n"
@@ -715,10 +729,6 @@ void make_makefile(char *exe_file_name) {
         "SRCS = $(wildcard *.c)\n"
         "OBJS = $(SRCS:.c=.o)\n"
 	"TARGET = ";
-    
-    strcpy(exe_file, variables);
-    strcat(exe_file, exe_file_name);
-    strcat(exe_file, "\n\n");
 
     const char *target_rule =
         "$(TARGET) : $(OBJS)\n"
@@ -736,31 +746,46 @@ void make_makefile(char *exe_file_name) {
         "clean:\n"
         "\trm -f $(TARGET) $(OBJS)\n\n";
     
-    // 각 부분을 결합하여 Makefile 내용을 완성
     char *makefile_content;
-    size_t content_size = strlen(exe_file) + strlen(target_rule) + strlen(object_rule) + strlen(clean_rule) + 1;
-
-    makefile_content = malloc(content_size);
-    if (makefile_content == NULL) {
-        perror("메모리 할당 실패");
-        return;
-    }
-
-    // 스트링들을 결합
-    strcpy(makefile_content, exe_file);
-    strcat(makefile_content, target_rule);
-    strcat(makefile_content, object_rule);
-    strcat(makefile_content, clean_rule);
-
-    // Makefile 생성
-    fp = fopen("Makefile", "w");
-    if (fp == NULL) {
-        perror("Makefile 생성 실패");
-        free(makefile_content);
-        return;
-    }
 	
-    fprintf(fp, "%s", makefile_content);
-    fclose(fp);
-    free(makefile_content);
+    if (temp == 'y' || temp == 'Y') {
+	wclear(contents);
+	row_pos = win_row / 2 - 2;
+	col_pos = win_col / 2 - 1;
+        mvwaddstr(contents, row_pos++, win_col / 2 - 12, "write down executable file name");
+        echo();
+        mvwscanw(contents, row_pos, col_pos, "%s", file_name);
+
+	strcpy(exe_file, variables);
+    	strcat(exe_file, file_name);
+    	strcat(exe_file, "\n\n");
+
+	size_t content_size = strlen(exe_file) + strlen(target_rule) + strlen(object_rule) + strlen(clean_rule) + 1;
+	makefile_content = malloc(content_size);
+        if (makefile_content == NULL) {
+                perror("메모리 할당 실패");
+                return;
+        }
+
+	// string merge
+        strcpy(makefile_content, exe_file);
+        strcat(makefile_content, target_rule);
+        strcat(makefile_content, object_rule);
+        strcat(makefile_content, clean_rule);
+
+    	// Makefile creat
+  	fp = fopen("Makefile", "w");
+  	if (fp == NULL) {
+       		perror("Makefile 생성 실패");
+       	 	free(makefile_content);
+        	return;
+    	}
+
+    	fprintf(fp, "%s", makefile_content);
+    	fclose(fp);
+    	free(makefile_content);
+    }
+    noecho();
+    workspace_contents_print();
+
 }
