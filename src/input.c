@@ -371,7 +371,7 @@ int input_control(int input_char)
                 }
             }
 	    else if (input_char == 'n') {
-		new_file_open();
+	    	new_file_open();
 	    }
             //break;   
             else if (input_char == KEY_LEFT)

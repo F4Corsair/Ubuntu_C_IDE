@@ -711,7 +711,8 @@ void free_list(WorkSpaceFile *head)
 
 void new_file_open() {
     int fd;
-    char file_name[256], full_path[256];
+    char file_name[256] = {0};
+    char full_path[256] = {0};
     winsize_calculate();
     wclear(contents);
 	
@@ -724,17 +725,22 @@ void new_file_open() {
     
     if (getcwd(full_path, 256) == NULL) {
 	perror("getcwd");
+	noecho();
 	return;
     }
+    strcat(full_path, "/");
+    strcat(full_path, file_name);
 
     fd = creat(file_name, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     if (fd == -1) {
         perror("file creat fail");
+	noecho();
         return;
     }
     
     if (close(fd) == -1) {
     	perror("file close fail");
+	noecho();
 	return;
     }
     noecho();
