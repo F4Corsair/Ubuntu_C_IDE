@@ -698,8 +698,8 @@ void make_makefile() {
     winsize_calculate();
     wclear(contents);
 
-    int row_pos = win_row / 2 - 2; int col_pos = win_col / 2 - 1;
-    mvwaddstr(contents, row_pos++, win_col / 2 - 14, "Do you want to make a makefile?");
+    int row_pos = win_row / 2 - 2; int col_pos = win_col / 2 - 3;
+    mvwaddstr(contents, row_pos++, win_col / 2 - 16, "Do you want to make a makefile?");
     mvwaddch(contents, row_pos, col_pos++, '[');
     wattron(contents, A_UNDERLINE);
     mvwaddch(contents, row_pos, col_pos++, 'Y');
