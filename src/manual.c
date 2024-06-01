@@ -68,13 +68,13 @@ void manual_page_print() {
     case FILE_MAN:
         mvwprintw(contents, 0, 0, "Notice : This program can read ASCII characters only - be careful when you select file to open");
         mvwprintw(contents, 2, 0, "To navigate directories:");
-        mvwprintw(contents, 3, 0, "Press the right arrow key to move to the directory.");
-        mvwprintw(contents, 4, 0, "Press the left arrow key to move to the previous directory.");
-        mvwprintw(contents, 5, 0, "If you press the right key in a directory without subdirectories, a warning message appears.");
-        mvwprintw(contents, 6, 0, "Press Enter key to set the workspace directory.");
-        mvwprintw(contents, 7, 0, "If you press Enter key in a directory without subfiles, a warning message appears.");
-        mvwprintw(contents, 8, 0, "Press 'r' to reset workspace set");
-        mvwprintw(contents, 9, 0, "If you press the 'c' key in the file tab, you can open the file in the code tab.");
+        mvwprintw(contents, 3, 0, "Press the right arrow key to move down into sub-directory");
+        mvwprintw(contents, 4, 0, "Press the left arrow key to move parent-directory");
+        mvwprintw(contents, 5, 0, "If you press the right key in a directory without subdirectories, a warning message appears");
+        mvwprintw(contents, 6, 0, "Press Enter key to set focused directory as workspace directory");
+        mvwprintw(contents, 7, 0, "If you press Enter key in a directory without subfiles, a warning message will appear");
+        mvwprintw(contents, 8, 0, "Press 'r' to change workspace - it will reset & turn back to home dir");
+        mvwprintw(contents, 9, 0, "If you press the 'c' key in the file tab, you can open the file in the code tab");
         break;
     case CODE_MAN:
         mvwprintw(contents, 0, 0, "You can handle Opened File Tab (You need to open file from File Tab)");
@@ -87,7 +87,7 @@ void manual_page_print() {
         mvwprintw(contents, 8, 0, "Alt + up/down arrow can let you swap 2 code line");
         break;
     case BUILD_MAN:
-        mvwprintw(contents, 0, 0, "Build Tab Manual");
+        mvwprintw(contents, 0, 0, "if makefile exist on workspace directory, it will excute");
         break;
     default:
         perror("manual_page_print() : page out of index");
