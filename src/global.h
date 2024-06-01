@@ -38,6 +38,15 @@ typedef struct {
     FileStatus *focus;
 } OpenFileInfo;
 
+typedef struct WorkSpaceFile{
+    char file_name[256];
+    char full_path[256];
+    int row;
+    int col;
+    int position;
+    struct WorkSpaceFile* next;
+}WorkSpaceFile;
+
 enum MenuTab {
     CODE_TAB,
     FILE_TAB,
@@ -78,6 +87,13 @@ extern int unsaved_caution_flag;
 
 // manual.c
 extern enum ManualPage manual_page_focus;
+
+//file.c
+extern int workspace_contents_row;
+extern int workspace_contents_col;
+extern int workspace_file_focus;
+extern int workspace_file_finish;
+extern int workspace_flag;
 
 #endif
 
