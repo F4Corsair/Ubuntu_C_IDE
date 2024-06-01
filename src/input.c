@@ -222,16 +222,30 @@ int input_control(int input_char) {
             break;
         case 0x7f: // DEL
         case 0x14a: // KEY_DC
-            // move cursor to next
-            input_control(0x105);
             // erase
-            code_edit_backspace();
+            input_control(0x105);
+            code_edit_del();
             focus->modified = 1;
             opened_file_tab_print();
             code_contents_print();
             break;
         case 0x107: // backspace
-            code_edit_backspace();
+            code_edit_del();
+            // move cursor to right
+            focus->modified = 1;
+            opened_file_tab_print();
+            code_contents_print();
+            break;
+        case 0x20b: // alt + down arrow
+        case 0x150: // shift + down arrow
+            code_edit_line_swap_down();
+            focus->modified = 1;
+            opened_file_tab_print();
+            code_contents_print();
+            break;
+        case 0x234: // alt + up arrow
+        case 0x151: // shift + up arrow
+            code_edit_line_swap_up();
             focus->modified = 1;
             opened_file_tab_print();
             code_contents_print();
