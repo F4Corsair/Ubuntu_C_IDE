@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "input.h"
 #include "global.h"
@@ -288,9 +290,17 @@ int input_control(int input_char) {
                     workspace_contents_print();
                 } else if (workspace_flag == 1) { // open file
                     WorkSpaceFile *cur = get_cur_workspace();
-                    file_open(cur->file_name, cur->full_path);
-                    code_tab_transition();
-                    wchgat(contents, -1, A_NORMAL, 0, NULL);
+                    // check selected is dir or not
+                    struct stat cur_st;
+                    if(stat(cur->full_path, &cur_st) != 0) {
+                        perror("input_control-FILE_TAB-stat");
+                        return 0;
+                    }
+                    if(!S_ISDIR(cur_st.st_mode)) {
+                        file_open(cur->file_name, cur->full_path);
+                        code_tab_transition();
+                        wchgat(contents, -1, A_NORMAL, 0, NULL);
+                    }
                 }
             }
             else if (input_char == 'r')

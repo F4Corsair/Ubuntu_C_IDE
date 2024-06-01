@@ -53,6 +53,7 @@ void ui_init() {
 
 void ui_terminate() {
     opened_file_info_terminate();
+    workspacefile_terminate(contents_head);
     delwin(menu_tab);
     delwin(opened_file_tab);
     delwin(contents);
