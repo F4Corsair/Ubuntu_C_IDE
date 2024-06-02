@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "input.h"
 #include "global.h"
@@ -266,6 +270,76 @@ int input_control(int input_char) {
         switch (menu_tab_focus)
         {
         case FILE_TAB:
+            if (input_char == KEY_DOWN)
+            {
+                workspace_key_down();
+            }
+            else if (input_char == KEY_UP)
+            {
+                workspace_key_up();
+            }
+            else if (input_char == KEY_RIGHT)
+            {
+                if (workspace_flag == 0 && directory_check != 0)
+                {
+                    WorkSpaceFile *cur = get_cur_workspace();
+                    char full_path[256];
+                    strcpy(full_path, cur->full_path);
+                    workspacefile_terminate(contents_head);
+                    chdir(full_path);
+                    opened_workspace_tab_print();
+                    workspace_contents_print();
+                }
+            }
+            else if (input_char == '\n')
+            {
+                if (workspace_flag == 0) {
+                    workspace_flag = 1;
+                    WorkSpaceFile *cur = get_cur_workspace();
+                    char full_path[256];
+                    strcpy(full_path, cur->full_path);
+                    chdir(full_path);
+		            make_makefile();
+                    opened_workspace_tab_print();
+                    workspace_contents_print();
+                } else if (workspace_flag == 1) { // open file
+                    WorkSpaceFile *cur = get_cur_workspace();
+                    // check selected is dir or not
+                    struct stat cur_st;
+                    if(stat(cur->full_path, &cur_st) != 0) {
+                        perror("input_control-FILE_TAB-stat");
+                        return 0;
+                    }
+                    if(!S_ISDIR(cur_st.st_mode)) {
+                        file_open(cur->file_name, cur->full_path);
+                        code_tab_transition();
+                        wchgat(contents, -1, A_NORMAL, 0, NULL);
+                    }
+                }
+            }
+            else if (input_char == 'r')
+            {
+                if (workspace_flag == 1)
+                {
+                    workspace_flag = 0;
+                    workspacefile_terminate(contents_head);
+                    chdir("/home");
+                    opened_workspace_tab_print();
+                    workspace_contents_print();
+                }
+            }
+            else if (input_char == 'n') {
+                new_file_open();
+            }
+            else if (input_char == KEY_LEFT)
+            {
+                if (workspace_flag == 0)
+                {
+                    chdir("..");
+                    opened_workspace_tab_print();
+                    workspace_contents_print();
+                }
+            }
             break;
         case BUILD_TAB:
             break;
