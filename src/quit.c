@@ -18,6 +18,7 @@ void quit_tab_transition() {
     menu_tab_update();
     wrefresh(menu_tab);
 
+    wrefresh(contents); // to prevent bug
     quit_tab_update();
     wrefresh(contents);
 }
